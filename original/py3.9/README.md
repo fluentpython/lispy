@@ -18,4 +18,5 @@ My rewrite includes all Norvig's original test cases and
 adds a few more. 
 
 _LR_
+
 São Paulo, June 19, 2021

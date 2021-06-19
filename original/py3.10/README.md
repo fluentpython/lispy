@@ -17,4 +17,5 @@ Other Python 3.10 features used:
 
 
 _LR_
+
 São Paulo, June 19, 2021
