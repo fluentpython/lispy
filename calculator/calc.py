@@ -109,6 +109,13 @@ def evaluate(x: Expression) -> Any:
             return proc(*values)
 
 
+################ High level API
+
+
+def calc(source: str) -> Any:
+    return evaluate(parse(source))
+
+
 ################ Interaction: A REPL
 
 
@@ -130,5 +137,5 @@ def lispstr(exp: object) -> str:
 
 if __name__ == '__main__':
     # activate line editing and history
-    import readline  
+    import readline
     repl()

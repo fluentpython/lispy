@@ -22,6 +22,22 @@ Evaluator::
     42
     >>> evaluate(parse('(/ (* (- 100.4 32) 5) 9)'))
     38.0
+
+High-level function `calc`::
+
+    >>> calc('+')
+    <built-in function add>
+    >>> calc('(* 111 111)')
+    12321
+
+Global environment::
+
+    >>> global_env['-']
+    <built-in function sub>
+    >>> calc('(define n 1729)')
+    >>> global_env['n']
+    1729
+
 """
 
 
@@ -29,7 +45,7 @@ from typing import Optional
 
 from pytest import mark
 
-from calc import parse, evaluate, Expression, global_env
+from calc import parse, evaluate, calc, Expression, global_env
 
 # tests for parse
 
