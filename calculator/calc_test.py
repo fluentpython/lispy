@@ -1,12 +1,22 @@
 from typing import Optional
 
-from pytest import mark, fixture
+from pytest import mark
 
-from calc import parse, evaluate, Expression, Environment, standard_env
+from calc import parse, evaluate, Expression, global_env
 
 # Norvig's tests are not isolated: they assume the
 # same environment from first to last test.
-global_env_for_first_test = standard_env()
+
+@mark.parametrize( 'source, expected', [
+    ('7', 7),
+    ('x', 'x'),
+    ('(sum 1 2 3)', ['sum', 1, 2, 3]),
+    ('(+ (* 2 100) (* 1 10))', ['+', ['*', 2, 100], ['*', 1, 10]]),
+])
+def test_parse(source: str, expected: Expression) -> None:
+    got = parse(source)
+    assert got == expected
+
 
 @mark.parametrize( 'source, expected', [
     ("(+ 2 2)", 4),
@@ -18,59 +28,54 @@ global_env_for_first_test = standard_env()
     ("(+ x x)", 6),
 ])
 def test_evaluate(source: str, expected: Optional[Expression]) -> None:
-    got = evaluate(parse(source), global_env_for_first_test)
+    got = evaluate(parse(source))
     assert got == expected
-
-
-@fixture
-def std_env() -> Environment:
-    return standard_env()
 
 # tests for each of the cases in evaluate
 
 def test_evaluate_variable() -> None:
-    env: Environment = dict(x=10)
+    global_env['x'] = 10
     source = 'x'
     expected = 10
-    got = evaluate(parse(source), env)
+    got = evaluate(parse(source))
     assert got == expected
 
 
-def test_evaluate_literal(std_env: Environment) -> None:
+def test_evaluate_literal() -> None:
     source = '3.3'
     expected = 3.3
-    got = evaluate(parse(source), std_env)
+    got = evaluate(parse(source))
     assert got == expected
 
 
-def test_evaluate_if_true(std_env: Environment) -> None:
+def test_evaluate_if_true() -> None:
     source = '(if 1 10 no-such-thing)'
     expected = 10
-    got = evaluate(parse(source), std_env)
+    got = evaluate(parse(source))
     assert got == expected
 
 
-def test_evaluate_if_false(std_env: Environment) -> None:
+def test_evaluate_if_false() -> None:
     source = '(if 0 no-such-thing 20)'
     expected = 20
-    got = evaluate(parse(source), std_env)
+    got = evaluate(parse(source))
     assert got == expected
 
 
-def test_define(std_env: Environment) -> None:
+def test_define() -> None:
     source = '(define answer (* 6 7))'
-    got = evaluate(parse(source), std_env)
+    got = evaluate(parse(source))
     assert got is None
-    assert std_env['answer'] == 42
+    assert global_env['answer'] == 42
 
 
-def test_invocation_builtin_cos(std_env: Environment) -> None:
+def test_invocation_builtin_cos() -> None:
     source = '(cos 0)'
-    got = evaluate(parse(source), std_env)
+    got = evaluate(parse(source))
     assert got == 1.0
 
 
-def test_invocation_builtin_random(std_env: Environment) -> None:
+def test_invocation_builtin_random() -> None:
     source = '(random)'
-    got = evaluate(parse(source), std_env)
+    got = evaluate(parse(source))
     assert 0 <= got < 1

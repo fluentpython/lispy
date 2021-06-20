@@ -1,8 +1,7 @@
 ################ Calculator: derived from lis.py for Python 3.10
 
 ## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
-## Minor edits for Fluent Python, Second Edition (O'Reilly, 2021)
-## by Luciano Ramalho, adding type hints and pattern matching.
+## adapted by Luciano Ramalho with type hints and pattern matching.
 
 ################ Imports and Types
 
@@ -66,7 +65,7 @@ def read_from_tokens(tokens: list[str]) -> Expression:
         L = []
         while tokens[0] != ')':
             L.append(read_from_tokens(tokens))
-        tokens.pop(0)   # pop off ')'
+        tokens.pop(0)   # discard ')'
         return L
     elif ')' == token:
         raise SyntaxError('unexpected )')
@@ -88,23 +87,25 @@ def parse_atom(token: str) -> Atom:
 ################ eval
 
 
-def evaluate(x: Expression, env: Environment) -> Any:
+global_env: Environment = standard_env()
+
+def evaluate(x: Expression) -> Any:
     "Evaluate an expression in an environment."
     match x:
         case Symbol(var):                               # variable reference
-            return env[var]
+            return global_env[var]
         case literal if not isinstance(x, list):        # constant literal
             return literal
         case ['if', test, conseq, alt]:                 # (if test conseq alt)
-            if evaluate(test, env):
-                return evaluate(conseq, env)
+            if evaluate(test):
+                return evaluate(conseq)
             else:
-                return evaluate(alt, env)
+                return evaluate(alt)
         case ['define', Symbol(var), exp]:              # (define var exp)
-            env[var] = evaluate(exp, env)
+            global_env[var] = evaluate(exp)
         case [op, *args]:                               # (proc arg...)
-            proc = evaluate(op, env)
-            values = (evaluate(arg, env) for arg in args)
+            proc = evaluate(op)
+            values = (evaluate(arg) for arg in args)
             return proc(*values)
 
 
@@ -113,9 +114,8 @@ def evaluate(x: Expression, env: Environment) -> Any:
 
 def repl(prompt: str = 'calc> ') -> None:
     "A prompt-read-evaluate-print loop."
-    global_env: Environment = standard_env()
     while True:
-        val = evaluate(parse(input(prompt)), global_env)
+        val = evaluate(parse(input(prompt)))
         if val is not None:
             print(lispstr(val))
 
