@@ -148,9 +148,11 @@ def evaluate(x: Expression, env: Environment) -> Any:
             return literal
         case ['quote', exp]:                            # (quote exp)
             return exp
-        case ['if', test, conseq, alt]:                 # (if test conseq alt)
-            exp = conseq if evaluate(test, env) else alt
-            return evaluate(exp, env)
+        case ['if', test, consequence, alternative]:    # (if test consequence alternative)
+            if evaluate(test, env):
+                return evaluate(consequence, env)
+            else:
+                return evaluate(alternative, env)
         case ['lambda', parms, body]:                   # (lambda (parm...) body)
             return Procedure(parms, body, env)
         case ['define', Symbol(var), exp]:              # (define var exp)

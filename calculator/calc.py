@@ -96,11 +96,6 @@ def evaluate(x: Expression) -> Any:
             return global_env[var]
         case literal if not isinstance(x, list):        # constant literal
             return literal
-        case ['if', test, conseq, alt]:                 # (if test conseq alt)
-            if evaluate(test):
-                return evaluate(conseq)
-            else:
-                return evaluate(alt)
         case ['define', Symbol(var), exp]:              # (define var exp)
             global_env[var] = evaluate(exp)
         case [op, *args]:                               # (proc arg...)
