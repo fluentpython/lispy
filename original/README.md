@@ -2,7 +2,9 @@
 
 This directory contains:
 
-* `norvig/`: Norvig's `lis.py` unchanged, and `lispy.py` with
+* `norvig/`:
+Norvig's [`lis.py` unchanged](https://github.com/norvig/pytudes/blob/c33cd6835a506a57d9fe73e3a8317d49babb13e8/py/lis.py),
+and [`lispy.py`](https://github.com/norvig/pytudes/blob/c33cd6835a506a57d9fe73e3a8317d49babb13e8/py/lispy.py) with
 [minor changes](https://github.com/norvig/pytudes/pull/106) to run on Python 3,
 and the `lispytest.py` custom test script;
 * `py3.9/`: `lis.py` with type hints and a few minor edits—requires Python 3.9;
