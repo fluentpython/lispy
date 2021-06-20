@@ -89,15 +89,15 @@ def parse_atom(token: str) -> Atom:
 
 global_env: Environment = standard_env()
 
-def evaluate(x: Expression) -> Any:
+def evaluate(exp: Expression) -> Any:
     "Evaluate an expression in an environment."
-    match x:
+    match exp:
         case Symbol(var):                               # variable reference
             return global_env[var]
-        case literal if not isinstance(x, list):        # constant literal
+        case literal if not isinstance(exp, list):      # constant literal
             return literal
-        case ['define', Symbol(var), exp]:              # (define var exp)
-            global_env[var] = evaluate(exp)
+        case ['define', Symbol(var), value_exp]:        # (define var exp)
+            global_env[var] = evaluate(value_exp)
         case [op, *args]:                               # (proc arg...)
             proc = evaluate(op)
             values = (evaluate(arg) for arg in args)
