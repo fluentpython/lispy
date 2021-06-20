@@ -18,6 +18,5 @@ My rewrite includes Norvig's original
 [`lis_tests` suite](https://github.com/norvig/pytudes/blob/60168bce8cdfacf57c92a5b2979f0b2e95367753/py/lispytest.py#L5)
 adds a few more test cases.
 
-_LR_
-
+_LR_<br/>
 São Paulo, June 19, 2021
