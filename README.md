@@ -13,4 +13,5 @@ The copyright holder is Peter Norvig and the code is licensed under the
 
 I wrote the changes and additions described above.
 
-— Luciano Ramalho ([@ramalho](https://github.com/ramalho/)), 2021-06-09.
+*Luciano Ramalho*<br/>
+São Paulo, June 19, 2021
