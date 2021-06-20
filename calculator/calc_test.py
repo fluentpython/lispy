@@ -1,11 +1,37 @@
+"""
+Doctests for calc.py
+
+Parser::
+
+    >>> parse('1.0')
+    1.0
+    >>> parse('alpha')
+    'alpha'
+    >>> parse('(+ 1 2.5)')
+    ['+', 1, 2.5]
+    >>> parse('(* 4 (+ 1 2.5))')
+    ['*', 4, ['+', 1, 2.5]]
+
+Evaluator::
+
+    >>> evaluate(1.0)
+    1.0
+    >>> evaluate('+')
+    <built-in function add>
+    >>> evaluate(['*', 6, 7])
+    42
+    >>> evaluate(parse('(/ (* (- 100.4 32) 5) 9)'))
+    38.0
+"""
+
+
 from typing import Optional
 
 from pytest import mark
 
 from calc import parse, evaluate, Expression, global_env
 
-# Norvig's tests are not isolated: they assume the
-# same environment from first to last test.
+# tests for parse
 
 @mark.parametrize( 'source, expected', [
     ('7', 7),
@@ -17,6 +43,7 @@ def test_parse(source: str, expected: Expression) -> None:
     got = parse(source)
     assert got == expected
 
+# Norvig's tests for the calculator subset of Scheme
 
 @mark.parametrize( 'source, expected', [
     ("(+ 2 2)", 4),

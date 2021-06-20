@@ -129,5 +129,6 @@ def lispstr(exp: object) -> str:
 
 
 if __name__ == '__main__':
-    import readline
+    # activate line editing and history
+    import readline  
     repl()
