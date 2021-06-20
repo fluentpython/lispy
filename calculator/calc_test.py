@@ -68,3 +68,9 @@ def test_invocation_builtin_cos(std_env: Environment) -> None:
     source = '(cos 0)'
     got = evaluate(parse(source), std_env)
     assert got == 1.0
+
+
+def test_invocation_builtin_random(std_env: Environment) -> None:
+    source = '(random)'
+    got = evaluate(parse(source), std_env)
+    assert 0 <= got < 1

@@ -1,4 +1,4 @@
-################ Lispy: Scheme Interpreter in Python 3.10
+################ Calculator: derived from lis.py for Python 3.10
 
 ## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
 ## Minor edits for Fluent Python, Second Edition (O'Reilly, 2021)
@@ -8,6 +8,7 @@
 
 import math
 import operator as op
+import random
 from collections import ChainMap
 from collections.abc import MutableMapping
 from typing import Any, TypeAlias
@@ -37,6 +38,7 @@ def standard_env() -> Environment:
             '>=': op.ge,
             '<=': op.le,
             '=': op.eq,
+            'random': random.random,
         }
     )
     return env
@@ -83,26 +85,6 @@ def parse_atom(token: str) -> Atom:
             return Symbol(token)
 
 
-################ Interaction: A REPL
-
-
-def repl(prompt: str = 'lis.py> ') -> None:
-    "A prompt-read-evaluate-print loop."
-    global_env: Environment = standard_env()
-    while True:
-        val = evaluate(parse(input(prompt)), global_env)
-        if val is not None:
-            print(lispstr(val))
-
-
-def lispstr(exp: object) -> str:
-    "Convert a Python object back into a Lisp-readable string."
-    if isinstance(exp, list):
-        return '(' + ' '.join(map(lispstr, exp)) + ')'
-    else:
-        return str(exp)
-
-
 ################ eval
 
 
@@ -124,3 +106,28 @@ def evaluate(x: Expression, env: Environment) -> Any:
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)
             return proc(*values)
+
+
+################ Interaction: A REPL
+
+
+def repl(prompt: str = 'calc> ') -> None:
+    "A prompt-read-evaluate-print loop."
+    global_env: Environment = standard_env()
+    while True:
+        val = evaluate(parse(input(prompt)), global_env)
+        if val is not None:
+            print(lispstr(val))
+
+
+def lispstr(exp: object) -> str:
+    "Convert a Python object back into a Lisp-readable string."
+    if isinstance(exp, list):
+        return '(' + ' '.join(map(lispstr, exp)) + ')'
+    else:
+        return str(exp)
+
+
+if __name__ == '__main__':
+    import readline
+    repl()
