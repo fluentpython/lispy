@@ -1,6 +1,6 @@
 # Changes from Norvig's code
 
-Peter Norvig's [`lis.py`](../py3.9/) code is beautiful.
+Peter Norvig's [`lis.py`](../original/) code is beautiful.
 
 I made a few changes for didactic reasons.
 These were the most important changes:
