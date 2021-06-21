@@ -139,6 +139,11 @@ def lispstr(exp: object) -> str:
 ################ eval
 
 
+def run(source: str) -> Any:
+    global_env: Environment = standard_env()
+    return evaluate(parse(source), global_env)
+
+
 def evaluate(x: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
     match x:
