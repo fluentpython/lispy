@@ -13,7 +13,7 @@ in the [norvig/pytudes](https://github.com/norvig/pytudes) repository on Github.
 The copyright holder is Peter Norvig and the code is licensed under the
 [MIT license](https://github.com/norvig/pytudes/blob/60168bce8cdfacf57c92a5b2979f0b2e95367753/LICENSE).
 
-I wrote the changes and additions described above.
+Unless otherwise noted, I wrote the changes and additions described in the README files in each directory.
 
 *Luciano Ramalho*<br/>
 São Paulo, June 19, 2021
