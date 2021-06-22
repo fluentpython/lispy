@@ -102,6 +102,8 @@ def evaluate(exp: Expression) -> Any:
             proc = evaluate(op)
             values = (evaluate(arg) for arg in args)
             return proc(*values)
+        case _:
+            raise SyntaxError(exp)
 
 
 ################ High level API

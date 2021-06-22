@@ -144,27 +144,31 @@ def run(source: str) -> Any:
     return evaluate(parse(source), global_env)
 
 
-def evaluate(x: Expression, env: Environment) -> Any:
+def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
-    match x:
-        case Symbol(var):                               # variable reference
+    match exp:
+        case Symbol(var):                                 # variable reference
             return env[var]
-        case literal if not isinstance(x, list):        # constant literal
+        case literal if not isinstance(exp, list):        # constant literal
             return literal
-        case ['quote', exp]:                            # (quote exp)
+        case []:
+            return []
+        case ['quote', exp]:                              # (quote exp)
             return exp
-        case ['if', test, consequence, alternative]:    # (if test consequence alternative)
+        case ['if', test, consequence, alternative]:      # (if test consequence alternative)
             if evaluate(test, env):
                 return evaluate(consequence, env)
             else:
                 return evaluate(alternative, env)
-        case ['lambda', parms, body]:                   # (lambda (parm...) body)
+        case ['lambda', parms, body]:                     # (lambda (parm...) body)
             return Procedure(parms, body, env)
-        case ['define', Symbol(var), exp]:              # (define var exp)
-            env[var] = evaluate(exp, env)
-        case ['define', [name, *parms], body]:          # (define (fun parm...) body)
-            env[name] = Procedure(parms, body, env)
-        case [op, *args]:                               # (proc arg...)
+        case ['define', Symbol(var), value_exp]:          # (define var exp)
+            env[var] = evaluate(value_exp, env)
+        case ['define', [func_name, *parms], body]:       # (define (fun parm...) body)
+            env[func_name] = Procedure(parms, body, env)
+        case [op, *args]:                                 # (proc arg...)
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)
             return proc(*values)
+        case _:
+            raise SyntaxError(repr(exp))

@@ -40,7 +40,7 @@ def test_scan():
 def test_scan_not_found():
     source = scan_scm.format('(scan (quote z) l )')
     got = run(source)
-    assert got is None
+    assert got == []
 
 
 lookup_scm = """
@@ -69,5 +69,5 @@ def test_lookup():
 def test_lookup_not_found():
     source = lookup_scm.format('(lookup (quote z) env )')
     got = run(source)
-    assert got is None
+    assert got == []
 
