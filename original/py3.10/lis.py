@@ -9,7 +9,8 @@
 import math
 import operator as op
 from collections import ChainMap
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Iterator
+from itertools import chain
 from typing import Any, TypeAlias
 
 Symbol: TypeAlias = str
@@ -23,7 +24,9 @@ class Procedure:
     "A user-defined Scheme procedure."
 
     def __init__(self, parms: list[Symbol], body: Expression, env: Environment):
-        self.parms, self.body, self.env = parms, body, env
+        self.parms = parms
+        self.body = body
+        self.env = env
 
     def __call__(self, *args: Expression) -> Any:
         local_env = dict(zip(self.parms, args))
@@ -44,13 +47,14 @@ def standard_env() -> Environment:
             '-': op.sub,
             '*': op.mul,
             '/': op.truediv,
+            '//': op.floordiv,
             '>': op.gt,
             '<': op.lt,
             '>=': op.ge,
             '<=': op.le,
             '=': op.eq,
             'abs': abs,
-            'append': op.add,
+            'append': lambda *args: list(chain(*args)),
             'apply': lambda proc, args: proc(*args),
             'begin': lambda *x: x[-1],
             'car': lambda x: x[0],
@@ -58,6 +62,7 @@ def standard_env() -> Environment:
             'cons': lambda x, y: [x] + y,
             'eq?': op.is_,
             'equal?': op.eq,
+            'filter': lambda *args: list(filter(*args)),
             'length': len,
             'list': lambda *x: list(x),
             'list?': lambda x: isinstance(x, list),
@@ -139,19 +144,14 @@ def lispstr(exp: object) -> str:
 ################ eval
 
 
-def run(source: str) -> Any:
-    global_env: Environment = standard_env()
-    return evaluate(parse(source), global_env)
-
-
 def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
     match exp:
+        case int(x) | float(x):                           # number literal
+            return x
         case Symbol(var):                                 # variable reference
             return env[var]
-        case literal if not isinstance(exp, list):        # constant literal
-            return literal
-        case []:
+        case []:                                          # empty list
             return []
         case ['quote', exp]:                              # (quote exp)
             return exp
@@ -160,15 +160,29 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 return evaluate(consequence, env)
             else:
                 return evaluate(alternative, env)
-        case ['lambda', parms, body]:                     # (lambda (parm...) body)
-            return Procedure(parms, body, env)
         case ['define', Symbol(var), value_exp]:          # (define var exp)
             env[var] = evaluate(value_exp, env)
-        case ['define', [func_name, *parms], body]:       # (define (fun parm...) body)
+        case ['define', [func_name, *parms], body]:       # (define (name parm...) body)
             env[func_name] = Procedure(parms, body, env)
+        case ['lambda', [*parms], body]:                  # (lambda (parm...) body)
+            return Procedure(parms, body, env)
         case [op, *args]:                                 # (proc arg...)
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)
             return proc(*values)
         case _:
             raise SyntaxError(repr(exp))
+
+
+def run_lines(source: str) -> Iterator[Any]:
+    global_env: Environment = standard_env()
+    tokens = tokenize(source)
+    while tokens:
+        exp = read_from_tokens(tokens)
+        yield evaluate(exp, global_env)
+
+
+def run(source: str) -> Any:
+    for result in run_lines(source):
+        pass
+    return result
