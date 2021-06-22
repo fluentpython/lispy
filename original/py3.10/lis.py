@@ -4,7 +4,7 @@
 ## Minor edits for Fluent Python, Second Edition (O'Reilly, 2021)
 ## by Luciano Ramalho, adding type hints and pattern matching.
 
-################ Imports and Types
+################ imports and types
 
 import math
 import operator as op
@@ -34,15 +34,14 @@ class Procedure:
         return evaluate(self.body, env)
 
 
-################ Global Environment
+################ global environment
 
 
 def standard_env() -> Environment:
     "An environment with some Scheme standard procedures."
     env: Environment = {}
     env.update(vars(math))   # sin, cos, sqrt, pi, ...
-    env.update(
-        {
+    env.update({
             '+': op.add,
             '-': op.sub,
             '*': op.mul,
@@ -75,12 +74,11 @@ def standard_env() -> Environment:
             'procedure?': callable,
             'round': round,
             'symbol?': lambda x: isinstance(x, Symbol),
-        }
-    )
+    })
     return env
 
 
-################ Parsing: parse, tokenize, and read_from_tokens
+################ parse, tokenize, and read_from_tokens
 
 
 def parse(program: str) -> Expression:
@@ -121,7 +119,7 @@ def parse_atom(token: str) -> Atom:
             return Symbol(token)
 
 
-################ Interaction: A REPL
+################ interaction: a REPL
 
 
 def repl(prompt: str = 'lis.py> ') -> None:
@@ -172,6 +170,9 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             return proc(*values)
         case _:
             raise SyntaxError(repr(exp))
+
+
+################ non-interactive execution
 
 
 def run_lines(source: str) -> Iterator[Any]:
