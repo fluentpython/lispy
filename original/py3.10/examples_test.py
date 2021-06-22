@@ -3,7 +3,7 @@ import math
 from lis import run
 
 
-fact_scm = """
+fact_src = """
 (define (! n)
     (if (< n 2)
         1
@@ -13,12 +13,12 @@ fact_scm = """
 (! 42)
 """
 def test_factorial():
-    got = run(fact_scm)
+    got = run(fact_src)
     assert got == 1405006117752879898543142606244511569936384000000000
     assert got == math.factorial(42)
-    
 
-gcd_scm = """
+
+gcd_src = """
 (define (mod m n)
     (- m (* n (// m n))))
 (define (gcd m n)
@@ -28,11 +28,11 @@ gcd_scm = """
 (gcd 18 45)
 """
 def test_gcd():
-    got = run(gcd_scm)
+    got = run(gcd_src)
     assert got == 9
 
 
-quicksort_scm = """
+quicksort_src = """
 (define (quicksort lst)
     (if (null? lst)
         lst
@@ -51,14 +51,14 @@ quicksort_scm = """
 (quicksort (list 2 1 6 3 4 0 8 9 7 5))
 """
 def test_quicksort():
-    got = run(quicksort_scm)
+    got = run(quicksort_src)
     assert got == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 # Example from Structure and Interpretation of Computer Programs
 # https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html
 
-newton_scm = """
+newton_src = """
 (define (sqrt x)
     (sqrt-iter 1.0 x))
 (define (sqrt-iter guess x)
@@ -74,5 +74,17 @@ newton_scm = """
 (sqrt 123454321)
 """
 def test_newton():
-    got = run(newton_scm)
+    got = run(newton_src)
     assert math.isclose(got, 11111)
+
+
+closure_src = """
+(define (make-adder increment)
+    (lambda (x) (+ increment x))
+)
+(define inc (make-adder 1))
+(inc 99)
+"""
+def test_newton():
+    got = run(closure_src)
+    assert got == 100
