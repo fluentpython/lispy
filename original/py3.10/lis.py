@@ -99,11 +99,11 @@ def read_from_tokens(tokens: list[str]) -> Expression:
         raise SyntaxError('unexpected EOF while reading')
     token = tokens.pop(0)
     if '(' == token:
-        L = []
+        exp = []
         while tokens[0] != ')':
-            L.append(read_from_tokens(tokens))
-        tokens.pop(0)   # pop off ')'
-        return L
+            exp.append(read_from_tokens(tokens))
+        tokens.pop(0)  # discard ')'
+        return exp
     elif ')' == token:
         raise SyntaxError('unexpected )')
     else:
