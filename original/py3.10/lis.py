@@ -160,7 +160,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 return evaluate(alternative, env)
         case ['define', Symbol(var), value_exp]:          # (define var exp)
             env[var] = evaluate(value_exp, env)
-        case ['define', [func_name, *parms], body]:       # (define (name parm...) body)
+        case ['define', [Symbol(func_name), *parms], body]:       # (define (name parm...) body)
             env[func_name] = Procedure(parms, body, env)
         case ['lambda', [*parms], body]:                  # (lambda (parm...) body)
             return Procedure(parms, body, env)
