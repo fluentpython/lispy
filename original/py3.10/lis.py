@@ -165,10 +165,10 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 return evaluate(alternative, env)
         case ['define', Symbol(var), value_exp]:            # (define var exp)
             env[var] = evaluate(value_exp, env)
-        case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body)
+        case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
               ] if len(body) > 0:
             env[name] = Procedure(parms, body, env)
-        case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body)
+        case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
             return Procedure(parms, body, env)
         case [op, *args] if op not in KEYWORDS:             # (proc arg...)
             proc = evaluate(op, env)
