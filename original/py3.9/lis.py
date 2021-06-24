@@ -22,8 +22,12 @@ Environment = MutableMapping[Symbol, object]
 class Procedure:
     "A user-defined Scheme procedure."
 
-    def __init__(self, parms: list[Symbol], body: Expression, env: Environment):
-        self.parms, self.body, self.env = parms, body, env
+    def __init__(
+        self, parms: list[Symbol], body: Expression, env: Environment
+    ):
+        self.parms = parms
+        self.body = body
+        self.env = env
 
     def __call__(self, *args: Expression) -> Any:
         local_env = dict(zip(self.parms, args))
@@ -148,7 +152,9 @@ def evaluate(x: Expression, env: Environment) -> Any:
     elif x[0] == 'quote':                        # (quote exp)
         (_, exp) = x
         return exp
-    elif x[0] == 'if':                           # (if test consequence alternative)
+    elif (
+        x[0] == 'if'
+    ):                           # (if test consequence alternative)
         (_, test, consequence, alternative) = x
         if evaluate(test, env):
             return evaluate(consequence, env)

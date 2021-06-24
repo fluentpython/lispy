@@ -23,7 +23,9 @@ Environment: TypeAlias = MutableMapping[Symbol, object]
 class Procedure:
     "A user-defined Scheme procedure."
 
-    def __init__(self, parms: list[Symbol], body: Expression, env: Environment):
+    def __init__(
+        self, parms: list[Symbol], body: list[Expression], env: Environment
+    ):
         self.parms = parms
         self.body = body
         self.env = env
@@ -31,7 +33,9 @@ class Procedure:
     def __call__(self, *args: Expression) -> Any:
         local_env = dict(zip(self.parms, args))
         env: Environment = ChainMap(local_env, self.env)
-        return evaluate(self.body, env)
+        for exp in self.body:
+            result = evaluate(exp, env)
+        return result
 
 
 ################ global environment
@@ -141,35 +145,37 @@ def lispstr(exp: object) -> str:
 
 ################ eval
 
+KEYWORDS = ['quote', 'if', 'define', 'lambda']
 
 def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
     match exp:
-        case int(x) | float(x):                           # number literal
+        case int(x) | float(x):                             # number literal
             return x
-        case Symbol(var):                                 # variable reference
+        case Symbol(var):                                   # variable reference
             return env[var]
-        case []:                                          # empty list
+        case []:                                            # empty list
             return []
-        case ['quote', exp]:                              # (quote exp)
+        case ['quote', exp]:                                # (quote exp)
             return exp
-        case ['if', test, consequence, alternative]:      # (if test consequence alternative)
+        case ['if', test, consequence, alternative]:        # (if test consequence alternative)
             if evaluate(test, env):
                 return evaluate(consequence, env)
             else:
                 return evaluate(alternative, env)
-        case ['define', Symbol(var), value_exp]:          # (define var exp)
+        case ['define', Symbol(var), value_exp]:            # (define var exp)
             env[var] = evaluate(value_exp, env)
-        case ['define', [Symbol(func_name), *parms], body]:       # (define (name parm...) body)
-            env[func_name] = Procedure(parms, body, env)
-        case ['lambda', [*parms], body]:                  # (lambda (parm...) body)
+        case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body)
+              ] if len(body) > 0:
+            env[name] = Procedure(parms, body, env)
+        case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body)
             return Procedure(parms, body, env)
-        case [op, *args]:                                 # (proc arg...)
+        case [op, *args] if op not in KEYWORDS:             # (proc arg...)
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)
             return proc(*values)
         case _:
-            raise SyntaxError(repr(exp))
+            raise SyntaxError(lispstr(exp))
 
 
 ################ non-interactive execution

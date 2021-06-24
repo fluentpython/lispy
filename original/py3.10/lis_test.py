@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pytest import mark, fixture
+from pytest import mark, fixture, raises
 
 from lis import parse, evaluate, Expression, Environment, standard_env
 
@@ -122,10 +122,36 @@ def test_lambda(std_env: Environment) -> None:
     source = '(lambda (a b) (if (>= a b) a b))'
     func = evaluate(parse(source), std_env)
     assert func.parms == ['a', 'b']
-    assert func.body == ['if', ['>=', 'a', 'b'], 'a', 'b']
+    assert len(func.body) == 1
+    assert func.body[0] == ['if', ['>=', 'a', 'b'], 'a', 'b']
     assert func.env is std_env
     assert func(1, 2) == 2
     assert func(3, 2) == 3
+
+
+def test_lambda_with_multi_expression_body(std_env: Environment) -> None:
+    source = """
+        (lambda (m n)
+            (define (mod m n)
+                (- m (* n (// m n))))
+            (define (gcd m n)
+                (if (= n 0)
+                    m
+                    (gcd n (mod m n))))
+            (gcd m n)
+        )
+    """
+    func = evaluate(parse(source), std_env)
+    assert func.parms == ['m', 'n']
+    assert len(func.body) == 3
+    assert func(18, 45) == 9
+
+
+def test_lambda_with_no_body(std_env: Environment) -> None:
+    source = '(lambda (a))'
+    with raises(SyntaxError) as excinfo:
+        evaluate(parse(source), std_env)
+    assert source in str(excinfo.value)
 
 
 def test_begin(std_env: Environment) -> None:
@@ -176,7 +202,8 @@ def test_define_function(std_env: Environment) -> None:
     assert got is None
     max_fn = std_env['max']
     assert max_fn.parms == ['a', 'b']
-    assert max_fn.body == ['if', ['>=', 'a', 'b'], 'a', 'b']
+    assert len(max_fn.body) == 1
+    assert max_fn.body[0] == ['if', ['>=', 'a', 'b'], 'a', 'b']
     assert max_fn.env is std_env
     assert max_fn(1, 2) == 2
     assert max_fn(3, 2) == 3
