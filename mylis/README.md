@@ -54,8 +54,8 @@ If you read [examples/newton.scm](examples/newton.scm) you'see that the last lin
 The `x` is not defined in the program,
 so it must be given as a command-line argument: `x=...`.
 
-Any command-line option with the syntax `<symbol>=<value>`
-will be interpreted as a global `(define x value)`
+Any command-line option with the syntax `symbol=value`
+will be interpreted as a global `(define symbol value)`
 with the limitation that `value` must be an integer, a float or a symbol.
 
 If you forget to provide a required argument,
