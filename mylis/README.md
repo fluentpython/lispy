@@ -63,7 +63,7 @@ the interpreter will make a suggestion (but currently it stops at the first issu
 
 ```
 $ ./mylis.py examples/newton.scm
-🚨  Undefined 'x'. You can provide it as an option:
+🚨  'x' was not defined. You can define it as an option:
     $ mylis.py examples/newton.scm x=<value>
 ```
 

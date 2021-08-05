@@ -240,7 +240,7 @@ def main(args: list[str]) -> None:
                 run_file(source_file, arg_env)
             except KeyError as exc:
                 key = exc.args[0]
-                print(f'{ERROR_MARK}  Undefined {key!r}. You can provide it as an option:')
+                print(f'{ERROR_MARK}  {key!r} was not defined. You can define it as an option:')
                 cmd = ' '.join(args)
                 print(f'    $ {cmd} {key}=<value>')
 
