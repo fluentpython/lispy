@@ -1,8 +1,35 @@
-# Changes for Python 3.10
+# Mylis:
 
 `mylis.py` is a variation of the Python 3.10
 [version](../original/py3.10/) of `lis.py`,
 adding some features for demonstration.
+
+## Interactive use
+
+Running `mylis.py` without arguments opens a very limited REPL.
+
+At this time the REPL can only handle one complete expression at a time,
+so it's more like a calculator—with no error handling.
+Plase don't make mistakes ;-)
+
+```
+$ ./mylis.py
+mylis.py> pi
+3.141592653589793
+mylis.py> (/ pi 2)
+1.5707963267948966
+mylis.py> (sin (/ pi 2))
+1.0
+mylis.py> (define (! n) (if (<= n 1) 1 (* n (! (- n 1)))))
+mylis.py> (! 5)
+120
+mylis.py> (! 42)
+1405006117752879898543142606244511569936384000000000
+mylis.py>
+```
+
+It's better to experiment using source files and
+command-line arguments, as presented next.
 
 
 ## Command-line integration

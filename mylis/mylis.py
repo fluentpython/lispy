@@ -7,6 +7,7 @@
 
 import math, sys
 import operator as op
+import readline  # this import enables readline for input()
 from collections import ChainMap
 from collections.abc import MutableMapping, Iterator, Sequence
 from itertools import chain
