@@ -7,12 +7,57 @@
 
 import sys
 from collections.abc import Sequence
-from typing import Any, Protocol
+from typing import Any, Protocol, Callable, NoReturn
 
 from lis import Environment, parse_atom, run, repl
+from exceptions import UnexpectedCloseParen, QuitRequest
+
+############### multi-line REPL
+
+QUIT_COMMAND = '.q'
+ELLIPSIS = '\N{HORIZONTAL ELLIPSIS}'
+
+
+def raise_unexpected_paren(line: str) -> NoReturn:
+    max_msg_len = 16
+    if len(line) < max_msg_len:
+        msg = line
+    else:
+        msg = ELLIPSIS + line[-(max_msg_len-1):]
+    raise UnexpectedCloseParen(msg)
+
+
+InputFnType = Callable[[str], str]
+
+def multiline_input(prompt1: str = '-->',
+                    prompt2: str= f' {ELLIPSIS}>',
+                    *,
+                quit_cmd: str = QUIT_COMMAND,
+                    input_fn: InputFnType = input) -> str:
+
+    paren_cnt = 0
+    lines = []
+    prompt = prompt1
+    while True:
+        line = input_fn(prompt).rstrip()
+        if line == quit_cmd:
+            raise QuitRequest()
+        for char in line:
+            if char == '(':
+                paren_cnt += 1
+            elif char == ')':
+                paren_cnt -= 1
+            if paren_cnt < 0:
+                raise_unexpected_paren(line)
+        lines.append(line)
+        prompt = prompt2
+        if paren_cnt == 0:
+            break
+
+    return '\n'.join(lines)
+
 
 ############### command-line integration
-
 
 class TextReader(Protocol):
     def read(self) -> str:

@@ -14,6 +14,8 @@ from collections.abc import MutableMapping, Iterator, Sequence
 from itertools import chain
 from typing import Any, TypeAlias
 
+from exceptions import UnexpectedCloseParen, UnexpectedEndOfSource
+
 Symbol: TypeAlias = str
 Atom: TypeAlias = float | int | Symbol
 Expression: TypeAlias = Atom | list
@@ -104,7 +106,7 @@ def tokenize(s: str) -> list[str]:
 def read_from_tokens(tokens: list[str]) -> Expression:
     "Read an expression from a sequence of tokens."
     if len(tokens) == 0:
-        raise SyntaxError('unexpected EOF while reading')
+        raise UnexpectedEndOfSource()
     token = tokens.pop(0)
     if '(' == token:
         exp = []
@@ -113,7 +115,7 @@ def read_from_tokens(tokens: list[str]) -> Expression:
         tokens.pop(0)  # discard ')'
         return exp
     elif ')' == token:
-        raise SyntaxError('unexpected )')
+        raise UnexpectedCloseParen()
     else:
         return parse_atom(token)
 

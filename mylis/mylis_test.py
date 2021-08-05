@@ -1,8 +1,64 @@
 import io
 
-from pytest import mark
+from pytest import mark, raises
 
-from mylis import env_from_args, run_file
+from mylis import multiline_input, env_from_args, run_file
+from exceptions import QuitRequest, UnexpectedCloseParen
+
+from dialogue import Dialogue, normalize
+
+############### multi-line REPL
+
+@mark.parametrize("session, result", [
+    ("""
+     1|3
+     """, '3'),
+    ("""
+     1|(a
+     2| b)
+     """, '(a\n b)'),
+])
+def test_multiline_input(capsys, session, result):
+    dlg = Dialogue(session)
+    got = multiline_input('1|', '2|', input_fn=dlg.fake_input)
+    assert result == got
+    captured = capsys.readouterr()
+    assert dlg.session == normalize(captured.out)
+
+
+@mark.parametrize("session", [
+    """
+    >Q
+    """,
+])
+def test_multiline_input_quit(session):
+    dlg = Dialogue(session)
+    with raises(QuitRequest):
+        multiline_input('>', quit_cmd='Q', input_fn=dlg.fake_input)
+
+@mark.skip('work in progress')
+@mark.parametrize("session, error_str", [
+    ("""
+     )
+     """, ')'),
+    ("""
+     (a
+      b))
+     """, ' b))'),
+    ("""
+     (a
+      very long line that will be cut))
+     """, '…t will be cut))'),
+])
+def test_multiline_input_unexpected_close_paren(session, error_str):
+    dlg = Dialogue(session)
+    with raises(UnexpectedCloseParen) as excinfo:
+        multiline_input(input_fn=dlg.fake_input)
+    want_msg = f"Unexpected close parenthesis: '{error_str}'."
+    assert want_msg == str(excinfo.value)
+
+
+############### command-line integration
 
 @mark.parametrize("args, global_env", [
     ([], {}),
