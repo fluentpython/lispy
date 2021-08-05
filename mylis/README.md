@@ -1,8 +1,9 @@
-# Mylis:
+# Mylis: a tiny Scheme interpreter
 
-`mylis.py` is a variation of the Python 3.10
-[version](../original/py3.10/) of `lis.py`,
-adding some features for demonstration.
+`mylis.py` is derived from a Python 3.10
+[fork](../original/py3.10/) of Peter Norvig's `lis.py`,
+adding some features for demonstration purposes.
+
 
 ## Interactive use
 
