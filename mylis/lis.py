@@ -14,7 +14,9 @@ from collections.abc import MutableMapping
 from itertools import chain
 from typing import Any, TypeAlias
 
-from exceptions import UnexpectedCloseParen, UnexpectedEndOfSource, UndefinedSymbol
+from exceptions import (
+    UnexpectedCloseParen, UnexpectedEndOfSource, UndefinedSymbol, InvalidSyntax
+)
 
 Symbol: TypeAlias = str
 Atom: TypeAlias = int | float | Symbol
@@ -189,4 +191,4 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             values = (evaluate(arg, env) for arg in args)
             return proc(*values)
         case _:
-            raise SyntaxError(lispstr(exp))
+            raise InvalidSyntax(lispstr(exp))
