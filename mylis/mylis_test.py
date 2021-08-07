@@ -92,9 +92,7 @@ def test_repl_quit_other_cases(capsys, session):
 def test_repl_gcd_example(capsys):
     session = """
     > (define (mod m n) (- m (* n (// m n))))
-    (lambda (m n) ...)
     > (define (gcd a b) (if (= b 0) a (gcd b (mod a b))))
-    (lambda (a b) ...)
     > (gcd 84 210)
     42
     """
@@ -108,12 +106,10 @@ def test_repl_gcd_example_multiline(capsys):
     session = """
     > (define (mod m n)
     ... (- m (* n (// m n))))
-    (lambda (m n) ...)
     > (define (gcd a b)
     ... (if (= b 0)
     ...   a
     ...   (gcd b (mod a b))))
-    (lambda (a b) ...)
     > (gcd 84 210)
     42
     """

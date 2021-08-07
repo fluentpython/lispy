@@ -40,10 +40,6 @@ class Procedure:
             result = evaluate(exp, env)
         return result
 
-    def __repr__(self):
-        parms = ' '.join(self.parms)
-        return f'(lambda ({parms}) ...)'
-
 
 
 ################ global environment
@@ -185,9 +181,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             env[var] = evaluate(value_exp, env)
         case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
               ] if len(body) > 0:
-            func = Procedure(parms, body, env)
-            env[name] = func
-            return func
+            env[name] = Procedure(parms, body, env)
         case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
             return Procedure(parms, body, env)
         case [op, *args] if op not in KEYWORDS:             # (proc arg...)

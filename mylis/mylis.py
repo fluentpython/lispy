@@ -92,7 +92,7 @@ def multiline_repl(prompt1: str = '> ',
 
     global_env: lis.Environment = lis.standard_env()
 
-    print(f'To exit, type {QUIT_COMMAND}', file=sys.stderr)
+    print(f'To exit type {QUIT_COMMAND}', file=sys.stderr)
 
     while True:
         # ___________________________________________ Read
@@ -111,13 +111,14 @@ def multiline_repl(prompt1: str = '> ',
         # ___________________________________________ Eval
         current_exp = lis.parse(source)
         try:
-            result = str(lis.evaluate(current_exp, global_env))
+            result = lis.evaluate(current_exp, global_env)
         except EvaluatorException as exc:
             print(error_mark, exc)
             continue
 
         # ___________________________________________ Print
-        print(result)
+        if result is not None:
+            print(lis.lispstr(result))
 
 
 ############### command-line integration
@@ -150,7 +151,7 @@ def env_from_args(args: Sequence[str]) -> lis.Environment:
 
 PROMPT1 = '\N{WHITE RIGHT-POINTING TRIANGLE}  '
 PROMPT2 = '\N{MIDLINE HORIZONTAL ELLIPSIS}    '
-ERROR_MARK = '\N{WARNING SIGN} '
+ERROR_MARK = '\N{POLICE CARS REVOLVING LIGHT} '
 
 def main(args: list[str]) -> None:
     if len(args) == 1:
@@ -162,7 +163,7 @@ def main(args: list[str]) -> None:
                 run_file(source_file, arg_env)
             except UndefinedSymbol as exc:
                 key = exc.args[0]
-                print(f'{ERROR_MARK}  {key!r} was not defined.')
+                print(f'{ERROR_MARK} {key!r} was not defined.')
                 cmd = ' '.join(args)
                 print('    You can define it as an option:')
                 print(f'    $ {cmd} {key}=<value>')
