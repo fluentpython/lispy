@@ -10,14 +10,14 @@ import math
 import operator as op
 import readline  # this import enables readline for input()
 from collections import ChainMap
-from collections.abc import MutableMapping, Iterator, Sequence
+from collections.abc import MutableMapping
 from itertools import chain
 from typing import Any, TypeAlias
 
-from exceptions import UnexpectedCloseParen, UnexpectedEndOfSource
+from exceptions import UnexpectedCloseParen, UnexpectedEndOfSource, UndefinedSymbol
 
 Symbol: TypeAlias = str
-Atom: TypeAlias = float | int | Symbol
+Atom: TypeAlias = int | float | Symbol
 Expression: TypeAlias = Atom | list
 
 Environment: TypeAlias = MutableMapping[Symbol, object]
@@ -58,7 +58,7 @@ def standard_env() -> Environment:
     env: Environment = {}
     env.update(vars(math))   # sin, cos, sqrt, pi, ...
     env.update({
-            '+': op.add,
+            '+': lambda *args: sum(args),
             '-': op.sub,
             '*': op.mul,
             '/': op.truediv,
@@ -168,7 +168,10 @@ def evaluate(exp: Expression, env: Environment) -> Any:
         case int(x) | float(x):                             # number literal
             return x
         case Symbol(var):                                   # variable reference
-            return env[var]
+            try:
+                return env[var]
+            except KeyError as exc:
+                raise UndefinedSymbol(var) from exc
         case []:                                            # empty list
             return []
         case ['quote', exp]:                                # (quote exp)
@@ -193,22 +196,3 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             return proc(*values)
         case _:
             raise SyntaxError(lispstr(exp))
-
-
-################ non-interactive execution
-
-
-def run_lines(source: str, env: Environment | None = None) -> Iterator[Any]:
-    global_env: Environment = standard_env()
-    if env is not None:
-        global_env.update(env)
-    tokens = tokenize(source)
-    while tokens:
-        exp = read_from_tokens(tokens)
-        yield evaluate(exp, global_env)
-
-
-def run(source: str, env: Environment | None = None) -> Any:
-    for result in run_lines(source, env):
-        pass
-    return result

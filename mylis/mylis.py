@@ -6,12 +6,31 @@
 ################ imports and types
 
 import sys
-from collections.abc import Sequence
+from collections.abc import Sequence, Iterator
 from typing import Any, Protocol, Callable, NoReturn
 
 
 import lis
-from exceptions import UnexpectedCloseParen, EvaluatorException
+from exceptions import UndefinedSymbol, UnexpectedCloseParen, EvaluatorException
+
+################ non-interactive execution
+
+
+def run_lines(source: str, env: lis.Environment | None = None) -> Iterator[Any]:
+    global_env: lis.Environment = lis.standard_env()
+    if env is not None:
+        global_env.update(env)
+    tokens = lis.tokenize(source)
+    while tokens:
+        exp = lis.read_from_tokens(tokens)
+        yield lis.evaluate(exp, global_env)
+
+
+def run(source: str, env: lis.Environment | None = None) -> Any:
+    for result in run_lines(source, env):
+        pass
+    return result
+
 
 ############### multi-line lis.REPL
 
@@ -20,7 +39,6 @@ class QuitRequest(Exception):
     """Signal to quit multi-line input."""
 
 
-QUIT_COMMAND = '.q'
 ELLIPSIS = '\N{HORIZONTAL ELLIPSIS}'
 
 
@@ -33,13 +51,14 @@ def raise_unexpected_paren(line: str) -> NoReturn:
     raise UnexpectedCloseParen(msg)
 
 
-InputFnType = Callable[[str], str]
+QUIT_COMMAND = '.q'
+InputFn = Callable[[str], str]
 
-def multiline_input(prompt1: str = '-->',
-                    prompt2: str= f' {ELLIPSIS}>',
+def multiline_input(prompt1: str,
+                    prompt2: str,
                     *,
                     quit_cmd: str = QUIT_COMMAND,
-                    input_fn: InputFnType = input) -> str:
+                    input_fn: InputFn = input) -> str:
 
     paren_cnt = 0
     lines = []
@@ -63,7 +82,12 @@ def multiline_input(prompt1: str = '-->',
     return '\n'.join(lines)
 
 
-def repl(input_fn: InputFnType = input) -> None:
+def multiline_repl(prompt1: str = '> ',
+                   prompt2: str= '... ',
+                   error_mark: str= '***',
+                   *,
+                   quit_cmd: str = QUIT_COMMAND,
+                   input_fn: InputFn = input) -> None:
     """Read-Eval-Print-Loop"""
 
     global_env: lis.Environment = lis.standard_env()
@@ -73,13 +97,13 @@ def repl(input_fn: InputFnType = input) -> None:
     while True:
         # ___________________________________________ Read
         try:
-            source = multiline_input('> ', '... ',
-                                     quit_cmd=QUIT_COMMAND,
+            source = multiline_input(prompt1, prompt2,
+                                     quit_cmd=quit_cmd,
                                      input_fn=input_fn)
         except (EOFError, QuitRequest):
             break
         except UnexpectedCloseParen as exc:
-            print('***', exc)
+            print(error_mark, exc)
             continue
         if not source:
             continue
@@ -89,7 +113,7 @@ def repl(input_fn: InputFnType = input) -> None:
         try:
             result = str(lis.evaluate(current_exp, global_env))
         except EvaluatorException as exc:
-            print('***', exc)
+            print(error_mark, exc)
             continue
 
         # ___________________________________________ Print
@@ -105,7 +129,7 @@ class TextReader(Protocol):
 
 def run_file(source_file: TextReader, env: lis.Environment | None = None) -> Any:
     source = source_file.read()
-    return lis.run(source, env)
+    return run(source, env)
 
 
 def env_from_args(args: Sequence[str]) -> lis.Environment:
@@ -122,19 +146,21 @@ def env_from_args(args: Sequence[str]) -> lis.Environment:
         env[name] = atom
     return env
 
+############### main
 
-ERROR_MARK = '\N{POLICE CARS REVOLVING LIGHT}'
-
+PROMPT1 = '\N{WHITE RIGHT-POINTING TRIANGLE}  '
+PROMPT2 = '\N{MIDLINE HORIZONTAL ELLIPSIS}    '
+ERROR_MARK = '\N{WARNING SIGN} '
 
 def main(args: list[str]) -> None:
     if len(args) == 1:
-        lis.repl()
+        multiline_repl(PROMPT1, PROMPT2, ERROR_MARK)
     else:
         arg_env = env_from_args(args[1:])
         with open(args[1]) as source_file:
             try:
                 run_file(source_file, arg_env)
-            except KeyError as exc:
+            except UndefinedSymbol as exc:
                 key = exc.args[0]
                 print(f'{ERROR_MARK}  {key!r} was not defined.')
                 cmd = ' '.join(args)

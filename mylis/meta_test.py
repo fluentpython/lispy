@@ -1,18 +1,18 @@
 import operator as op
 
-import lis
+import mylis
 
 env_scm = """
 (define standard-env (list
-    (list (quote +) +)
     (list (quote -) -)
+    (list (quote /) /)
 ))
 standard-env
 """
 
 def test_env_build():
-    got = lis.run(env_scm)
-    assert got == [['+', op.add], ['-', op.sub]]
+    got = mylis.run(env_scm)
+    assert got == [['-', op.sub], ['/', op.truediv]]
 
 scan_scm = """
 (define l (quote (a b c)))
@@ -27,13 +27,13 @@ scan_scm = """
 
 def test_scan():
     source = scan_scm + '(scan (quote a) l )'
-    got = lis.run(source)
+    got = mylis.run(source)
     assert got == 'a'
 
 
 def test_scan_not_found():
     source = scan_scm + '(scan (quote z) l )'
-    got = lis.run(source)
+    got = mylis.run(source)
     assert got == []
 
 
@@ -52,13 +52,13 @@ lookup_scm = """
 """
 
 def test_lookup():
-    source = lookup_scm + '(lookup (quote +) env)'
-    got = lis.run(source)
-    assert got == op.add
+    source = lookup_scm + '(lookup (quote -) env)'
+    got = mylis.run(source)
+    assert got == op.sub
 
 
 def test_lookup_not_found():
     source = lookup_scm + '(lookup (quote z) env )'
-    got = lis.run(source)
+    got = mylis.run(source)
     assert got == []
 

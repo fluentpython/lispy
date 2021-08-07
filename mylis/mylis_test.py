@@ -2,7 +2,7 @@ import io
 
 from pytest import mark, raises
 
-from mylis import multiline_input, env_from_args, run_file, repl
+from mylis import multiline_input, env_from_args, run_file, multiline_repl
 from mylis import QuitRequest
 
 from exceptions import UnexpectedCloseParen
@@ -36,7 +36,7 @@ def test_multiline_input(capsys, session, result):
 def test_multiline_input_quit(session):
     dlg = Dialogue(session)
     with raises(QuitRequest):
-        multiline_input('>', quit_cmd='Q', input_fn=dlg.fake_input)
+        multiline_input('>', '', quit_cmd='Q', input_fn=dlg.fake_input)
 
 
 @mark.parametrize("session, error_str", [
@@ -62,7 +62,7 @@ def test_multiline_input_unexpected_close_paren(session, error_str):
 
 def test_repl_quit(capsys):
     dlg = Dialogue('> .q\n')
-    repl(dlg.fake_input)
+    multiline_repl(input_fn=dlg.fake_input)
     captured = capsys.readouterr()
     assert dlg.session == normalize(captured.out)
 
@@ -84,7 +84,7 @@ def test_repl_quit(capsys):
 ])
 def test_repl_quit_other_cases(capsys, session):
     dlg = Dialogue(session)
-    repl(dlg.fake_input)
+    multiline_repl(input_fn=dlg.fake_input)
     captured = capsys.readouterr()
     assert dlg.session == normalize(captured.out)
 
@@ -99,7 +99,7 @@ def test_repl_gcd_example(capsys):
     42
     """
     dlg = Dialogue(session)
-    repl(dlg.fake_input)
+    multiline_repl(input_fn=dlg.fake_input)
     captured = capsys.readouterr()
     assert normalize(captured.out) == dlg.session
 
@@ -118,7 +118,7 @@ def test_repl_gcd_example_multiline(capsys):
     42
     """
     dlg = Dialogue(session)
-    repl(dlg.fake_input)
+    multiline_repl(input_fn=dlg.fake_input)
     captured = capsys.readouterr()
     assert dlg.session == normalize(captured.out)
 

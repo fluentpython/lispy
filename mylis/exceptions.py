@@ -30,3 +30,7 @@ class UnexpectedEndOfSource(ParserException):
 
 class EvaluatorException(InterpreterException):
     """Generic exception while evaluating."""
+
+
+class UndefinedSymbol(EvaluatorException):
+    """Undefined symbol."""
