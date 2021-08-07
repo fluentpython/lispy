@@ -156,9 +156,24 @@ def lispstr(exp: object) -> str:
         return str(exp)
 
 
+################ special forms
+
+def cond_form(clauses: list[Expression], env: Environment) -> Any:
+    for clause in clauses:
+        match clause:
+            case ['else', *body]:
+                for exp in body:
+                    result = evaluate(exp, env)
+                return result
+            case [test, *body] if evaluate(test, env):
+                for exp in body:
+                    result = evaluate(exp, env)
+                return result
+
+
 ################ eval
 
-KEYWORDS = ['quote', 'if', 'define', 'lambda']
+KEYWORDS = ['quote', 'if', 'define', 'lambda', 'cond']
 
 def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
@@ -186,6 +201,8 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             env[name] = Procedure(parms, body, env)
         case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
             return Procedure(parms, body, env)
+        case ['cond', *clauses]:
+            return cond_form(clauses, env)
         case [op, *args] if op not in KEYWORDS:             # (proc arg...)
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)

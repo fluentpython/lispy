@@ -207,3 +207,35 @@ def test_define_function(std_env: Environment) -> None:
     assert max_fn.env is std_env
     assert max_fn(1, 2) == 2
     assert max_fn(3, 2) == 3
+
+
+def test_cond(std_env: Environment) -> None:
+    source = """
+        (cond ((> x 0) x)
+              ((= x 0) 0)
+              ((< x 0) (- 0 x)))
+        """
+    std_env['x'] = -2
+    got = evaluate(parse(source), std_env)
+    assert got == 2
+
+
+def test_cond_else(std_env: Environment) -> None:
+    source = """
+       (cond ((> x 0) x)
+             ((< x 0) (- 0 x))
+             (else 0))
+        """
+    std_env['x'] = 0
+    got = evaluate(parse(source), std_env)
+    assert got == 0
+
+
+def test_cond_no_match(std_env: Environment) -> None:
+    source = """
+       (cond ((> x 0) x)
+             ((< x 0) (- 0 x)))
+        """
+    std_env['x'] = 0
+    got = evaluate(parse(source), std_env)
+    assert got is None
