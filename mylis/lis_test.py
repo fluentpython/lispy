@@ -1,9 +1,9 @@
 import io
-from typing import Optional
+from exceptions import InvalidSyntax
 
 from pytest import mark, fixture, raises
 
-from lis import parse, evaluate, standard_env, Procedure
+from lis import parse, evaluate, standard_env
 from lis import Expression, Environment
 
 ############################################################# tests for parse
@@ -151,7 +151,7 @@ def test_lambda_with_multi_expression_body(std_env: Environment) -> None:
 
 def test_lambda_with_no_body(std_env: Environment) -> None:
     source = '(lambda (a))'
-    with raises(SyntaxError) as excinfo:
+    with raises(InvalidSyntax) as excinfo:
         evaluate(parse(source), std_env)
     assert source in str(excinfo.value)
 
