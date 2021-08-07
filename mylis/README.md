@@ -1,35 +1,44 @@
 # Mylis: a tiny Scheme interpreter
 
-`mylis.py` is derived from a Python 3.10
-[fork](../original/py3.10/) of Peter Norvig's `lis.py`,
+**Mylis** is derived from a Python 3.10
+[fork](../original/py3.10/) of Peter Norvig's
+[lis.py](https://norvig.com/lispy.html),
 adding some features for demonstration purposes.
 
 
 ## Interactive use
 
-Running `mylis.py` without arguments opens a very limited REPL.
+Running `mylis.py` without arguments opens a REPL.
 
-At this time the REPL can only handle one complete expression at a time,
-so it's more like a calculator—with no error handling.
-Plase don't make mistakes ;-)
+**Mylis** has limited error handling.
+Simple mistakes will crash the interpreter.
 
 ```
 $ ./mylis.py
-mylis.py> pi
+To exit type .q
+▷  pi
 3.141592653589793
-mylis.py> (/ pi 2)
+▷  (/ pi 2)
 1.5707963267948966
-mylis.py> (sin (/ pi 2))
+▷  (define (half x) (/ x 2))
+▷  (cos (half pi))
+6.123233995736766e-17
+▷  (sin (half pi))
 1.0
-mylis.py> (define (! n) (if (<= n 1) 1 (* n (! (- n 1)))))
-mylis.py> (! 5)
+▷  (define (! n)
+⋯    (if (< n 2)
+⋯        1
+⋯        (* n (! (- n 1)))
+⋯    ))
+▷  (! 5)
 120
-mylis.py> (! 42)
+▷  (! 42)
 1405006117752879898543142606244511569936384000000000
-mylis.py>
+▷  .q
+$
 ```
 
-It's better to experiment using source files and
+For longer experiments, use source files and
 command-line arguments, as presented next.
 
 
@@ -39,35 +48,45 @@ You can run programs written in the supported Scheme subset from the
 command-line, like this:
 
 ```
-$ ./mylis.py examples/newton.scm x=12345654321
-111111.0
+./mylis.py examples/fibo-seq.scm n=20
+(1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765)
+
 ```
 
-The `x=12345654321` option creates an `x` global variable with the given value.
+The `n=20` option creates an `n` global variable with the given value.
 
-If you read [examples/newton.scm](examples/newton.scm) you'see that the last line is:
+If you read [examples/fibo-seq.scm](examples/fibo-seq.scm)
+you'see that the last line is:
 
 ```scheme
-(display (sqrt x))
+(display (fibo-seq n))
 ```
 
-The `x` is not defined in the program,
-so it must be given as a command-line argument: `x=...`.
+The `n` is not defined in the program,
+so it must be given as a command-line argument: `n=...`
 
 Any command-line option with the syntax `symbol=value`
-will be interpreted as a global `(define symbol value)`
-with the limitation that `value` must be an integer, a float or a symbol.
+will be interpreted as a global definition—with
+the limitation that `value` must be an integer or a float:
+
+```scheme
+(define symbol value)
+```
 
 If you forget to provide a required argument,
-the interpreter will make a suggestion (but currently it stops at the first issue found):
+the interpreter will make a suggestion
+(but currently it stops at the first undefined variable found):
 
 ```
-$ ./mylis.py examples/newton.scm
-🚨  'x' was not defined.
+$ ./mylis.py examples/fibo-seq.scm
+🚨  'n' was not defined.
     You can define it as an option:
-    $ mylis.py examples/newton.scm x=<value>
+    $ ./mylis.py examples/fibo-seq.scm n=<value>
+$ ./mylis.py examples/fibo-seq.scm n=20
+(1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765)
+
 ```
 
 _LR_
 
-São Paulo, August 4, 2021
+São Paulo, August 7, 2021
