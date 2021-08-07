@@ -16,10 +16,6 @@ class InterpreterException(Exception):
         return msg
 
 
-class QuitRequest(InterpreterException):
-    """Signal to quit multi-line input."""
-
-
 class ParserException(InterpreterException):
     """Generic exception while parsing."""
 
@@ -30,3 +26,7 @@ class UnexpectedCloseParen(ParserException):
 
 class UnexpectedEndOfSource(ParserException):
     """Unexpected end of source code."""
+
+
+class EvaluatorException(InterpreterException):
+    """Generic exception while evaluating."""

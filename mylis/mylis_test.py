@@ -2,8 +2,10 @@ import io
 
 from pytest import mark, raises
 
-from mylis import multiline_input, env_from_args, run_file
-from exceptions import QuitRequest, UnexpectedCloseParen
+from mylis import multiline_input, env_from_args, run_file, repl
+from mylis import QuitRequest
+
+from exceptions import UnexpectedCloseParen
 
 from dialogue import Dialogue, normalize
 
@@ -36,7 +38,7 @@ def test_multiline_input_quit(session):
     with raises(QuitRequest):
         multiline_input('>', quit_cmd='Q', input_fn=dlg.fake_input)
 
-@mark.skip('work in progress')
+
 @mark.parametrize("session, error_str", [
     ("""
      )
@@ -53,10 +55,72 @@ def test_multiline_input_quit(session):
 def test_multiline_input_unexpected_close_paren(session, error_str):
     dlg = Dialogue(session)
     with raises(UnexpectedCloseParen) as excinfo:
-        multiline_input(input_fn=dlg.fake_input)
+        multiline_input('', '', input_fn=dlg.fake_input)
     want_msg = f"Unexpected close parenthesis: '{error_str}'."
     assert want_msg == str(excinfo.value)
 
+
+def test_repl_quit(capsys):
+    dlg = Dialogue('> .q\n')
+    repl(dlg.fake_input)
+    captured = capsys.readouterr()
+    assert dlg.session == normalize(captured.out)
+
+
+@mark.parametrize("session", [
+    """
+    >
+    > .q
+    """,
+    """
+    > (
+    ... .q
+    """,
+    """
+    > 3
+    3
+    > .q
+    """,
+])
+def test_repl_quit_other_cases(capsys, session):
+    dlg = Dialogue(session)
+    repl(dlg.fake_input)
+    captured = capsys.readouterr()
+    assert dlg.session == normalize(captured.out)
+
+
+def test_repl_gcd_example(capsys):
+    session = """
+    > (define (mod m n) (- m (* n (// m n))))
+    (lambda (m n) ...)
+    > (define (gcd a b) (if (= b 0) a (gcd b (mod a b))))
+    (lambda (a b) ...)
+    > (gcd 84 210)
+    42
+    """
+    dlg = Dialogue(session)
+    repl(dlg.fake_input)
+    captured = capsys.readouterr()
+    assert normalize(captured.out) == dlg.session
+
+
+def test_repl_gcd_example_multiline(capsys):
+    session = """
+    > (define (mod m n)
+    ... (- m (* n (// m n))))
+    (lambda (m n) ...)
+    > (define (gcd a b)
+    ... (if (= b 0)
+    ...   a
+    ...   (gcd b (mod a b))))
+    (lambda (a b) ...)
+    > (gcd 84 210)
+    42
+    """
+    dlg = Dialogue(session)
+    repl(dlg.fake_input)
+    captured = capsys.readouterr()
+    assert dlg.session == normalize(captured.out)
 
 ############### command-line integration
 

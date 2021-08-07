@@ -1,7 +1,6 @@
 import math
 
-from mylis import run
-
+import lis
 
 fact_src = """
 (define (! n)
@@ -13,7 +12,7 @@ fact_src = """
 (! 42)
 """
 def test_factorial():
-    got = run(fact_src)
+    got = lis.run(fact_src)
     assert got == 1405006117752879898543142606244511569936384000000000
     assert got == math.factorial(42)
 
@@ -28,7 +27,7 @@ gcd_src = """
 (gcd 18 45)
 """
 def test_gcd():
-    got = run(gcd_src)
+    got = lis.run(gcd_src)
     assert got == 9
 
 
@@ -51,7 +50,7 @@ quicksort_src = """
 (quicksort (list 2 1 6 3 4 0 8 9 7 5))
 """
 def test_quicksort():
-    got = run(quicksort_src)
+    got = lis.run(quicksort_src)
     assert got == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
@@ -74,7 +73,7 @@ newton_src = """
 (sqrt 123454321)
 """
 def test_newton():
-    got = run(newton_src)
+    got = lis.run(newton_src)
     assert math.isclose(got, 11111)
 
 
@@ -86,5 +85,5 @@ closure_src = """
 (inc 99)
 """
 def test_newton():
-    got = run(closure_src)
+    got = lis.run(closure_src)
     assert got == 100

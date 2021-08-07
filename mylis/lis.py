@@ -40,6 +40,11 @@ class Procedure:
             result = evaluate(exp, env)
         return result
 
+    def __repr__(self):
+        parms = ' '.join(self.parms)
+        return f'(lambda ({parms}) ...)'
+
+
 
 ################ global environment
 
@@ -110,8 +115,10 @@ def read_from_tokens(tokens: list[str]) -> Expression:
     token = tokens.pop(0)
     if '(' == token:
         exp = []
-        while tokens[0] != ')':
+        while tokens and tokens[0] != ')':
             exp.append(read_from_tokens(tokens))
+        if not tokens:
+            raise UnexpectedEndOfSource()
         tokens.pop(0)  # discard ')'
         return exp
     elif ')' == token:
@@ -175,7 +182,9 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             env[var] = evaluate(value_exp, env)
         case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
               ] if len(body) > 0:
-            env[name] = Procedure(parms, body, env)
+            func = Procedure(parms, body, env)
+            env[name] = func
+            return func
         case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
             return Procedure(parms, body, env)
         case [op, *args] if op not in KEYWORDS:             # (proc arg...)

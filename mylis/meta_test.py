@@ -1,6 +1,6 @@
 import operator as op
 
-from mylis import run
+import lis
 
 env_scm = """
 (define standard-env (list
@@ -11,7 +11,7 @@ standard-env
 """
 
 def test_env_build():
-    got = run(env_scm)
+    got = lis.run(env_scm)
     assert got == [['+', op.add], ['-', op.sub]]
 
 scan_scm = """
@@ -27,13 +27,13 @@ scan_scm = """
 
 def test_scan():
     source = scan_scm + '(scan (quote a) l )'
-    got = run(source)
+    got = lis.run(source)
     assert got == 'a'
 
 
 def test_scan_not_found():
     source = scan_scm + '(scan (quote z) l )'
-    got = run(source)
+    got = lis.run(source)
     assert got == []
 
 
@@ -53,12 +53,12 @@ lookup_scm = """
 
 def test_lookup():
     source = lookup_scm + '(lookup (quote +) env)'
-    got = run(source)
+    got = lis.run(source)
     assert got == op.add
 
 
 def test_lookup_not_found():
     source = lookup_scm + '(lookup (quote z) env )'
-    got = run(source)
+    got = lis.run(source)
     assert got == []
 

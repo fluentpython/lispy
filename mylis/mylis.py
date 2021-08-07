@@ -9,10 +9,16 @@ import sys
 from collections.abc import Sequence
 from typing import Any, Protocol, Callable, NoReturn
 
-from lis import Environment, parse_atom, run, repl
-from exceptions import UnexpectedCloseParen, QuitRequest
 
-############### multi-line REPL
+import lis
+from exceptions import UnexpectedCloseParen, EvaluatorException
+
+############### multi-line lis.REPL
+
+
+class QuitRequest(Exception):
+    """Signal to quit multi-line input."""
+
 
 QUIT_COMMAND = '.q'
 ELLIPSIS = '\N{HORIZONTAL ELLIPSIS}'
@@ -32,7 +38,7 @@ InputFnType = Callable[[str], str]
 def multiline_input(prompt1: str = '-->',
                     prompt2: str= f' {ELLIPSIS}>',
                     *,
-                quit_cmd: str = QUIT_COMMAND,
+                    quit_cmd: str = QUIT_COMMAND,
                     input_fn: InputFnType = input) -> str:
 
     paren_cnt = 0
@@ -57,6 +63,39 @@ def multiline_input(prompt1: str = '-->',
     return '\n'.join(lines)
 
 
+def repl(input_fn: InputFnType = input) -> None:
+    """Read-Eval-Print-Loop"""
+
+    global_env: lis.Environment = lis.standard_env()
+
+    print(f'To exit, type {QUIT_COMMAND}', file=sys.stderr)
+
+    while True:
+        # ___________________________________________ Read
+        try:
+            source = multiline_input('> ', '... ',
+                                     quit_cmd=QUIT_COMMAND,
+                                     input_fn=input_fn)
+        except (EOFError, QuitRequest):
+            break
+        except UnexpectedCloseParen as exc:
+            print('***', exc)
+            continue
+        if not source:
+            continue
+
+        # ___________________________________________ Eval
+        current_exp = lis.parse(source)
+        try:
+            result = str(lis.evaluate(current_exp, global_env))
+        except EvaluatorException as exc:
+            print('***', exc)
+            continue
+
+        # ___________________________________________ Print
+        print(result)
+
+
 ############### command-line integration
 
 class TextReader(Protocol):
@@ -64,12 +103,12 @@ class TextReader(Protocol):
         ...
 
 
-def run_file(source_file: TextReader, env: Environment | None = None) -> Any:
+def run_file(source_file: TextReader, env: lis.Environment | None = None) -> Any:
     source = source_file.read()
-    return run(source, env)
+    return lis.run(source, env)
 
 
-def env_from_args(args: Sequence[str]) -> Environment:
+def env_from_args(args: Sequence[str]) -> lis.Environment:
     env = {}
     for arg in (a for a in args if '=' in a):
         parts = arg.split('=')
@@ -77,7 +116,7 @@ def env_from_args(args: Sequence[str]) -> Environment:
             continue
         name, val = parts
         try:
-            atom = parse_atom(val)
+            atom = lis.parse_atom(val)
         except ValueError:
             continue
         env[name] = atom
@@ -89,7 +128,7 @@ ERROR_MARK = '\N{POLICE CARS REVOLVING LIGHT}'
 
 def main(args: list[str]) -> None:
     if len(args) == 1:
-        repl()
+        lis.repl()
     else:
         arg_env = env_from_args(args[1:])
         with open(args[1]) as source_file:

@@ -3,7 +3,7 @@ from typing import Optional
 
 from pytest import mark, fixture, raises
 
-from lis import parse, evaluate, standard_env
+from lis import parse, evaluate, standard_env, Procedure
 from lis import Expression, Environment
 
 ############################################################# tests for parse
@@ -199,7 +199,7 @@ def test_invocation_user_procedure(std_env: Environment) -> None:
 def test_define_function(std_env: Environment) -> None:
     source = '(define (max a b) (if (>= a b) a b))'
     got = evaluate(parse(source), std_env)
-    assert got is None
+    assert isinstance(got, Procedure)
     max_fn = std_env['max']
     assert max_fn.parms == ['a', 'b']
     assert len(max_fn.body) == 1
