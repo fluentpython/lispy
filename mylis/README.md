@@ -16,6 +16,8 @@ Simple mistakes will crash the interpreter.
 ```
 $ ./mylis.py
 To exit type .q
+▷  x
+🚨  Undefined symbol: 'x'
 ▷  pi
 3.141592653589793
 ▷  (/ pi 2)

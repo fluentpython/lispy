@@ -12,7 +12,7 @@ class InterpreterException(Exception):
                 value = self.value
             else:
                 value = repr(self.value)
-            msg += f': {value}.'
+            msg += f': {value}'
         return msg
 
 

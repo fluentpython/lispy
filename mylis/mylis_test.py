@@ -56,7 +56,7 @@ def test_multiline_input_unexpected_close_paren(session, error_str):
     dlg = Dialogue(session)
     with raises(UnexpectedCloseParen) as excinfo:
         multiline_input('', '', input_fn=dlg.fake_input)
-    want_msg = f"Unexpected close parenthesis: '{error_str}'."
+    want_msg = f'Unexpected close parenthesis: {error_str!r}'
     assert want_msg == str(excinfo.value)
 
 
