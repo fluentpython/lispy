@@ -64,7 +64,6 @@ def standard_env() -> lis.Environment:
         '//': op.floordiv,
         'display': display,
         'filter': lambda *args: list(filter(*args)),
-
     })
     return env
 
@@ -88,7 +87,7 @@ def run(source: str, env: lis.Environment | None = None) -> Any:
     return result
 
 
-############### multi-line lis.REPL
+############### multi-line REPL
 
 
 class QuitRequest(Exception):
