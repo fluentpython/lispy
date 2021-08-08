@@ -29,7 +29,7 @@ class UnexpectedEndOfSource(ParserException):
 
 
 class EvaluatorException(InterpreterException):
-    """Generic exception while evaluating."""
+    """Exception while evaluating."""
 
 class InvalidSyntax(EvaluatorException):
     """Invalid syntax."""

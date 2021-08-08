@@ -2,14 +2,107 @@ import io
 
 from pytest import mark, raises
 
-from mylis import multiline_input, env_from_args, run_file, multiline_repl
+from mylis import (
+    standard_env, multiline_input, env_from_args, run_file, multiline_repl)
 from mylis import QuitRequest
+
+import lis
 
 from exceptions import UnexpectedCloseParen
 
 from dialogue import Dialogue, normalize
 
+############### enhanced and new built-ins
+
+@mark.parametrize('source, expected', [
+    ('(+ 1 2)', 3),
+    ('(+ 1)', 1),
+    ('(+ 1 2 3)', 6),
+    ('(+)', 0),
+])
+def test_add(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(- 5 2)', 3),
+    ('(- 7)', -7),
+    ('(- 4 3 2 1)', -2),
+])
+def test_sub(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(* 5 2)', 10),
+    ('(* 1 2 3 4 5)', 120),
+    ('(*)', 1),
+])
+def test_mul(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(/ 6 2)', 3),
+    ('(/ 2)', .5),
+    ('(/ 60 5 4 3 2)', .5),
+])
+def test_truediv(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(/ 6 2)', 3),
+    ('(/ 2)', .5),
+    ('(/ 60 5 4 3 2)', .5),
+])
+def test_truediv(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(= 3 3)', True),
+    ('(= 1 3)', False),
+    ('(= 2 2 2)', True),
+    ('(= 2 2 1)', False),
+])
+def test_op_eq(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(< 3 3)', False),
+    ('(< 1 3)', True),
+    ('(< 1 2 2)', False),
+    ('(< 1 2 3)', True),
+    ('(<= 3 3)', True),
+    ('(<= 1 3)', True),
+    ('(<= 1 2 2)', True),
+    ('(<= 1 2 3)', True),
+    ('(<= 1 2 1)', False),
+    ('(> 3 3)', False),
+    ('(> 3 1)', True),
+    ('(> 2 1 2)', False),
+    ('(> 3 2 1)', True),
+    ('(>= 3 1)', True),
+    ('(>= 1 3)', False),
+    ('(>= 3 2 1)', True),
+    ('(>= 3 2 2)', True),
+    ('(>= 2 1 2)', False),
+])
+def test_elastic_comparison(source: str, expected: lis.Expression) -> None:
+    got = lis.evaluate(lis.parse(source), standard_env())
+    assert got == expected
+
+
 ############### multi-line REPL
+
 
 @mark.parametrize("session, result", [
     ("""

@@ -25,7 +25,7 @@ def test_parse(source: str, expected: Expression) -> None:
 
 # Norvig's tests are not isolated: they assume the
 # same environment from first to last test.
-global_env_for_first_test = standard_env()
+Norvig_suite_global_env = standard_env()
 
 @mark.parametrize( 'source, expected', [
     ("(quote (testing 1 (2.0) -3.14e159))", ['testing', 1, [2.0], -3.14e159]),
@@ -67,7 +67,7 @@ global_env_for_first_test = standard_env()
     ("(riff-shuffle (riff-shuffle (riff-shuffle (list 1 2 3 4 5 6 7 8))))", [1,2,3,4,5,6,7,8]),
 ])
 def test_evaluate(source: str, expected: Expression | None) -> None:
-    got = evaluate(parse(source), global_env_for_first_test)
+    got = evaluate(parse(source), Norvig_suite_global_env)
     assert got == expected
 
 
@@ -213,7 +213,7 @@ def test_cond(std_env: Environment) -> None:
     source = """
         (cond ((> x 0) x)
               ((= x 0) 0)
-              ((< x 0) (- x)))
+              ((< x 0) (- 0 x)))
         """
     std_env['x'] = -2
     got = evaluate(parse(source), std_env)
@@ -223,7 +223,7 @@ def test_cond(std_env: Environment) -> None:
 def test_cond_else(std_env: Environment) -> None:
     source = """
        (cond ((> x 0) x)
-             ((< x 0) (- x))
+             ((< x 0) (- 0 x))
              (else 0))
         """
     std_env['x'] = 0

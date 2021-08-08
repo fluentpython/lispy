@@ -5,6 +5,9 @@
 ## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
 ################ imports and types
 
+import functools as ft
+import itertools as it
+import operator as op
 import sys
 from collections.abc import Sequence, Iterator
 from typing import Any, Protocol, Callable, NoReturn
@@ -13,11 +16,64 @@ from typing import Any, Protocol, Callable, NoReturn
 import lis
 from exceptions import UndefinedSymbol, UnexpectedCloseParen, EvaluatorException
 
+
+################ enhanced and new built-ins
+
+def display(exp: object) -> str:
+    output = lis.lispstr(exp)
+    print(output)
+
+
+def elastic_sub(first, *rest):
+    if rest:
+        return first - sum(rest)
+    else:
+        return -first
+
+
+def elastic_truediv(first, *rest):
+    if rest:
+        return first / ft.reduce(op.mul, rest, 1)
+    else:
+        return 1 / first
+
+
+def elastic_comparison(op, current, *rest):
+    for arg in rest:
+        if not op(current, arg):
+            return False
+        current = arg
+    return True
+
+
+def standard_env() -> lis.Environment:
+    env = lis.standard_env()
+    env.update({
+        # enhancements
+        '+': lambda *args: sum(args),
+        '-': lambda *args: elastic_sub(*args),
+        '*': lambda *args: ft.reduce(op.mul, args, 1),
+        '/': lambda *args: elastic_truediv(*args),
+        '=': lambda first, *rest: all(first == x for x in rest),
+        '<': lambda *args: elastic_comparison(op.lt, *args),
+        '<=': lambda *args: elastic_comparison(op.le, *args),
+        '>': lambda *args: elastic_comparison(op.gt, *args),
+        '>=': lambda *args: elastic_comparison(op.ge, *args),
+        'append': lambda *args: list(it.chain(*args)),
+        # additional built-ins
+        '//': op.floordiv,
+        'display': display,
+        'filter': lambda *args: list(filter(*args)),
+
+    })
+    return env
+
+
 ################ non-interactive execution
 
 
 def run_lines(source: str, env: lis.Environment | None = None) -> Iterator[Any]:
-    global_env: lis.Environment = lis.standard_env()
+    global_env: lis.Environment = standard_env()
     if env is not None:
         global_env.update(env)
     tokens = lis.tokenize(source)
@@ -90,7 +146,7 @@ def multiline_repl(prompt1: str = '> ',
                    input_fn: InputFn = input) -> None:
     """Read-Eval-Print-Loop"""
 
-    global_env: lis.Environment = lis.standard_env()
+    global_env: lis.Environment = standard_env()
 
     print(f'To exit type {QUIT_COMMAND}', file=sys.stderr)
 

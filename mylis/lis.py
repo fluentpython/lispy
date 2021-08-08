@@ -11,14 +11,15 @@ import operator as op
 import readline  # this import enables readline for input()
 from collections import ChainMap
 from collections.abc import MutableMapping
-from itertools import chain
 from typing import Any, TypeAlias
 
 from exceptions import (
-    UnexpectedCloseParen, UnexpectedEndOfSource, UndefinedSymbol, InvalidSyntax
+    UnexpectedCloseParen, UnexpectedEndOfSource, UndefinedSymbol,
+    InvalidSyntax, EvaluatorException,
 )
 
 Symbol: TypeAlias = str
+Number: TypeAlias = int | float
 Atom: TypeAlias = int | float | Symbol
 Expression: TypeAlias = Atom | list
 
@@ -46,48 +47,34 @@ class Procedure:
 ################ global environment
 
 
-def display(exp: object) -> str:
-    output = lispstr(exp)
-    print(output)
-
-
 def standard_env() -> Environment:
     "An environment with some Scheme standard procedures."
     env: Environment = {}
     env.update(vars(math))   # sin, cos, sqrt, pi, ...
     env.update({
-        '+': lambda *args: sum(args),
-        '-': lambda a, b=None: -a if b is None else a - b,
-        '*': op.mul,
-        '/': op.truediv,
-        '//': op.floordiv,
-        '>': op.gt,
-        '<': op.lt,
-        '>=': op.ge,
-        '<=': op.le,
-        '=': op.eq,
-        'abs': abs,
-        'append': lambda *args: list(chain(*args)),
-        'apply': lambda proc, args: proc(*args),
-        'begin': lambda *x: x[-1],
-        'car': lambda x: x[0],
-        'cdr': lambda x: x[1:],
-        'cons': lambda x, y: [x] + y,
-        'display': display,
-        'eq?': op.is_,
-        'equal?': op.eq,
-        'filter': lambda *args: list(filter(*args)),
-        'length': len,
-        'list': lambda *x: list(x),
-        'list?': lambda x: isinstance(x, list),
-        'map': lambda *args: list(map(*args)),
-        'max': max,
-        'min': min,
-        'not': op.not_,
-        'null?': lambda x: x == [],
-        'number?': lambda x: isinstance(x, (int, float)),
+        '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv,
+        '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq,
+        '//': op.floordiv,  # added for Python 3 compatibility
+        'abs':     abs,
+        'append':  op.add,
+        'apply':   lambda proc, args: proc(*args),
+        'begin':   lambda *x: x[-1],
+        'car':     lambda x: x[0],
+        'cdr':     lambda x: x[1:],
+        'cons':    lambda x,y: [x] + y,
+        'eq?':     op.is_,
+        'equal?':  op.eq,
+        'length':  len,
+        'list':    lambda *x: list(x),
+        'list?':   lambda x: isinstance(x,list),
+        'map':     lambda *args: list(map(*args)),
+        'max':     max,
+        'min':     min,
+        'not':     op.not_,
+        'null?':   lambda x: x == [],
+        'number?': lambda x: isinstance(x, Number),
         'procedure?': callable,
-        'round': round,
+        'round':   round,
         'symbol?': lambda x: isinstance(x, Symbol),
     })
     return env
@@ -228,6 +215,10 @@ def evaluate(exp: Expression, env: Environment) -> Any:
         case [op, *args] if op not in KEYWORDS:             # (proc arg...)
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)
-            return proc(*values)
+            try:
+                return proc(*values)
+            except TypeError as exc:
+                msg = f'{exc!r} in {lispstr(exp)}\n{exp!r}'
+                raise EvaluatorException(msg) from exc
         case _:
             raise InvalidSyntax(lispstr(exp))
