@@ -143,6 +143,6 @@ def test_run_file(capsys):
     file = io.StringIO(source)
     env = env_from_args(['x=5'])
     got = run_file(file, env)
-    assert got == '120'
+    assert got is None
     captured = capsys.readouterr()
     assert captured.out == '120\n'

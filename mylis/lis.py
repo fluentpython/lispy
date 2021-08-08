@@ -43,52 +43,52 @@ class Procedure:
         return result
 
 
-
 ################ global environment
+
 
 def display(exp: object) -> str:
     output = lispstr(exp)
     print(output)
-    return output
+
 
 def standard_env() -> Environment:
     "An environment with some Scheme standard procedures."
     env: Environment = {}
     env.update(vars(math))   # sin, cos, sqrt, pi, ...
     env.update({
-            '+': lambda *args: sum(args),
-            '-': op.sub,
-            '*': op.mul,
-            '/': op.truediv,
-            '//': op.floordiv,
-            '>': op.gt,
-            '<': op.lt,
-            '>=': op.ge,
-            '<=': op.le,
-            '=': op.eq,
-            'abs': abs,
-            'append': lambda *args: list(chain(*args)),
-            'apply': lambda proc, args: proc(*args),
-            'begin': lambda *x: x[-1],
-            'car': lambda x: x[0],
-            'cdr': lambda x: x[1:],
-            'cons': lambda x, y: [x] + y,
-            'display': display,
-            'eq?': op.is_,
-            'equal?': op.eq,
-            'filter': lambda *args: list(filter(*args)),
-            'length': len,
-            'list': lambda *x: list(x),
-            'list?': lambda x: isinstance(x, list),
-            'map': lambda *args: list(map(*args)),
-            'max': max,
-            'min': min,
-            'not': op.not_,
-            'null?': lambda x: x == [],
-            'number?': lambda x: isinstance(x, (int, float)),
-            'procedure?': callable,
-            'round': round,
-            'symbol?': lambda x: isinstance(x, Symbol),
+        '+': lambda *args: sum(args),
+        '-': lambda a, b=None: -a if b is None else a - b,
+        '*': op.mul,
+        '/': op.truediv,
+        '//': op.floordiv,
+        '>': op.gt,
+        '<': op.lt,
+        '>=': op.ge,
+        '<=': op.le,
+        '=': op.eq,
+        'abs': abs,
+        'append': lambda *args: list(chain(*args)),
+        'apply': lambda proc, args: proc(*args),
+        'begin': lambda *x: x[-1],
+        'car': lambda x: x[0],
+        'cdr': lambda x: x[1:],
+        'cons': lambda x, y: [x] + y,
+        'display': display,
+        'eq?': op.is_,
+        'equal?': op.eq,
+        'filter': lambda *args: list(filter(*args)),
+        'length': len,
+        'list': lambda *x: list(x),
+        'list?': lambda x: isinstance(x, list),
+        'map': lambda *args: list(map(*args)),
+        'max': max,
+        'min': min,
+        'not': op.not_,
+        'null?': lambda x: x == [],
+        'number?': lambda x: isinstance(x, (int, float)),
+        'procedure?': callable,
+        'round': round,
+        'symbol?': lambda x: isinstance(x, Symbol),
     })
     return env
 
@@ -96,9 +96,9 @@ def standard_env() -> Environment:
 ################ parse, tokenize, and read_from_tokens
 
 
-def parse(program: str) -> Expression:
+def parse(source: str) -> Expression:
     "Read a Scheme expression from a string."
-    return read_from_tokens(tokenize(program))
+    return read_from_tokens(tokenize(source))
 
 
 def tokenize(s: str) -> list[str]:
@@ -171,9 +171,27 @@ def cond_form(clauses: list[Expression], env: Environment) -> Any:
                 return result
 
 
+def or_form(expressions: list[Expression], env: Environment) -> Any:
+    value = False
+    for exp in expressions:
+        value = evaluate(exp, env)
+        if value:
+            return value
+    return value
+
+
+def and_form(expressions: list[Expression], env: Environment) -> Any:
+    value = True
+    for exp in expressions:
+        value = evaluate(exp, env)
+        if not value:
+            return value
+    return value
+
 ################ eval
 
-KEYWORDS = ['quote', 'if', 'define', 'lambda', 'cond']
+KEYWORDS = ['quote', 'if', 'define', 'lambda', 'cond', 'or', 'and']
+
 
 def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
@@ -201,8 +219,12 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             env[name] = Procedure(parms, body, env)
         case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
             return Procedure(parms, body, env)
-        case ['cond', *clauses]:
+        case ['cond', *clauses]:                            # (cond (t1 e1) (t2 e2)... (else eN))
             return cond_form(clauses, env)
+        case ['or', *expressions]:                          # (or exp...)
+            return or_form(expressions, env)
+        case ['and', *expressions]:                         # (and exp...)
+            return and_form(expressions, env)
         case [op, *args] if op not in KEYWORDS:             # (proc arg...)
             proc = evaluate(op, env)
             values = (evaluate(arg, env) for arg in args)

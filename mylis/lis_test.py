@@ -213,7 +213,7 @@ def test_cond(std_env: Environment) -> None:
     source = """
         (cond ((> x 0) x)
               ((= x 0) 0)
-              ((< x 0) (- 0 x)))
+              ((< x 0) (- x)))
         """
     std_env['x'] = -2
     got = evaluate(parse(source), std_env)
@@ -223,7 +223,7 @@ def test_cond(std_env: Environment) -> None:
 def test_cond_else(std_env: Environment) -> None:
     source = """
        (cond ((> x 0) x)
-             ((< x 0) (- 0 x))
+             ((< x 0) (- x))
              (else 0))
         """
     std_env['x'] = 0
@@ -239,3 +239,27 @@ def test_cond_no_match(std_env: Environment) -> None:
     std_env['x'] = 0
     got = evaluate(parse(source), std_env)
     assert got is None
+
+
+@mark.parametrize('source, expected', [
+    ('(or)', False),
+    ('(or 0)', 0),
+    ('(or 1)', 1),
+    ('(or 0 2)', 2),
+    ('(or 0 3 (crash))', 3),
+])
+def test_or(source: str, expected: Expression) -> None:
+    got = evaluate(parse(source), {})
+    assert got == expected
+
+
+@mark.parametrize('source, expected', [
+    ('(and)', True),
+    ('(and 0)', 0),
+    ('(and 1)', 1),
+    ('(and 0 (crash))', 0),
+    ('(and 1 2 3)', 3),
+])
+def test_and(source: str, expected: Expression) -> None:
+    got = evaluate(parse(source), {})
+    assert got == expected

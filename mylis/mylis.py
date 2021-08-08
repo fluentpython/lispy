@@ -83,8 +83,8 @@ def multiline_input(prompt1: str,
 
 
 def multiline_repl(prompt1: str = '> ',
-                   prompt2: str= '... ',
-                   error_mark: str= '***',
+                   prompt2: str = '... ',
+                   error_mark: str = '***',
                    *,
                    quit_cmd: str = QUIT_COMMAND,
                    input_fn: InputFn = input) -> None:
