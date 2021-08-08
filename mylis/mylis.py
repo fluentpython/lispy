@@ -24,21 +24,21 @@ def display(exp: object) -> str:
     print(output)
 
 
-def elastic_sub(first, *rest):
+def variadic_sub(first, *rest):
     if rest:
         return first - sum(rest)
     else:
         return -first
 
 
-def elastic_truediv(first, *rest):
+def variadic_truediv(first, *rest):
     if rest:
         return first / ft.reduce(op.mul, rest, 1)
     else:
         return 1 / first
 
 
-def elastic_comparison(op, current, *rest):
+def variadic_comparison(op, current, *rest):
     for arg in rest:
         if not op(current, arg):
             return False
@@ -51,14 +51,14 @@ def standard_env() -> lis.Environment:
     env.update({
         # enhancements
         '+': lambda *args: sum(args),
-        '-': lambda *args: elastic_sub(*args),
+        '-': lambda *args: variadic_sub(*args),
         '*': lambda *args: ft.reduce(op.mul, args, 1),
-        '/': lambda *args: elastic_truediv(*args),
+        '/': lambda *args: variadic_truediv(*args),
         '=': lambda first, *rest: all(first == x for x in rest),
-        '<': lambda *args: elastic_comparison(op.lt, *args),
-        '<=': lambda *args: elastic_comparison(op.le, *args),
-        '>': lambda *args: elastic_comparison(op.gt, *args),
-        '>=': lambda *args: elastic_comparison(op.ge, *args),
+        '<': lambda *args: variadic_comparison(op.lt, *args),
+        '<=': lambda *args: variadic_comparison(op.le, *args),
+        '>': lambda *args: variadic_comparison(op.gt, *args),
+        '>=': lambda *args: variadic_comparison(op.ge, *args),
         'append': lambda *args: list(it.chain(*args)),
         # additional built-ins
         '//': op.floordiv,

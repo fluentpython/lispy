@@ -218,7 +218,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             try:
                 return proc(*values)
             except TypeError as exc:
-                msg = f'{exc!r} in {lispstr(exp)}\n{exp!r}'
+                msg = f'{exc!r} in {lispstr(exp)}\nAST={exp!r}'
                 raise EvaluatorException(msg) from exc
         case _:
             raise InvalidSyntax(lispstr(exp))

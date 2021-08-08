@@ -96,7 +96,7 @@ def test_op_eq(source: str, expected: lis.Expression) -> None:
     ('(>= 3 2 2)', True),
     ('(>= 2 1 2)', False),
 ])
-def test_elastic_comparison(source: str, expected: lis.Expression) -> None:
+def test_variadic_comparison(source: str, expected: lis.Expression) -> None:
     got = lis.evaluate(lis.parse(source), standard_env())
     assert got == expected
 
