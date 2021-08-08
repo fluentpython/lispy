@@ -16,10 +16,16 @@ from dialogue import Dialogue, normalize
 ############### enhanced and new built-ins
 
 @mark.parametrize('obj, expected', [
+    (0, '0'),
+    (1, '1'),
+    (False, '#f'),
+    (True, '#t'),
     (1.5, '1.5'),
     ('sin', 'sin'),
     (['+', 1, 2], '(+ 1 2)'),
     (['if', ['<', 'a', 'b'], True, False], '(if (< a b) #t #f)'),
+    ([], '()'),
+    (None, 'None'),
 ])
 def test_s_expr(obj: object, expected: str) -> None:
     got = s_expr(obj)

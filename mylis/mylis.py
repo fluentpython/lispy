@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-################ mylis: Scheme Environoment in Python 3.10
-## Runtime support by Luciano Ramalho for lis.py
-## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
-################ imports and types
+################ mylis: Tiny Scheme Environment in Python 3.10
+## Additional runtime support by Luciano Ramalho for lis.py by
+## Peter Norvig (c) 2010-18; See http://norvig.com/lispy.html
+
 
 import functools as ft
 import itertools as it
@@ -13,12 +13,12 @@ import sys
 from collections.abc import Sequence, Iterator
 from typing import Any, Protocol, Callable, NoReturn
 
-
 import lis
 from exceptions import UndefinedSymbol, UnexpectedCloseParen, EvaluatorException
 
 
 ################ enhanced and new built-ins
+
 
 def s_expr(obj: object) -> str:
     "Convert Python object into Lisp s-expression."
