@@ -20,8 +20,21 @@ from exceptions import UndefinedSymbol, UnexpectedCloseParen, EvaluatorException
 
 ################ enhanced and new built-ins
 
+def lispstr(exp: object) -> str:
+    "Convert a Python object back into a Lisp-readable string."
+    match exp:
+        case list(exp):
+            return '(' + ' '.join(map(lispstr, exp)) + ')'
+        case True:
+            return '#t'
+        case False:
+            return '#f'
+        case _:
+            return str(exp)
+
+
 def display(exp: object) -> str:
-    output = lis.lispstr(exp)
+    output = lispstr(exp)
     print(output)
 
 
@@ -51,6 +64,8 @@ def standard_env() -> lis.Environment:
     env = lis.standard_env()
     env.update({
         # enhancements
+        '#f': False,
+        '#t': True,
         '+':  lambda *args: sum(args),
         '-':  variadic_sub,
         '*':  lambda *args: math.prod(args),
@@ -174,7 +189,7 @@ def multiline_repl(prompt1: str = '> ',
 
         # ___________________________________________ Print
         if result is not None:
-            print(lis.lispstr(result))
+            print(lispstr(result))
 
 
 ############### command-line integration

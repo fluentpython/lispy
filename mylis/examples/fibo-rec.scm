@@ -4,8 +4,8 @@
           (else (+ (fibo (- n 1))
                    (fibo (- n 2))))))
 
-(if (>= n 20)
-    (display (quote (This will take a while)))
-    ())
+(cond
+    ((>= n 20)
+     (display (quote (This will take a while)))))
 
 (display (fibo n))

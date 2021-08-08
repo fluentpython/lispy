@@ -1,5 +1,5 @@
 (define (member item lst)
-    (cond ((null? lst) ())
+    (cond ((null? lst) #f)
           ((equal? item (car lst)) lst)
           (else (member item (cdr lst)))))
 
