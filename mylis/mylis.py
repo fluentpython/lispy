@@ -9,6 +9,7 @@ import functools as ft
 import itertools as it
 import operator as op
 import math
+import readline  # "unused" import to enable readline in input()
 import sys
 from collections.abc import Sequence, Iterator
 from typing import Any, Protocol, Callable, NoReturn

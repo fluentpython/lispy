@@ -8,7 +8,6 @@
 ################ imports and types
 import math
 import operator as op
-import readline  # this import enables readline for input()
 from collections import ChainMap
 from collections.abc import MutableMapping
 from typing import Any, TypeAlias
@@ -126,7 +125,7 @@ def parse_atom(token: str) -> Atom:
 ################ interaction: a REPL
 
 
-def repl(prompt: str = 'mylis.py> ') -> None:
+def repl(prompt: str = 'lis.py> ') -> None:
     "A prompt-read-evaluate-print loop."
     global_env: Environment = standard_env()
     while True:
@@ -222,3 +221,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 raise EvaluatorException(msg) from exc
         case _:
             raise InvalidSyntax(lispstr(exp))
+
+
+if __name__ == '__main__':
+    repl()
