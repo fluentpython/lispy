@@ -17,12 +17,9 @@ def test_env_build():
 scan_scm = """
 (define l (quote (a b c)))
 (define (scan what where)
-    (if (null? where)
-        ()
-        (if (equal? what (car where))
-            what
-            (scan what (cdr where))))
-)
+    (cond ((null? where) #f)
+          ((equal? what (car where)) what)
+          (else (scan what (cdr where)))))
 """
 
 def test_scan():
@@ -34,7 +31,7 @@ def test_scan():
 def test_scan_not_found():
     source = scan_scm + '(scan (quote z) l )'
     got = mylis.run(source)
-    assert got == []
+    assert got is False
 
 
 lookup_scm = """
@@ -43,12 +40,9 @@ lookup_scm = """
     (list (quote //) //)
 ))
 (define (lookup what where)
-    (if (null? where)
-        ()
-        (if (equal? what (car (car where)))
-            (car (cdr (car where)))
-            (lookup what (cdr where))))
-)
+    (cond ((null? where) #f)
+          ((equal? what (car (car where))) (car (cdr (car where))))
+          (else (lookup what (cdr where)))))
 """
 
 def test_lookup():
@@ -60,5 +54,4 @@ def test_lookup():
 def test_lookup_not_found():
     source = lookup_scm + '(lookup (quote z) env )'
     got = mylis.run(source)
-    assert got == []
-
+    assert got is False
