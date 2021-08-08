@@ -56,8 +56,8 @@ def standard_env() -> lis.Environment:
         '/': lambda *args: variadic_truediv(*args),
         '=': lambda first, *rest: all(first == x for x in rest),
         '<': lambda *args: variadic_comparison(op.lt, *args),
-        '<=': lambda *args: variadic_comparison(op.le, *args),
         '>': lambda *args: variadic_comparison(op.gt, *args),
+        '<=': lambda *args: variadic_comparison(op.le, *args),
         '>=': lambda *args: variadic_comparison(op.ge, *args),
         'append': lambda *args: list(it.chain(*args)),
         # additional built-ins
