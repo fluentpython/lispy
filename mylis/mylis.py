@@ -20,21 +20,24 @@ from exceptions import UndefinedSymbol, UnexpectedCloseParen, EvaluatorException
 
 ################ enhanced and new built-ins
 
-def lispstr(exp: object) -> str:
-    "Convert a Python object back into a Lisp-readable string."
-    match exp:
-        case list(exp):
-            return '(' + ' '.join(map(lispstr, exp)) + ')'
+def s_expr(obj: object) -> str:
+    "Convert Python object into Lisp s-expression."
+    match obj:
         case True:
             return '#t'
         case False:
             return '#f'
+        case list(obj):
+            items = ' '.join(s_expr(x) for x in obj)
+            return f'({items})'
+        case lis.Symbol(x):
+            return x
         case _:
-            return str(exp)
+            return repr(obj)
 
 
-def display(exp: object) -> str:
-    output = lispstr(exp)
+def display(obj: object) -> str:
+    output = s_expr(obj)
     print(output)
 
 
@@ -189,7 +192,7 @@ def multiline_repl(prompt1: str = '> ',
 
         # ___________________________________________ Print
         if result is not None:
-            print(lispstr(result))
+            print(s_expr(result))
 
 
 ############### command-line integration

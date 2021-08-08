@@ -3,7 +3,8 @@ import io
 from pytest import mark, raises
 
 from mylis import (
-    standard_env, multiline_input, env_from_args, run_file, multiline_repl)
+    s_expr, standard_env, env_from_args, run_file,
+    multiline_input, multiline_repl)
 from mylis import QuitRequest
 
 import lis
@@ -13,6 +14,17 @@ from exceptions import UnexpectedCloseParen
 from dialogue import Dialogue, normalize
 
 ############### enhanced and new built-ins
+
+@mark.parametrize('obj, expected', [
+    (1.5, '1.5'),
+    ('sin', 'sin'),
+    (['+', 1, 2], '(+ 1 2)'),
+    (['if', ['<', 'a', 'b'], True, False], '(if (< a b) #t #f)'),
+])
+def test_s_expr(obj: object, expected: str) -> None:
+    got = s_expr(obj)
+    assert got == expected
+
 
 @mark.parametrize('source, expected', [
     ('(+ 1 2)', 3),
