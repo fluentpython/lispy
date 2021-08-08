@@ -19,7 +19,7 @@ scan_scm = """
 (define (scan what where)
     (if (null? where)
         ()
-        (if (eq? what (car where))
+        (if (equal? what (car where))
             what
             (scan what (cdr where))))
 )
@@ -45,7 +45,7 @@ lookup_scm = """
 (define (lookup what where)
     (if (null? where)
         ()
-        (if (eq? what (car (car where)))
+        (if (equal? what (car (car where)))
             (car (cdr (car where)))
             (lookup what (cdr where))))
 )
