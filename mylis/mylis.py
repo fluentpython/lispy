@@ -8,6 +8,7 @@
 import functools as ft
 import itertools as it
 import operator as op
+import math
 import sys
 from collections.abc import Sequence, Iterator
 from typing import Any, Protocol, Callable, NoReturn
@@ -33,7 +34,7 @@ def variadic_sub(first, *rest):
 
 def variadic_truediv(first, *rest):
     if rest:
-        return first / ft.reduce(op.mul, rest, 1)
+        return first / math.prod(rest)
     else:
         return 1 / first
 
@@ -50,15 +51,15 @@ def standard_env() -> lis.Environment:
     env = lis.standard_env()
     env.update({
         # enhancements
-        '+': lambda *args: sum(args),
-        '-': lambda *args: variadic_sub(*args),
-        '*': lambda *args: ft.reduce(op.mul, args, 1),
-        '/': lambda *args: variadic_truediv(*args),
-        '=': lambda first, *rest: all(first == x for x in rest),
-        '<': lambda *args: variadic_comparison(op.lt, *args),
-        '>': lambda *args: variadic_comparison(op.gt, *args),
-        '<=': lambda *args: variadic_comparison(op.le, *args),
-        '>=': lambda *args: variadic_comparison(op.ge, *args),
+        '+':  lambda *args: sum(args),
+        '-':  variadic_sub,
+        '*':  lambda *args: math.prod(args),
+        '/':  variadic_truediv,
+        '=':  lambda first, *rest: all(first == x for x in rest),
+        '<':  ft.partial(variadic_comparison, op.lt),
+        '>':  ft.partial(variadic_comparison, op.gt),
+        '<=': ft.partial(variadic_comparison, op.le),
+        '>=': ft.partial(variadic_comparison, op.ge),
         'append': lambda *args: list(it.chain(*args)),
         # additional built-ins
         '//': op.floordiv,
