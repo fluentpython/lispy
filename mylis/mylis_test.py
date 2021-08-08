@@ -26,6 +26,7 @@ from dialogue import Dialogue, normalize
     (['if', ['<', 'a', 'b'], True, False], '(if (< a b) #t #f)'),
     ([], '()'),
     (None, 'None'),
+    (..., 'Ellipsis'),
 ])
 def test_s_expr(obj: object, expected: str) -> None:
     got = s_expr(obj)
