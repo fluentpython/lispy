@@ -38,7 +38,7 @@ if __name__ == '__main__':
         ackermann = functools.cache(ackermann)
 
     for m in range(0, 5):
-        for n in range(0, 8):
+        for n in range(0, 10):
             if hasattr(ackermann, 'cache_clear'):
                 ackermann.cache_clear()
             calls = 0
@@ -46,7 +46,7 @@ if __name__ == '__main__':
                 res = ackermann(m, n)
             except RecursionError:
                 res = '...'
-            print(f'A({m}, {n}) = {res}\t[{calls} calls]')
+            print(f'A({m}, {n}) = {res:>4}\t[{calls:,.0f} calls]')
 
     if len(sys.argv) == 1:
         print(f'To enable caching, pass the "c" command-line option.')

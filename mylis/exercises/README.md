@@ -5,17 +5,17 @@
 Write functions `c-to-f` to convert a temperature from Celsius to
 Fahrenheit and `f-to-c` to convert back.
 
+The formulas are:
+
+* f = (9 / 5) * f + 32
+* c = (f − 32) * 5 / 9
+
 Some examples:
 
 * 0°C is 32°F
 * 20°C is 68°F
 * 100°C is 212°F
 * -20°C is -4°F
-
-The formulas are:
-
-* f = (9 / 5) * f + 32
-* c = (f − 32) * 5 / 9
 
 
 ## 2. Ackermann function
@@ -42,14 +42,12 @@ def ackermann(m, n):
 
 The arguments `m` and `n` must non-negative integers.
 
-In practice, they must also be very small.
+In practice, they must be very small, especially the `m` parameter.
+Computing A(3, 2) requires 541 calls to `ackermann`, and the result is 29.
 Wikipedia says "A(4, 2) is an integer of 19,729 decimal digits."
 
-Computing A(3, 2) requires 541 calls to `ackermann`,
-and the result is 29.
-
 In Python 3.10, the two largest combinations of `(m, n)` that
-can be computed with the definition above are:
+I could compute with the implementation above are:
 
 * A(3, 6) = 509 (requires 172,233 calls)
 * A(4, 0) = 13 (requires 107 calls)
@@ -63,3 +61,8 @@ See
 [exercises/ackermann.py](https://github.com/fluentpython/lispy/blob/main/mylis/exercises/ackermann.py)
 for a Python script that iterates over small values of `(m, n)` and
 counts the number of calls required.
+
+
+_LR_
+
+São Paulo, August 9, 2021
