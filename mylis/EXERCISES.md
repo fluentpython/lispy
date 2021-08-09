@@ -25,8 +25,8 @@ Implement the Ackermann–Péter function.
 The
 [Ackermann function](http://en.wikipedia.org/wiki/Ackermann_function)
 is a deeply recursive function from computability theory.
-Besides its theoretical relevance, it has also been used to
-"benchmark of a compiler's ability to optimize recursion" according to its [Wikipedia article](http://en.wikipedia.org/wiki/Ackermann_function).
+Besides its theoretical relevance, it has also been used to benchmark
+"a compiler's ability to optimize recursion" according to its [Wikipedia article](http://en.wikipedia.org/wiki/Ackermann_function).
 
 One of its variations, the Ackermann–Péter function,
 can be coded in Python as:
