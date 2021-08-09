@@ -27,26 +27,26 @@ def standard_env():
     env = {}
     env.update(vars(math)) # sin, cos, sqrt, pi, ...
     env.update({
-        '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv,
-        '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq,
+        '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv, 
+        '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq, 
         'abs':     abs,
-        'append':  op.add,
+        'append':  op.add,  
         'apply':   lambda proc, args: proc(*args),
         'begin':   lambda *x: x[-1],
         'car':     lambda x: x[0],
-        'cdr':     lambda x: x[1:],
+        'cdr':     lambda x: x[1:], 
         'cons':    lambda x,y: [x] + y,
-        'eq?':     op.is_,
-        'equal?':  op.eq,
-        'length':  len,
-        'list':    lambda *x: list(x),
-        'list?':   lambda x: isinstance(x,list),
+        'eq?':     op.is_, 
+        'equal?':  op.eq, 
+        'length':  len, 
+        'list':    lambda *x: list(x), 
+        'list?':   lambda x: isinstance(x,list), 
         'map':     lambda *args: list(map(*args)),
         'max':     max,
         'min':     min,
         'not':     op.not_,
-        'null?':   lambda x: x == [],
-        'number?': lambda x: isinstance(x, Number),
+        'null?':   lambda x: x == [], 
+        'number?': lambda x: isinstance(x, Number),   
         'procedure?': callable,
         'round':   round,
         'symbol?': lambda x: isinstance(x, Symbol),
@@ -101,7 +101,7 @@ def repl(prompt='lis.py> '):
 def lispstr(exp):
     "Convert a Python object back into a Lisp-readable string."
     if isinstance(exp, List):
-        return '(' + ' '.join(map(lispstr, exp)) + ')'
+        return '(' + ' '.join(map(lispstr, exp)) + ')' 
     else:
         return str(exp)
 
@@ -112,7 +112,7 @@ def eval(x, env=global_env):
     if isinstance(x, Symbol):      # variable reference
         return env[x]
     elif not isinstance(x, List):  # constant literal
-        return x
+        return x                
     elif x[0] == 'quote':          # (quote exp)
         (_, exp) = x
         return exp
