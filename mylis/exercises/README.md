@@ -171,7 +171,7 @@ The output would look like this:
 
 Find out what are the maximum values for `(m, n)` that your program (or Mylis itself) can compute,
 considering that computing A(3, 3) takes 2,432 recursive calls,
-and Python itself can only go as high as A(3, 7)
+and Python itself can only go as high as A(3, 6) and A(4, 0)
 without memoization or changing its default configuration with
 [`sys.setrecursionlimit`](https://docs.python.org/3/library/sys.html#sys.setrecursionlimit).
 
@@ -179,6 +179,7 @@ without memoization or changing its default configuration with
 ### Challenge 3.3
 
 Implement memoization using nested lists—because Mylis has no `dict` type.
+How high can you go then?
 
 (Understanding what this means is part of the challenge ;-)
 
