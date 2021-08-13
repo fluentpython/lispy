@@ -2,13 +2,12 @@
 
 ## 1. Temperature converter
 
-Write functions `c-to-f` to convert a temperature from Celsius to
-Fahrenheit and `f-to-c` to convert back.
+Write a function `c-to-f` to convert a temperature from Celsius to
+Fahrenheit.
 
-The formulas are:
+This is the formula using infix notation, which you'll need to rewrite in prefix notation:
 
-* f = (9 / 5) * f + 32
-* c = (f − 32) * 5 / 9
+> `f = (9 / 5) * f + 32`
 
 Some examples:
 
@@ -17,8 +16,85 @@ Some examples:
 * 100°C is 212°F
 * -20°C is -4°F
 
+### Challenge 1.1
 
-## 2. Ackermann function
+> **TIP**: The challenge exercises are optional. Do them if you have time and are motivated to learn more.
+
+Write a function `f-to-c` to convert from Fahrenheit to Celsius.
+The formula is:
+
+> `c = (f − 32) * 5 / 9`
+
+
+### Challenge 2.2
+
+After you make each of those functions work in the REPL,
+turn each of them into a script using the trick
+of having a top-level expression like `(display c-to-f c)`,
+where `c` is not defined at the global level,
+which will make the interpreter suggest that the user provide it.
+
+See [`mylis/examples/fibo-n.scm`](https://github.com/fluentpython/lispy/blob/main/mylis/examples/fibo-n.scm)
+for an example that does this:
+
+```
+$ ./mylis.py examples/fibo-n.scm
+🚨  'n' was not defined.
+    You can define it as an option:
+    $ ./mylis.py examples/fibo-n.scm n=<value>
+```
+
+## 2. Fibonacci by rounding
+
+In the [`mylis/examples`](https://github.com/fluentpython/lispy/tree/main/mylis/examples)
+directory you'll find the
+[`fibo-n.scm`](https://github.com/fluentpython/lispy/blob/main/mylis/examples/fibo-n.scm)
+which asks for `n` and returns the N<sup>th</sup> number
+in the Fibonacci sequence, starting with 0.
+
+Write an alternative script, `fibo-round.scm` using the
+[Computation by rounding](https://en.wikipedia.org/wiki/Fibonacci_number#Computation_by_rounding) formula.
+
+A few examples:
+
+* `n=0` → `0`
+* `n=2` → `1`
+* `n=10` → `55`
+* `n=22` → `17711`
+
+For reference, this Python code uses that formula:
+
+```python
+import math
+
+def fibonacci_round(n):
+    """This works only for n<=70 with 64 bit floats"""
+    assert n <= 70, 'Not enough precision for n >= 70'
+    sqrt5 = math.sqrt(5)
+    phi = (1 + sqrt5) / 2
+    return round(phi ** n / sqrt5)
+```
+
+> **TIP**: In Mylis, Python's `math` functions are built-in, so you don't need to import them:
+>
+> ```
+> ▷  (sqrt 5)
+> 2.23606797749979
+> ```
+
+### Challenge 2.1
+
+Note that the formula only works for `n <= 70`,
+because of the limited precision of the 64-bit `float` type used in Python and Mylis.
+Include a test to display an error message instead of the wrong value
+if the user provides some `n > 70` in the command line.
+
+>  **TIP**: The highly inefficient
+  [fibo-rec.scm](https://github.com/fluentpython/lispy/blob/main/mylis/examples/fibo-rec.scm)
+  example displays a message when `n >= 20` and proceeds to compute the number.
+  In this exercise, we want to display a message but not compute the number if `n > 70`.
+
+## 3. Ackermann function
 
 Implement the Ackermann–Péter function.
 
@@ -61,6 +137,45 @@ See
 [exercises/ackermann.py](https://github.com/fluentpython/lispy/blob/main/mylis/exercises/ackermann.py)
 for a Python script that iterates over small values of `(m, n)` and
 counts the number of calls required.
+
+### Challenge 3.1
+
+Write a script to compute the Ackermann function for A(m, n), with both m and n ranging from 0 to 3 inclusive inclusive.
+The output would look like this:
+
+```
+((A 0 0) = 1)
+((A 0 1) = 2)
+((A 0 2) = 3)
+((A 0 3) = 4)
+((A 1 0) = 2)
+((A 1 1) = 3)
+((A 1 2) = 4)
+((A 1 3) = 5)
+((A 2 0) = 3)
+((A 2 1) = 5)
+((A 2 2) = 7)
+((A 2 3) = 9)
+((A 3 0) = 5)
+((A 3 1) = 13)
+((A 3 2) = 29)
+((A 3 3) = 61)
+```
+
+### Challenge 3.2
+
+Find out what are the maximum values for `(m, n)` that your program (or Mylis itself) can compute,
+considering that computing A(3, 3) takes 2,432 recursive calls,
+and Python itself can only go as high as A(3, 7)
+without memoization or changing its default configuration with
+[`sys.setrecursionlimit`](https://docs.python.org/3/library/sys.html#sys.setrecursionlimit).
+
+
+### Challenge 3.3
+
+Implement memoization using nested lists—because Mylis has no `dict` type.
+
+(Understanding what this means is part of the challenge ;-)
 
 
 _LR_
