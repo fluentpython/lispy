@@ -49,8 +49,13 @@ $ ./mylis.py examples/fibo-n.scm
 In the [`mylis/examples`](https://github.com/fluentpython/lispy/tree/main/mylis/examples)
 directory you'll find the
 [`fibo-n.scm`](https://github.com/fluentpython/lispy/blob/main/mylis/examples/fibo-n.scm)
-which asks for `n` and returns the N<sup>th</sup> number
-in the Fibonacci sequence, starting with 0.
+which given `n`, displays the N<sup>th</sup> number
+in the Fibonacci sequence, starting at 0.
+
+```
+$ ./mylis.py examples/fibo-n.scm n=70
+190392490709135
+```
 
 Write an alternative script, `fibo-round.scm` using the
 [Computation by rounding](https://en.wikipedia.org/wiki/Fibonacci_number#Computation_by_rounding) formula.
