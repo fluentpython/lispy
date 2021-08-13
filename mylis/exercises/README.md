@@ -145,7 +145,7 @@ counts the number of calls required.
 
 ### Challenge 3.1
 
-Write a script to compute the Ackermann function for A(m, n), with both m and n ranging from 0 to 3 inclusive inclusive.
+Write a script to compute the Ackermann function for A(m, n), with both m and n ranging from 0 to 3 inclusive.
 The output would look like this:
 
 ```
