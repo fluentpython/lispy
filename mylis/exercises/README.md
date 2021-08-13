@@ -7,7 +7,7 @@ Fahrenheit.
 
 This is the formula using infix notation, which you'll need to rewrite in prefix notation:
 
-> `f = (9 / 5) * f + 32`
+`f = (9 / 5) * f + 32`
 
 Some examples:
 
@@ -23,7 +23,7 @@ Some examples:
 Write a function `f-to-c` to convert from Fahrenheit to Celsius.
 The formula is:
 
-> `c = (f − 32) * 5 / 9`
+`c = (f − 32) * 5 / 9`
 
 
 ### Challenge 2.2
