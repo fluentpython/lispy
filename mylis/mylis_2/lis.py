@@ -22,7 +22,14 @@ Number: TypeAlias = int | float
 Atom: TypeAlias = int | float | Symbol
 Expression: TypeAlias = Atom | list
 
-Environment: TypeAlias = MutableMapping[Symbol, object]
+
+class Environment(ChainMap):
+    def change(self, key: Symbol, value: object):
+        for map in self.maps:
+            if key in map:
+                map[key] = value
+                return
+        raise KeyError(key)
 
 
 class Procedure:
@@ -37,7 +44,7 @@ class Procedure:
 
     def __call__(self, *args: Expression) -> Any:
         local_env = dict(zip(self.parms, args))
-        env: Environment = ChainMap(local_env, self.env)
+        env = Environment(local_env, self.env)
         for exp in self.body:
             result = evaluate(exp, env)
         return result
@@ -48,7 +55,7 @@ class Procedure:
 
 def standard_env() -> Environment:
     "An environment with some Scheme standard procedures."
-    env: Environment = {}
+    env = Environment()
     env.update(vars(math))   # sin, cos, sqrt, pi, ...
     env.update({
         '+':op.add, '-':op.sub, '*':op.mul, '/':op.truediv,
@@ -200,6 +207,8 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 return evaluate(alternative, env)
         case ['define', Symbol(var), value_exp]:            # (define var exp)
             env[var] = evaluate(value_exp, env)
+        case ['set!', Symbol(var), value_exp]:              # (set! var exp)
+            env.change(var, evaluate(value_exp, env))
         case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
               ] if len(body) > 0:
             env[name] = Procedure(parms, body, env)

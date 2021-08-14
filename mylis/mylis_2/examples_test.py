@@ -84,6 +84,23 @@ closure_src = """
 (define inc (make-adder 1))
 (inc 99)
 """
-def test_newton():
+def test_closure():
     got = run(closure_src)
     assert got == 100
+
+
+closure_with_change_src = """
+(define (make-counter)
+    (define n 0)
+    (lambda ()
+        (set! n (+ n 1))
+        n)
+)
+(define counter (make-counter))
+(counter)
+(counter)
+(counter)
+"""
+def test_closure_with_change():
+    got = run(closure_with_change_src)
+    assert got == 3

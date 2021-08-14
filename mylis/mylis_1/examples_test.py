@@ -84,6 +84,6 @@ closure_src = """
 (define inc (make-adder 1))
 (inc 99)
 """
-def test_newton():
+def test_closure():
     got = run(closure_src)
     assert got == 100
