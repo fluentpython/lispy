@@ -230,6 +230,38 @@ def test_repl_gcd_example_multiline(capsys):
     captured = capsys.readouterr()
     assert dlg.session == normalize(captured.out)
 
+
+# Note: flip-flop is defined as with shared closure,
+# there is no "maker" function surrounding it.
+# Contrast with make-counter in examples_test.py
+# where each call to (make-counter) creates a new procedure
+# with its own closure.
+# Based on first set! example from
+# R. Kent Dybvig--The Scheme Programming Language, Fourth Edition
+# https://scheme.com/tspl4/binding.html#./binding:s28
+def test_repl_flip_flop(capsys):
+    session = """
+    > (define flip-flop
+    ... (begin
+    ...   (define state #f)
+    ...     (lambda ()
+    ...       (set! state (not state))
+    ...       state)))
+    > (flip-flop)
+    #t
+    > (flip-flop)
+    #f
+    > (flip-flop)
+    #t
+    > (flip-flop)
+    #f
+    """
+    dlg = Dialogue(session)
+    multiline_repl(input_fn=dlg.fake_input)
+    captured = capsys.readouterr()
+    assert dlg.session == normalize(captured.out)
+
+
 ############### command-line integration
 
 @mark.parametrize("args, global_env", [
