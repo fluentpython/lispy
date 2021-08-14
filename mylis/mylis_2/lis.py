@@ -188,48 +188,52 @@ KEYWORDS = ['quote', 'if', 'define', 'lambda', 'cond', 'or', 'and']
 
 def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
-    match exp:
-        case int(x) | float(x):                             # number literal
-            return x
-        case Symbol(var):                                   # variable reference
-            try:
-                return env[var]
-            except KeyError as exc:
-                raise UndefinedSymbol(var) from exc
-        case []:                                            # empty list
-            return []
-        case ['quote', exp]:                                # (quote exp)
-            return exp
-        case ['if', test, consequence, alternative]:        # (if test consequence alternative)
-            if evaluate(test, env):
-                return evaluate(consequence, env)
-            else:
-                return evaluate(alternative, env)
-        case ['define', Symbol(var), value_exp]:            # (define var exp)
-            env[var] = evaluate(value_exp, env)
-        case ['set!', Symbol(var), value_exp]:              # (set! var exp)
-            env.change(var, evaluate(value_exp, env))
-        case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
-              ] if len(body) > 0:
-            env[name] = Procedure(parms, body, env)
-        case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
-            return Procedure(parms, body, env)
-        case ['cond', *clauses]:                            # (cond (t1 e1) (t2 e2)... (else eN))
-            return cond_form(clauses, env)
-        case ['or', *expressions]:                          # (or exp...)
-            return or_form(expressions, env)
-        case ['and', *expressions]:                         # (and exp...)
-            return and_form(expressions, env)
-        case [op, *args] if op not in KEYWORDS:             # (proc arg...)
-            proc = evaluate(op, env)
-            values = (evaluate(arg, env) for arg in args)
-            try:
-                return proc(*values)
-            except TypeError as exc:
-                msg = f'{exc!r} in {lispstr(exp)}\nAST={exp!r}'
-                raise EvaluatorException(msg) from exc
-        case _:
-            raise InvalidSyntax(lispstr(exp))
+    while True:
+        match exp:
+            case int(x) | float(x):                             # number literal
+                return x
+            case Symbol(var):                                   # variable reference
+                try:
+                    return env[var]
+                except KeyError as exc:
+                    raise UndefinedSymbol(var) from exc
+            case []:                                            # empty list
+                return []
+            case ['quote', exp]:                                # (quote exp)
+                return exp
+            case ['if', test, consequence, alternative]:        # (if test consequence alternative)
+                if evaluate(test, env):
+                    exp = consequence
+                else:
+                    exp = alternative
+            case ['define', Symbol(var), value_exp]:            # (define var exp)
+                env[var] = evaluate(value_exp, env)
+                return
+            case ['set!', Symbol(var), value_exp]:              # (set! var exp)
+                env.change(var, evaluate(value_exp, env))
+                return
+            case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
+                ] if len(body) > 0:
+                env[name] = Procedure(parms, body, env)
+                return
+            case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
+                return Procedure(parms, body, env)
+            case ['cond', *clauses]:                            # (cond (t1 e1) (t2 e2)... (else eN))
+                return cond_form(clauses, env)
+            case ['or', *expressions]:                          # (or exp...)
+                return or_form(expressions, env)
+            case ['and', *expressions]:                         # (and exp...)
+                return and_form(expressions, env)
+            case [op, *args] if op not in KEYWORDS:             # (proc arg...)
+                proc = evaluate(op, env)
+                values = (evaluate(arg, env) for arg in args)
+                try:
+                    return proc(*values)
+                except TypeError as exc:
+                    msg = f'{exc!r} in {lispstr(exp)}\nAST={exp!r}'
+                    raise EvaluatorException(msg) from exc
+            case _:
+                raise InvalidSyntax(lispstr(exp))
 
 
 if __name__ == '__main__':
