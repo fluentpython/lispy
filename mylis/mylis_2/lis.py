@@ -183,7 +183,7 @@ def and_form(expressions: list[Expression], env: Environment) -> Any:
 
 ################ eval
 
-KEYWORDS = ['quote', 'if', 'define', 'lambda', 'cond', 'or', 'and']
+KEYWORDS = ['quote', 'if', 'define', 'set!', 'lambda', 'cond', 'or', 'and']
 
 
 def evaluate(exp: Expression, env: Environment) -> Any:
