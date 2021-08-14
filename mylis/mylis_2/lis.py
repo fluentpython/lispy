@@ -227,10 +227,15 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             case [op, *args] if op not in KEYWORDS:             # (proc arg...)
                 proc = evaluate(op, env)
                 values = (evaluate(arg, env) for arg in args)
+                # if isinstance(proc, Procedure):
+                #     exp = ['begin', proc.body]
+                #     local_env = dict(zip(proc.parms, values))
+                #     env = Environment(local_env, proc.env)
+                # else:
                 try:
                     return proc(*values)
                 except TypeError as exc:
-                    msg = f'{exc!r} in {lispstr(exp)}\nAST={exp!r}'
+                    msg = f'{exc!r} invoking {proc!r}({args!r}): {lispstr(exp)}\nAST={exp!r}'
                     raise EvaluatorException(msg) from exc
             case _:
                 raise InvalidSyntax(lispstr(exp))
