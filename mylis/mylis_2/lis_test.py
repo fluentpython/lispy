@@ -298,30 +298,42 @@ def test_tail_call_countdown(std_env: Environment, tco) -> None:
                 (countdown (- n 1))))
     """
     evaluate(parse(countdown_scm), std_env)
-    # maximum with TCO: n=475; without TCO: n=316
-    n = 475
+    # maximum without TCO: n=316
+    n = 100_000  # may take > 2s to run
     source = f'(countdown {n})'
     got = evaluate(parse(source), std_env)
     assert got == 0
 
 
+@mark.slow
+@mark.tail_call_optimization(True)
+def test_tail_call_sum_integers(std_env: Environment, tco) -> None:
+    """Example from: https://norvig.com/lispy2.html"""
+    sum_ints_scm = """
+        (define (sum n acc)
+        (if (= n 0)
+            acc
+            (sum (- n 1) (+ n acc))))
+    """
+    evaluate(parse(sum_ints_scm), std_env)
+    # maximum without TCO: n=316
+    n = 1_000_000  # may take > 30s to run
+    source = f'(sum {n} 0)'
+    got = evaluate(parse(source), std_env)
+    assert got == sum(range(1, n + 1))
+
+
 @mark.tail_call_optimization(True)
 def test_tail_call_factorial(std_env: Environment, tco) -> None:
     factorial_scm = """
-    (begin
-        (define (factorial n)
-            (factorial-iter n 1))
-
         (define (factorial-iter n product)
             (if (= n 1)
                 product
                 (factorial-iter (- n 1) (* n product))))
-    )
     """
     evaluate(parse(factorial_scm), std_env)
-    import lis
-    # maximum with TCO: n=475; without TCO: n=316
-    n = 475
-    source = f'(factorial {n})'
+    # maximum without TCO: n=317
+    n = 10_000
+    source = f'(factorial-iter {n} 1)'
     got = evaluate(parse(source), std_env)
     assert got == math.prod(range(2, n + 1))

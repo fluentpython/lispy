@@ -66,7 +66,6 @@ def standard_env() -> Environment:
         'abs':     abs,
         'append':  op.add,
         'apply':   lambda proc, args: proc(*args),
-        'begin':   lambda *x: x[-1],
         'car':     lambda x: x[0],
         'cdr':     lambda x: x[1:],
         'cons':    lambda x,y: [x] + y,
@@ -185,7 +184,9 @@ def and_form(expressions: list[Expression], env: Environment) -> Any:
 
 ################ eval
 
-KEYWORDS = ['quote', 'if', 'define', 'set!', 'lambda', 'cond', 'or', 'and']
+KEYWORDS_1 = ['quote', 'if', 'define', 'lambda']
+KEYWORDS_2 = ['set!', 'cond', 'or', 'and', 'begin']
+KEYWORDS = KEYWORDS_1 + KEYWORDS_2
 
 
 def evaluate(exp: Expression, env: Environment) -> Any:
@@ -214,19 +215,23 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             case ['set!', Symbol(var), value_exp]:              # (set! var exp)
                 env.change(var, evaluate(value_exp, env))
                 return
-            case ['define', [Symbol(name), *parms], *body       # (define (name parm...) body1 bodyN...)
+            case ['define', [Symbol(name), *parms], *body       # (define (name parm*)) body+)
                 ] if len(body) > 0:
                 env[name] = Procedure(parms, body, env)
                 return
-            case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm...) body1 bodyN...)
+            case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm*) body+)
                 return Procedure(parms, body, env)
             case ['cond', *clauses]:                            # (cond (t1 e1) (t2 e2)... (else eN))
                 return cond_form(clauses, env)
-            case ['or', *expressions]:                          # (or exp...)
+            case ['or', *expressions]:                          # (or exp*)
                 return or_form(expressions, env)
-            case ['and', *expressions]:                         # (and exp...)
+            case ['and', *expressions]:                         # (and exp*)
                 return and_form(expressions, env)
-            case [op, *args] if op not in KEYWORDS:             # (proc arg...)
+            case ['begin', *expressions]:                       # (begin exp+)
+                for exp in expressions[:-1]:
+                    evaluate(exp, env)
+                exp = expressions[-1]
+            case [op, *args] if op not in KEYWORDS:             # (proc arg*)
                 proc = evaluate(op, env)
                 values = (evaluate(arg, env) for arg in args)
                 if TCO_ENABLED and isinstance(proc, Procedure):
