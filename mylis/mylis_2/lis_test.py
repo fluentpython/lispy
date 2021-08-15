@@ -299,7 +299,7 @@ def test_tail_call_countdown(std_env: Environment, tco) -> None:
     """
     evaluate(parse(countdown_scm), std_env)
     # maximum without TCO: n=316
-    n = 100_000  # may take > 2s to run
+    n = 10_000  # 100_000 may take > 2s to run
     source = f'(countdown {n})'
     got = evaluate(parse(source), std_env)
     assert got == 0
@@ -323,6 +323,7 @@ def test_tail_call_sum_integers(std_env: Environment, tco) -> None:
     assert got == sum(range(1, n + 1))
 
 
+@mark.slow
 @mark.tail_call_optimization(True)
 def test_tail_call_factorial(std_env: Environment, tco) -> None:
     factorial_scm = """
