@@ -121,24 +121,6 @@ def test_variadic_comparison(source: str, expected: lis.Expression) -> None:
     assert got == expected
 
 
-############### tail-call optimization (TCO)
-
-@mark.skip('requires TCO for n > 159')
-def test_tail_call() -> None:
-    factorial_scm = """
-        (define (! n)
-            (if (<= n 1)
-                1
-                (* n (! (- n 1)))))
-    """
-    env = standard_env()
-    lis.evaluate(lis.parse(factorial_scm), env)
-    n = 200   # maximum without TCO: n = 159
-    source = f'(! {n})'
-    got = lis.evaluate(lis.parse(source), env)
-    assert got == math.prod(range(2, n+1))
-
-
 ############### multi-line REPL
 
 
@@ -250,8 +232,9 @@ def test_repl_gcd_example_multiline(capsys):
     assert dlg.session == normalize(captured.out)
 
 
-# Note: flip-flop is defined as with shared closure,
-# there is no "maker" function surrounding it.
+# Note: flip-flop keep state in a global variable
+# because lis.py has no `let` form, and there is
+# no "maker" function surrounding the function.
 # Contrast with make-counter in examples_test.py
 # where each call to (make-counter) creates a new procedure
 # with its own closure.

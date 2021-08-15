@@ -1,4 +1,4 @@
-import io
+import math
 from exceptions import InvalidSyntax
 
 from pytest import mark, fixture, raises
@@ -167,36 +167,25 @@ def test_begin(std_env: Environment) -> None:
     assert got == 42
 
 
-def test_invocation_builtin_car(std_env: Environment) -> None:
+def test_call_builtin_car(std_env: Environment) -> None:
     source = '(car (quote (11 22 33)))'
     got = evaluate(parse(source), std_env)
     assert got == 11
 
 
-def test_invocation_builtin_append(std_env: Environment) -> None:
+def test_call_builtin_append(std_env: Environment) -> None:
     source = '(append (quote (a b)) (quote (c d)))'
     got = evaluate(parse(source), std_env)
     assert got == ['a', 'b', 'c', 'd']
 
 
-def test_invocation_builtin_map(std_env: Environment) -> None:
+def test_call_builtin_map(std_env: Environment) -> None:
     source = '(map (lambda (x) (* x 2)) (quote (1 2 3))))'
     got = evaluate(parse(source), std_env)
     assert got == [2, 4, 6]
 
 
-def test_invocation_user_procedure(std_env: Environment) -> None:
-    source = """
-        (begin
-            (define max (lambda (a b) (if (>= a b) a b)))
-            (max 22 11)
-        )
-        """
-    got = evaluate(parse(source), std_env)
-    assert got == 22
-
-
-def test_define_function(std_env: Environment) -> None:
+def test_define_procedure(std_env: Environment) -> None:
     source = '(define (max a b) (if (>= a b) a b))'
     got = evaluate(parse(source), std_env)
     assert got is None
@@ -207,6 +196,17 @@ def test_define_function(std_env: Environment) -> None:
     assert max_fn.env is std_env
     assert max_fn(1, 2) == 2
     assert max_fn(3, 2) == 3
+
+
+def test_call_user_procedure(std_env: Environment) -> None:
+    source = """
+        (begin
+            (define max (lambda (a b) (if (>= a b) a b)))
+            (max 22 11)
+        )
+        """
+    got = evaluate(parse(source), std_env)
+    assert got == 22
 
 
 def test_cond(std_env: Environment) -> None:
@@ -263,3 +263,65 @@ def test_or(source: str, expected: Expression) -> None:
 def test_and(source: str, expected: Expression) -> None:
     got = evaluate(parse(source), {})
     assert got == expected
+
+############### tail-call optimization (TCO)
+
+def test_simple_user_procedure_call(std_env: Environment) -> None:
+    source = """
+        (begin
+            (define (answer) 42)
+            (answer)
+        )
+        """
+    got = evaluate(parse(source), std_env)
+    assert got == 42
+
+
+@fixture
+def tco(request):
+    import lis
+    initial_tco_setting = lis.TCO_ENABLED
+    marker = request.node.get_closest_marker('tail_call_optimization')
+    tco_flag = marker.args[0]
+    assert tco_flag in (True, False)
+    lis.TCO_ENABLED = tco_flag
+    yield
+    lis.TCO_ENABLED = initial_tco_setting
+
+
+@mark.tail_call_optimization(True)
+def test_tail_call_countdown(std_env: Environment, tco) -> None:
+    countdown_scm = """
+        (define (countdown n)
+            (if (= n 0)
+                0
+                (countdown (- n 1))))
+    """
+    evaluate(parse(countdown_scm), std_env)
+    # maximum with TCO: n=475; without TCO: n=316
+    n = 475
+    source = f'(countdown {n})'
+    got = evaluate(parse(source), std_env)
+    assert got == 0
+
+
+@mark.tail_call_optimization(True)
+def test_tail_call_factorial(std_env: Environment, tco) -> None:
+    factorial_scm = """
+    (begin
+        (define (factorial n)
+            (factorial-iter n 1))
+
+        (define (factorial-iter n product)
+            (if (= n 1)
+                product
+                (factorial-iter (- n 1) (* n product))))
+    )
+    """
+    evaluate(parse(factorial_scm), std_env)
+    import lis
+    # maximum with TCO: n=475; without TCO: n=316
+    n = 475
+    source = f'(factorial {n})'
+    got = evaluate(parse(source), std_env)
+    assert got == math.prod(range(2, n + 1))
