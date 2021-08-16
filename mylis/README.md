@@ -2,9 +2,13 @@
 
 **Mylis** is derived from a Python 3.10
 [fork](../original/py3.10/) of Peter Norvig's
-[lis.py](https://norvig.com/lispy.html),
+[**lis.py**](https://norvig.com/lispy.html),
 adding some features for demonstration purposes.
 
+There are two versions of **Mylis**:
+
+* [**mylis_1**](mylis_1/) is closer to the original [**lis.py**](https://norvig.com/lispy.html). The main differences are usability features: an enhanced REPL and new command-line integration, both available through the [`mylis.py`](mylis_1/mylis.py) script. The [`lis.py`](mylis_1/lis.py) module shows the use of pattern matching in the `evaluate` function.
+* [**mylis_2**](mylis_2/) has all the features of **mylis_1** plus mutation with the `set!` command, and tail-call optimization for efficient iteration through tail recursion.
 
 ## Interactive use
 
@@ -91,4 +95,4 @@ $ ./mylis.py examples/fibo-seq.scm n=20
 
 _LR_
 
-São Paulo, August 7, 2021
+São Paulo, August 15, 2021
