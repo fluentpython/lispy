@@ -154,8 +154,6 @@ def evaluate(exp: Expression, env: Environment) -> Any:
             return x
         case Symbol(var):                                   # variable reference
             return env[var]
-        case []:                                            # empty list
-            return []
         case ['quote', exp]:                                # (quote exp)
             return exp
         case ['if', test, consequence, alternative]:        # (if test consequence alternative)

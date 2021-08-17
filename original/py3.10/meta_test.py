@@ -18,7 +18,7 @@ scan_scm = """
 (define l (quote (a b c)))
 (define (scan what where)
     (if (null? where)
-        ()
+        (quote ())
         (if (eq? what (car where))
             what
             (scan what (cdr where))))
@@ -44,7 +44,7 @@ lookup_scm = """
 ))
 (define (lookup what where)
     (if (null? where)
-        ()
+        (quote ())
         (if (eq? what (car (car where)))
             (car (cdr (car where)))
             (lookup what (cdr where))))
