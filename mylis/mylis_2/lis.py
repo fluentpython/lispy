@@ -42,11 +42,14 @@ class Procedure:
     ):
         self.parms = parms
         self.body = body
-        self.env = env
+        self.definition_env = env
+
+    def application_env(self, args: list[Expression]) -> Environment:
+        local_env = dict(zip(self.parms, args))
+        return Environment(local_env, self.definition_env)
 
     def __call__(self, *args: Expression) -> Any:
-        local_env = dict(zip(self.parms, args))
-        env = Environment(local_env, self.env)
+        env = self.application_env(args)
         for exp in self.body:
             result = evaluate(exp, env)
         return result
@@ -240,11 +243,10 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 exp = expressions[-1]
             case [op, *args] if op not in KEYWORDS:             # (proc arg*)
                 proc = evaluate(op, env)
-                values = (evaluate(arg, env) for arg in args)
+                values = [evaluate(arg, env) for arg in args]
                 if TCO_ENABLED and isinstance(proc, Procedure):
                      exp = ['begin', *proc.body]
-                     local_env = dict(zip(proc.parms, values))
-                     env = Environment(local_env, proc.env)
+                     env = proc.application_env(values)
                 else:
                     try:
                         return proc(*values)

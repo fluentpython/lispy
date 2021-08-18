@@ -33,11 +33,11 @@ class Procedure:
     ):
         self.parms = parms
         self.body = body
-        self.env = env
+        self.definition_env = env
 
     def __call__(self, *args: Expression) -> Any:
         local_env = dict(zip(self.parms, args))
-        env: Environment = ChainMap(local_env, self.env)
+        env: Environment = ChainMap(local_env, self.definition_env)
         for exp in self.body:
             result = evaluate(exp, env)
         return result

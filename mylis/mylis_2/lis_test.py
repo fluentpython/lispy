@@ -126,7 +126,7 @@ def test_lambda(std_env: Environment) -> None:
     assert func.parms == ['a', 'b']
     assert len(func.body) == 1
     assert func.body[0] == ['if', ['>=', 'a', 'b'], 'a', 'b']
-    assert func.env is std_env
+    assert func.definition_env is std_env
     assert func(1, 2) == 2
     assert func(3, 2) == 3
 
@@ -193,7 +193,7 @@ def test_define_procedure(std_env: Environment) -> None:
     assert max_fn.parms == ['a', 'b']
     assert len(max_fn.body) == 1
     assert max_fn.body[0] == ['if', ['>=', 'a', 'b'], 'a', 'b']
-    assert max_fn.env is std_env
+    assert max_fn.definition_env is std_env
     assert max_fn(1, 2) == 2
     assert max_fn(3, 2) == 3
 
