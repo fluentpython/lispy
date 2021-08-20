@@ -3,7 +3,7 @@
 This repository contains variations of Peter Norvig's 
 [`lis.py` interpreter](https://github.com/norvig/pytudes/blob/c33cd6835a506a57d9fe73e3a8317d49babb13e8/py/lis.py)
 for a subset of [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language)),
-described in [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html).
+described in his post [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html).
 
 
 ## Provenance, Copyright and License
