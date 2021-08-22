@@ -1,7 +1,9 @@
-FIXED_DEMO = """
+"""
 
-The `make_inc` and `make_inc2` functions have a closure that
-encloses a variable that is never updated:
+# EXAMPLES: CLOSURE VARIABLE NOT UPDATED
+
+The `make_inc` and `make_inc2` functions have a closure
+enclosing a variable that is never updated:
 
     >>> inc3 = make_inc(3)
     >>> inc3(5)
@@ -12,6 +14,19 @@ encloses a variable that is never updated:
     >>> inc100 = make_inc_anon(100)
     >>> inc100(8)
     108
+"""
+
+def make_inc(step):
+    def inc(n):
+        return n + step
+    return inc
+
+
+def make_inc_anon(step):
+    return lambda n: n + step
+
+
+__doc__ += """
 
 Let's inspect the closure:
 
@@ -81,23 +96,11 @@ Testing it:
     >>> run(inc_demo_src)
     18
 
-"""
 
-def make_inc(step):
-    def inc(n):
-        return n + step
-    return inc
+## EXAMPLES: CLOSURE VARIABLES UPDATED
 
-
-def make_inc_anon(step):
-    return lambda n: n + step
-
-
-CHANGING_DEMO = """
-
-The `make_averager` function has a closure enclosing two
-variables that need to be updated, `count` and `total`:
-
+The `make_averager` function (below) has a closure enclosing
+two variables that need to be updated, `count` and `total`:
 
     >>> avg = make_averager()
     >>> avg(10)
@@ -107,6 +110,20 @@ variables that need to be updated, `count` and `total`:
     >>> avg(12)
     11.0
 
+"""
+
+def make_averager():
+    count = 0
+    total = 0
+    def averager(new_value):
+        nonlocal count, total
+        count += 1
+        total += new_value
+        return total / count
+    return averager
+
+
+__doc__ += """
 
 Now `make-averager` in Scheme:
 
@@ -139,16 +156,3 @@ Testing it:
     11.0
 
 """
-
-def make_averager():
-    count = 0
-    total = 0
-    def averager(new_value):
-        nonlocal count, total
-        count += 1
-        total += new_value
-        return total / count
-    return averager
-
-
-__doc__ = FIXED_DEMO + CHANGING_DEMO
