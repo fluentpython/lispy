@@ -3,7 +3,7 @@
 # EXAMPLES: CLOSURE VARIABLE NOT UPDATED
 
 The `make_inc` and `make_inc2` functions have a closure
-enclosing a variable that is never updated:
+enclosing a `step` variable that is never updated:
 
     >>> inc3 = make_inc(3)
     >>> inc3(5)
