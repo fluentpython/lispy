@@ -28,9 +28,12 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 ### Books
 
 * Dybvig, R. Kent: [The Scheme Programming Language, Fourth Edition](https://scheme.com/tspl4/)
-* Abelson, Harold; Sussman, Gerald Jay; Sussman, Julie: [Structure and Interpretation of Computer Programs, Second Edition](https://mitpress.mit.edu/sites/default/files/sicp/index.html)
+* Abelson, Harold; Sussman, Gerald Jay; Sussman, Julie: [Structure and Interpretation of Computer Programs, Second Edition](https://mitpress.mit.edu/sites/default/files/sicp/index.html) (a.k.a. SICP)
 * Harvey, Brian; Wright, Matthew: [Simply Scheme: Introducing Computer Science, Second Edition](https://people.eecs.berkeley.edu/~bh/ss-toc2.html)
+* Friedman, Daniel P.; Felleisen, Matthias: [The Little Schemer, Fourth Edition](https://mitpress.mit.edu/books/little-schemer-fourth-edition)
 * Butterick, Mathew: [Beautiful Racket—an introduction to language-oriented programming using Racket](https://beautifulracket.com/)
+* Felleisen, Matthias; Findler, Robert Bruce; Flatt, Matthew; Krishnamurthi, Shriram: [How to Design Programs, Second Edition](https://htdp.org/)
+* Krishnamurthi, Shriram: [Programming Languages: Application and Interpretation](https://www.plai.org/)
 
 ### Interpreters and tools
 
