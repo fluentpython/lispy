@@ -26,7 +26,10 @@ TCO_ENABLED = True
 
 
 class Environment(ChainMap):
-    def change(self, key: Symbol, value: object):
+    "A ChainMap that allows updating an item in-place."
+
+    def change(self, key: Symbol, value: object) -> None:
+        "Find where key is defined and change the value there."
         for map in self.maps:
             if key in map:
                 map[key] = value
@@ -165,6 +168,7 @@ def lispstr(exp: object) -> str:
 ################ special forms
 
 def cond_form(clauses: list[Expression], env: Environment) -> Any:
+    "Special form: (cond (test exp)* (else eN)?)."
     for clause in clauses:
         match clause:
             case ['else', *body]:
@@ -178,6 +182,7 @@ def cond_form(clauses: list[Expression], env: Environment) -> Any:
 
 
 def or_form(expressions: list[Expression], env: Environment) -> Any:
+    "Special form: (or exp*)"
     value = False
     for exp in expressions:
         value = evaluate(exp, env)
@@ -187,6 +192,7 @@ def or_form(expressions: list[Expression], env: Environment) -> Any:
 
 
 def and_form(expressions: list[Expression], env: Environment) -> Any:
+    "Special form: (and exp*)"
     value = True
     for exp in expressions:
         value = evaluate(exp, env)
@@ -200,6 +206,10 @@ KEYWORDS_1 = ['quote', 'if', 'define', 'lambda']
 KEYWORDS_2 = ['set!', 'cond', 'or', 'and', 'begin']
 KEYWORDS = KEYWORDS_1 + KEYWORDS_2
 
+# Special marks in syntax descriptions:
+#   * : 0 or more
+#   + : 1 or more
+#   ? : 0 or 1
 
 def evaluate(exp: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
@@ -231,7 +241,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 return
             case ['lambda', [*parms], *body] if len(body) > 0:  # (lambda (parm*) body+)
                 return Procedure(parms, body, env)
-            case ['cond', *clauses]:                            # (cond (t1 e1) (t2 e2)... (else eN))
+            case ['cond', *clauses]:                            # (cond (t1 e1)* (else eN)?)
                 return cond_form(clauses, env)
             case ['or', *expressions]:                          # (or exp*)
                 return or_form(expressions, env)
@@ -241,7 +251,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                 for exp in expressions[:-1]:
                     evaluate(exp, env)
                 exp = expressions[-1]
-            case [op, *args] if op not in KEYWORDS:             # (proc arg*)
+            case [op, *args] if op not in KEYWORDS:             # (proc exp*)
                 proc = evaluate(op, env)
                 values = [evaluate(arg, env) for arg in args]
                 if TCO_ENABLED and isinstance(proc, Procedure):
