@@ -33,7 +33,7 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 * Friedman, Daniel P.; Felleisen, Matthias: [The Little Schemer, Fourth Edition](https://mitpress.mit.edu/books/little-schemer-fourth-edition) 🔒
 * Butterick, Mathew: [Beautiful Racket—an introduction to language-oriented programming using Racket](https://beautifulracket.com/)
 * Felleisen, Matthias; Findler, Robert Bruce; Flatt, Matthew; Krishnamurthi, Shriram: [How to Design Programs, Second Edition](https://htdp.org/)
-* Krishnamurthi, Shriram: [Programming Languages: Application and Interpretation](https://www.plai.org/)
+* Krishnamurthi, Shriram: [Programming Languages: Application and Interpretation](https://www.plai.org/) (PLAI)
 
 ### Interpreters and tools
 
