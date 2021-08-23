@@ -27,7 +27,7 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 
 ### Books
 
-* Abelson, Harold; Sussman, Gerald Jay; Sussman, Julie: [Structure and Interpretation of Computer Programs, Second Edition](https://mitpress.mit.edu/sites/default/files/sicp/index.html)<br>(a.k.a. SICP)
+* Abelson, Harold; Sussman, Gerald Jay; Sussman, Julie: [Structure and Interpretation of Computer Programs, Second Edition](https://mitpress.mit.edu/sites/default/files/sicp/index.html) (SICP)
 * Dybvig, R. Kent: [The Scheme Programming Language, Fourth Edition](https://scheme.com/tspl4/)
 * Harvey, Brian; Wright, Matthew: [Simply Scheme: Introducing Computer Science, Second Edition](https://people.eecs.berkeley.edu/~bh/ss-toc2.html)
 * Friedman, Daniel P.; Felleisen, Matthias: [The Little Schemer, Fourth Edition](https://mitpress.mit.edu/books/little-schemer-fourth-edition) 🔒
