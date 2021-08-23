@@ -18,16 +18,21 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 
 ## References
 
+### Articles
+
 * Norvig, Peter: [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html)
 * Norvig, Peter: [(An ((Even Better) Lisp) Interpreter (in Python))](https://norvig.com/lispy2.html)
 * Graham, Paul: [The Roots of Lisp](http://www.paulgraham.com/rootsoflisp.html)
 * Steele, Guy Lewis, Jr.; Sussman, Gerald Jay: [The Art of the Interpreter, or the Modularity Complex](https://dspace.mit.edu/handle/1721.1/6094)
+
+### Books
+
 * Dybvig, R. Kent: [The Scheme Programming Language, Fourth Edition](https://scheme.com/tspl4/)
 * Abelson, Harold; Sussman, Gerald Jay; Sussman, Julie: [Structure and Interpretation of Computer Programs, Second Edition](https://mitpress.mit.edu/sites/default/files/sicp/index.html)
 * Harvey, Brian; Wright, Matthew: [Simply Scheme: Introducing Computer Science, Second Edition](https://people.eecs.berkeley.edu/~bh/ss-toc2.html)
 * Butterick, Mathew: [Beautiful Racket—an introduction to language-oriented programming using Racket](https://beautifulracket.com/)
 
-## Interpreters and tools
+### Interpreters and tools
 
 * [Racket, the Language-Oriented Programming Language](https://racket-lang.org/)
 * [Chicken Scheme](https://www.call-cc.org/)
