@@ -1,6 +1,12 @@
 import math
 
+import lis
 from mylis import run
+
+def fact_rec(n):
+    if n < 2:
+        return 1
+    return n * fact_rec(n - 1)
 
 fact_src = """
 (define (! n)
@@ -9,12 +15,44 @@ fact_src = """
         (* n (! (- n 1)))
     )
 )
-(! 42)
+(! x)
 """
 def test_factorial():
-    got = run(fact_src)
-    assert got == 1405006117752879898543142606244511569936384000000000
-    assert got == math.factorial(42)
+    x = 450
+    got = run(fact_src, x=x)
+    assert got == math.factorial(x)
+    assert got == fact_rec(x)
+
+
+def fact_tail_rec(n):
+    return fact_iter(n, 1)
+
+def fact_iter(n, product):
+    if n < 2:
+        return product
+    return fact_iter(n - 1, n * product)
+
+fact_tail_src = """
+(define (! n)
+    (factorial-iter n 1))
+
+(define (factorial-iter n product)
+    (if (< n 2)
+        product
+        (factorial-iter (- n 1) (* n product))))
+(! x)
+"""
+def test_factorial_tail_rec():
+    x = 1000
+    got = run(fact_tail_src, x=x)
+    assert got == math.factorial(x)
+    # assert got == fact_tail_rec(x)  # can't handle x=1000
+
+
+def gcd(m, n):
+    if n == 0:
+        return m
+    return gcd(n, m % n)
 
 
 gcd_src = """
@@ -24,12 +62,39 @@ gcd_src = """
     (if (= n 0)
         m
         (gcd n (mod m n))))
-(gcd 18 45)
+(gcd a b)
 """
 def test_gcd():
-    got = run(gcd_src)
+    a, b = 18, 45
+    got = run(gcd_src, a=a, b=b)
     assert got == 9
+    assert got == gcd(a, b)
 
+
+
+def quicksort_lc(lst):
+    """quicksort with list comprehensions"""
+    if not lst:
+        return lst
+    else:
+        pivot, *rest = lst
+        return (
+            quicksort_lc([x for x in rest if x < pivot])
+            + [pivot] +
+            quicksort_lc([x for x in rest if x >= pivot])
+        )
+
+def quicksort(lst):
+    """quicksort with filter and lambda"""
+    if not lst:
+        return lst
+    else:
+        pivot, *rest = lst
+        return (
+            quicksort(list(filter(lambda x: x < pivot, rest)))
+            + [pivot] +
+            quicksort(list(filter(lambda x: x >= pivot, rest)))
+        )
 
 quicksort_src = """
 (define (quicksort lst)
@@ -47,11 +112,15 @@ quicksort_src = """
         )
     )
 )
-(quicksort (list 2 1 6 3 4 0 8 9 7 5))
+(quicksort numbers)
 """
 def test_quicksort():
-    got = run(quicksort_src)
-    assert got == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    data = [2, 1, 6, 3, 4, 0, 8, 9, 7, 5]
+    want = sorted(data)
+    got = run(quicksort_src, numbers=data)
+    assert got == want
+    assert quicksort(data) == want
+    assert quicksort_lc(data) == want
 
 
 # Example from Structure and Interpretation of Computer Programs

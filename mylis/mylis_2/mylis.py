@@ -101,7 +101,7 @@ def run_lines(source: str, env: lis.Environment | None = None) -> Iterator[Any]:
         yield lis.evaluate(exp, global_env)
 
 
-def run(source: str, env: lis.Environment | None = None) -> Any:
+def run(source: str, **env: lis.Expression) -> Any:
     for result in run_lines(source, env):
         pass
     return result
@@ -205,7 +205,7 @@ class TextReader(Protocol):
 
 def run_file(source_file: TextReader, env: lis.Environment | None = None) -> Any:
     source = source_file.read()
-    return run(source, env)
+    return run(source, **env)
 
 
 def env_from_args(args: Sequence[str]) -> lis.Environment:
@@ -228,9 +228,14 @@ PROMPT1 = '\N{WHITE RIGHT-POINTING TRIANGLE}  '
 PROMPT2 = '\N{MIDLINE HORIZONTAL ELLIPSIS}    '
 ERROR_MARK = '\N{POLICE CARS REVOLVING LIGHT} '
 
+
+def repl():
+    multiline_repl(PROMPT1, PROMPT2, ERROR_MARK)
+
+
 def main(args: list[str]) -> None:
     if len(args) == 1:
-        multiline_repl(PROMPT1, PROMPT2, ERROR_MARK)
+        repl()
     else:
         arg_env = env_from_args(args[1:])
         with open(args[1]) as source_file:
