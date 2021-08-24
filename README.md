@@ -41,10 +41,8 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 * [Racket](https://racket-lang.org/): the Language-Oriented Programming Language
 * [Chicken Scheme](https://www.call-cc.org/): a practical and portable Scheme system
 * [A Meta-Circular Interpreter for Scheme](https://scheme.com/tspl4/examples.html#./examples:h7): example 12.7 from TSPL
-* [McCarthy's original Lisp](https://sep.yimg.com/ty/cdn/paulgraham/jmc.lisp?t=1595850613) converted to Common Lisp by Paul Graham ([local copy](blob/main/references/jmc.lisp))
+* [McCarthy's original Lisp](https://sep.yimg.com/ty/cdn/paulgraham/jmc.lisp?t=1595850613) converted to Common Lisp by Paul Graham ([local copy](references/jmc.lisp))
 
-
-https://github.com/fluentpython/lispy/blob/main/sicp/ch1.scm
 
 *Luciano Ramalho*<br/>
 São Paulo, August 23, 2021
