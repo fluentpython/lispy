@@ -38,7 +38,7 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 
 ### Interpreters and tools
 
-* [Racket, the Language-Oriented Programming Language](https://racket-lang.org/)
+* [Racket](https://racket-lang.org/): the Language-Oriented Programming Language
 * [Chicken Scheme](https://www.call-cc.org/)
 
 *Luciano Ramalho*<br/>
