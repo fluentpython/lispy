@@ -1,6 +1,6 @@
 # Learning with lis.py
 
-This repository contains variations of Peter Norvig's 
+This repository contains variations of Peter Norvig's
 [`lis.py` interpreter](https://github.com/norvig/pytudes/blob/c33cd6835a506a57d9fe73e3a8317d49babb13e8/py/lis.py)
 for a subset of [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language)),
 described in his post [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html).
@@ -29,7 +29,7 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 ### Books
 
 * Abelson, Harold; Sussman, Gerald Jay; Sussman, Julie: [Structure and Interpretation of Computer Programs, Second Edition](https://mitpress.mit.edu/sites/default/files/sicp/index.html) (SICP)
-* Dybvig, R. Kent: [The Scheme Programming Language, Fourth Edition](https://scheme.com/tspl4/)
+* Dybvig, R. Kent: [The Scheme Programming Language, Fourth Edition](https://scheme.com/tspl4/) (TSPL)
 * Harvey, Brian; Wright, Matthew: [Simply Scheme: Introducing Computer Science, Second Edition](https://people.eecs.berkeley.edu/~bh/ss-toc2.html)
 * Friedman, Daniel P.; Felleisen, Matthias: [The Little Schemer, Fourth Edition](https://mitpress.mit.edu/books/little-schemer-fourth-edition) 🔒
 * Butterick, Mathew: [Beautiful Racket—an introduction to language-oriented programming using Racket](https://beautifulracket.com/)
@@ -39,7 +39,11 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 ### Interpreters and tools
 
 * [Racket](https://racket-lang.org/): the Language-Oriented Programming Language
-* [Chicken Scheme](https://www.call-cc.org/)
+* [Chicken Scheme](https://www.call-cc.org/): a practical and portable Scheme system
+* [A Meta-Circular Interpreter for Scheme](https://scheme.com/tspl4/examples.html#./examples:h7): example 12.7 from TSPL
+* [McCarthy's original Lisp](./blob/main/references/jmc.lisp) converted to Common Lisp by Paul Graham (local copy)
+
+https://github.com/fluentpython/lispy/blob/main/sicp/ch1.scm
 
 *Luciano Ramalho*<br/>
-São Paulo, June 19, 2021
+São Paulo, August 23, 2021
