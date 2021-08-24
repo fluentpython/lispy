@@ -222,7 +222,7 @@ def evaluate(exp: Expression, env: Environment) -> Any:
                     return env[var]
                 except KeyError as exc:
                     raise UndefinedSymbol(var) from exc
-            case ['quote', exp]:                                # (quote exp)
+            case ['quote' | "'", exp]:                                # (quote exp)
                 return exp
             case ['if', test, consequence, alternative]:        # (if test consequence alternative)
                 if evaluate(test, env):
