@@ -7,7 +7,7 @@ Fahrenheit.
 
 This is the formula using infix notation, which you'll need to rewrite in prefix notation:
 
-`f = (9 / 5) * f + 32`
+`c = (9 / 5) * f + 32`
 
 Some examples:
 
