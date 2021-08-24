@@ -24,6 +24,7 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 * Norvig, Peter: [(An ((Even Better) Lisp) Interpreter (in Python))](https://norvig.com/lispy2.html)
 * Graham, Paul: [The Roots of Lisp](http://www.paulgraham.com/rootsoflisp.html)
 * Steele, Guy Lewis, Jr.; Sussman, Gerald Jay: [The Art of the Interpreter, or the Modularity Complex](https://dspace.mit.edu/handle/1721.1/6094)
+* McCarthy, John: [Recursive functions of symbolic expressions and their computation by machine, Part I](https://dl.acm.org/doi/abs/10.1145/367177.367199) 🔒
 
 ### Books
 
