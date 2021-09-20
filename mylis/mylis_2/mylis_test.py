@@ -232,8 +232,8 @@ def test_repl_gcd_example_multiline(capsys):
     assert dlg.session == normalize(captured.out)
 
 
-# Note: flip-flop keep state in a global variable
-# because lis.py has no `let` form, and there is
+# Note: flip-flop keeps state in a global variable
+# `state` because lis.py has no `let` form, and there is
 # no "maker" function surrounding the function.
 # Contrast with make-counter in examples_test.py
 # where each call to (make-counter) creates a new procedure
@@ -246,9 +246,9 @@ def test_repl_flip_flop(capsys):
     > (define flip-flop
     ... (begin
     ...   (define state #f)
-    ...     (lambda ()
-    ...       (set! state (not state))
-    ...       state)))
+    ...   (lambda ()
+    ...     (set! state (not state))
+    ...     state)))
     > (flip-flop)
     #t
     > (flip-flop)

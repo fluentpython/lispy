@@ -150,12 +150,12 @@ closure_src = """
 (define (make-adder increment)
     (lambda (x) (+ increment x))
 )
-(define inc (make-adder 1))
-(inc 99)
+(define inc (make-adder 8))
+(inc 34)
 """
 def test_closure():
     got = run(closure_src)
-    assert got == 100
+    assert got == 42
 
 
 closure_with_change_src = """

@@ -11,6 +11,7 @@ import operator as op
 import math
 import readline  # "unused" import to enable readline in input()
 import sys
+from collections import ChainMap
 from collections.abc import Sequence, Iterator
 from typing import Any, Protocol, Callable, NoReturn
 
@@ -92,7 +93,7 @@ def standard_env() -> lis.Environment:
 
 
 def run_lines(source: str, env: lis.Environment | None = None) -> Iterator[Any]:
-    global_env: lis.Environment = standard_env()
+    global_env: lis.Environment = ChainMap({}, standard_env())
     if env is not None:
         global_env.update(env)
     tokens = lis.tokenize(source)
@@ -165,7 +166,7 @@ def multiline_repl(prompt1: str = '> ',
                    input_fn: InputFn = input) -> None:
     """Read-Eval-Print-Loop"""
 
-    global_env: lis.Environment = standard_env()
+    global_env: lis.Environment = ChainMap({}, standard_env())
 
     print(f'To exit type {QUIT_COMMAND}', file=sys.stderr)
 
