@@ -8,7 +8,7 @@ adding some features for demonstration purposes.
 There are two versions of **Mylis**:
 
 * [**mylis_1**](mylis_1/) is closer to the original [**lis.py**](https://norvig.com/lispy.html). The main differences are usability features: an enhanced REPL and new command-line integration, both available through the [`mylis_1/mylis.py`](mylis_1/mylis.py) script. The [`mylis_1/lis.py`](mylis_1/lis.py) module shows the use of pattern matching in the `evaluate` function.
-* [**mylis_2**](mylis_2/) has all the features of **mylis_1** plus mutation with the `set!` command, and tail-call optimization for efficient iteration through tail recursion. It is a step towards implementing the language features of Norvig's more advanced [**lispy.py**](https://norvig.com/lispy2.html).
+* [**mylis_2**](mylis_2/) has all the features of **mylis_1** plus mutation with the `set!` command, and proper tail calls for efficient iteration through tail recursion. It is a step towards implementing the language features of Norvig's more advanced [**lispy.py**](https://norvig.com/lispy2.html).
 
 ## Interactive use
 
