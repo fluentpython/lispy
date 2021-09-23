@@ -78,8 +78,8 @@ def std_env() -> Environment:
 
 def test_declared_keywords():
     """ Check that the set of KEYWORDS is the same as
-        the set of constants in the first position of sequence patterns
-        in the match/case inside evaluate()
+        the set of string constants in the first position of
+        sequence patterns in the match/case inside evaluate()
     """
     with open('lis.py') as source:
         tree = ast.parse(source.read())
@@ -96,12 +96,12 @@ def test_declared_keywords():
     matches = [node for node in evaluate_body if isinstance(node, ast.Match)]
     assert len(matches) == 1
 
-    # collect keyword constants in the first position of sequence patterns
+    # collect string constants in the first position of sequence patterns
     found_keywords = set()
     for case in matches[0].cases:
         match case.pattern:
             case ast.MatchSequence(
-                    patterns=[ast.MatchValue(ast.Constant(value=kw)), *_]):
+                    patterns=[ast.MatchValue(ast.Constant(value=str(kw))), *_]):
                 found_keywords.add(kw)
 
     found_keywords = sorted(found_keywords)
