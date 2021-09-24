@@ -84,21 +84,20 @@ def test_declared_keywords():
     with open('lis.py') as source:
         tree = ast.parse(source.read())
 
-    # get body of evaluate()
-    evaluate_body = None
+    cases = None
     for node in ast.walk(tree):
         match node:
-            case ast.FunctionDef(name='evaluate'):
-                evaluate_body = node.body
-    assert evaluate_body is not None
-
-    # get the match statement
-    matches = [node for node in evaluate_body if isinstance(node, ast.Match)]
-    assert len(matches) == 1
+            # find FunctionDef named 'evaluate'
+            case ast.FunctionDef(name='evaluate', body=[_,
+                    # destructure match>cases
+                    ast.Match(cases=cases)
+                ]):
+                break
+    assert cases is not None
 
     # collect string constants in the first position of sequence patterns
     found_keywords = set()
-    for case in matches[0].cases:
+    for case in cases:
         match case.pattern:
             case ast.MatchSequence(
                     patterns=[ast.MatchValue(ast.Constant(value=str(kw))), *_]):
@@ -200,36 +199,25 @@ def test_begin(std_env: Environment) -> None:
     assert got == 42
 
 
-def test_invocation_builtin_car(std_env: Environment) -> None:
+def test_call_builtin_car(std_env: Environment) -> None:
     source = '(car (quote (11 22 33)))'
     got = evaluate(parse(source), std_env)
     assert got == 11
 
 
-def test_invocation_builtin_append(std_env: Environment) -> None:
+def test_call_builtin_append(std_env: Environment) -> None:
     source = '(append (quote (a b)) (quote (c d)))'
     got = evaluate(parse(source), std_env)
     assert got == ['a', 'b', 'c', 'd']
 
 
-def test_invocation_builtin_map(std_env: Environment) -> None:
+def test_call_builtin_map(std_env: Environment) -> None:
     source = '(map (lambda (x) (* x 2)) (quote (1 2 3))))'
     got = evaluate(parse(source), std_env)
     assert got == [2, 4, 6]
 
 
-def test_invocation_user_procedure(std_env: Environment) -> None:
-    source = """
-        (begin
-            (define max (lambda (a b) (if (>= a b) a b)))
-            (max 22 11)
-        )
-        """
-    got = evaluate(parse(source), std_env)
-    assert got == 22
-
-
-def test_define_function(std_env: Environment) -> None:
+def test_define_procedure(std_env: Environment) -> None:
     source = '(define (max a b) (if (>= a b) a b))'
     got = evaluate(parse(source), std_env)
     assert got is None
@@ -240,6 +228,17 @@ def test_define_function(std_env: Environment) -> None:
     assert max_fn.definition_env is std_env
     assert max_fn(1, 2) == 2
     assert max_fn(3, 2) == 3
+
+
+def test_call_user_procedure(std_env: Environment) -> None:
+    source = """
+        (begin
+            (define max (lambda (a b) (if (>= a b) a b)))
+            (max 22 11)
+        )
+        """
+    got = evaluate(parse(source), std_env)
+    assert got == 22
 
 
 def test_cond(std_env: Environment) -> None:

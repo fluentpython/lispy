@@ -1,9 +1,10 @@
+import ast
 import math
 from exceptions import InvalidSyntax
 
 from pytest import mark, fixture, raises
 
-from lis import parse, evaluate, standard_env
+from lis import parse, evaluate, standard_env, KEYWORDS
 from lis import Expression, Environment
 
 ############################################################# tests for parse
@@ -74,6 +75,39 @@ def test_evaluate(source: str, expected: Expression | None) -> None:
 @fixture
 def std_env() -> Environment:
     return standard_env()
+
+
+def test_declared_keywords():
+    """ Check that the set of KEYWORDS is the same as
+        the set of string constants in the first position of
+        sequence patterns in the match/case inside evaluate()
+    """
+    with open('lis.py') as source:
+        tree = ast.parse(source.read())
+
+    cases = None
+    for node in ast.walk(tree):
+        match node:
+            # find FunctionDef named 'evaluate'
+            case ast.FunctionDef(name='evaluate', body=[_,
+                    # destructure while>match>cases
+                    ast.While(body=[
+                        ast.Match(cases=cases)
+                    ])]):
+                break
+    assert cases is not None
+
+    # collect string constants in the first position of sequence patterns
+    found_keywords = set()
+    for case in cases:
+        match case.pattern:
+            case ast.MatchSequence(
+                    patterns=[ast.MatchValue(ast.Constant(value=str(kw))), *_]):
+                found_keywords.add(kw)
+
+    found_keywords = sorted(found_keywords)
+    assert found_keywords == sorted(KEYWORDS)
+
 
 # tests for each of the cases in evaluate
 

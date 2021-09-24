@@ -206,7 +206,7 @@ KEYWORDS_1 = ['quote', 'if', 'define', 'lambda']
 KEYWORDS_2 = ['set!', 'cond', 'or', 'and', 'begin']
 KEYWORDS = KEYWORDS_1 + KEYWORDS_2
 
-# Special marks in syntax descriptions:
+# Quantifiers in syntax descriptions:
 #   * : 0 or more
 #   + : 1 or more
 #   ? : 0 or 1

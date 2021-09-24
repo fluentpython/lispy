@@ -1,5 +1,4 @@
 import io
-import math
 
 from pytest import mark, raises
 
