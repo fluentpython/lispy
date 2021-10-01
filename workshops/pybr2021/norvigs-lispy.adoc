@@ -1,11 +1,4 @@
-date: 2021-10-01T17:25:42-12:34
-draft: true
-tags:
-- Lisp
-- Scheme
-- interpreter
-- functional programming
----
+== Norvig's lis.py: a simple functional interpreter
 
 Contents:
 
@@ -17,8 +10,6 @@ Contents:
 * <<evaluator_sec>>
 * <<procedure_sec>>
 * <<conclusion_sec>>
-
-== Norvig's lis.py: a simple functional interpreter
 
 https://en.wikipedia.org/wiki/Peter_Norvig[Peter Norvig] of Stanford University wrote
 https://github.com/fluentpython/lispy/blob/main/original/norvig/lis.py[_lis.py_]:
