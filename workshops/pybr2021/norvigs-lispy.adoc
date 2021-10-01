@@ -117,8 +117,7 @@ The use of `TypeAlias` and the `|` type union operator require Python 3.10.
 ====
 [source, py]
 ----
-include::./content/sample/lis.py[tags=IMPORTS]
-include::./content/extra/multi-character-emojis/skin.py[]
+include::.lis.py[tags=IMPORTS]
 ----
 ====
 
