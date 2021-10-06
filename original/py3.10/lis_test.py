@@ -12,7 +12,7 @@ from lis import parse, evaluate, Expression, Environment, standard_env
     ('(sum 1 2 3)', ['sum', 1, 2, 3]),
     ('(+ (* 2 100) (* 1 10))', ['+', ['*', 2, 100], ['*', 1, 10]]),
     ('99 100', 99),  # parse stops at the first complete expression
-    ('(a)(b)', ['a']),  
+    ('(a)(b)', ['a']),
 ])
 def test_parse(source: str, expected: Expression) -> None:
     got = parse(source)
@@ -133,7 +133,7 @@ def test_lambda_with_multi_expression_body(std_env: Environment) -> None:
     source = """
         (lambda (m n)
             (define (mod m n)
-                (- m (* n (// m n))))
+                (- m (* n (quotient m n))))
             (define (gcd m n)
                 (if (= n 0)
                     m

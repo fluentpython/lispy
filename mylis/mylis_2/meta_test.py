@@ -5,14 +5,14 @@ import mylis
 env_scm = """
 (define standard-env (list
     (list (quote not) not)
-    (list (quote //) //)
+    (list (quote eq?) eq?)
 ))
 standard-env
 """
 
 def test_env_build():
     got = mylis.run(env_scm)
-    assert got == [['not', op.not_], ['//', op.floordiv]]
+    assert got == [['not', op.not_], ['eq?', op.is_]]
 
 scan_scm = """
 (define l (quote (a b c)))
@@ -36,8 +36,8 @@ def test_scan_not_found():
 
 lookup_scm = """
 (define env (list
-    (list (quote *) *)
-    (list (quote //) //)
+    (list (quote not) not)
+    (list (quote eq?) eq?)
 ))
 (define (lookup what where)
     (cond ((null? where) #f)
@@ -46,9 +46,9 @@ lookup_scm = """
 """
 
 def test_lookup():
-    source = lookup_scm + '(lookup (quote //) env)'
+    source = lookup_scm + '(lookup (quote eq?) env)'
     got = mylis.run(source)
-    assert got == op.floordiv
+    assert got == op.is_
 
 
 def test_lookup_not_found():

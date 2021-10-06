@@ -169,7 +169,7 @@ def test_lambda_with_multi_expression_body(std_env: Environment) -> None:
     source = """
         (lambda (m n)
             (define (mod m n)
-                (- m (* n (// m n))))
+                (- m (* n (quotient m n))))
             (define (gcd m n)
                 (if (= n 0)
                     m

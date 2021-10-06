@@ -81,7 +81,7 @@ def standard_env() -> lis.Environment:
         '>=': ft.partial(variadic_comparison, op.ge),
         'append': lambda *args: list(it.chain(*args)),
         # additional built-ins
-        '//': op.floordiv,
+        'quotient': op.floordiv,
         'display': display,
         'filter': lambda *args: list(filter(*args)),
     })
