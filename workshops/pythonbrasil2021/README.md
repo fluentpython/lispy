@@ -1,4 +1,4 @@
-# Norvig's `lis.py`
+# O `lis.py` de Norvig
 
-Click [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fluentpython/lispy/HEAD?labpath=workshops%2Fthoughtworks2021%2Fnorvigs-lispy.ipynb)
- to run Jupyter Notebook at Binder. 
+Clique este botão [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fluentpython/lispy/HEAD?labpath=workshops%2Ftpythonbrasil2021%2Fnorvigs-lispy.ipynb)
+ para executar o Jupyter Notebook na nuvem através do Binder.
