@@ -10,7 +10,7 @@ Este repositório contém variações do [interpretador lis.py](https://github.c
 
 `lis.py` foi [publicado](https://github.com/norvig/pytudes/blob/c33cd6835a506a57d9fe73e3a8317d49babb13e8/py/lis.py) no repositório [`norvig/pytudes`](https://github.com/norvig/pytudes) no Github. O detentor dos direitos autorais é Peter Norvig e o código é licenciado sob a [licença do MIT](https://github.com/norvig/pytudes/blob/60168bce8cdfacf57c92a5b2979f0b2e95367753/LICENSE).
 
-A menos que seja observado o contrário, eu escrevi as mudanças e adições descritas nos arquivos README em cada diretório.
+A menos que seja observado o contrário, escrevi as mudanças e adições descritas nos arquivos README em cada diretório.
 
 
 ## Referências
@@ -42,4 +42,4 @@ A menos que seja observado o contrário, eu escrevi as mudanças e adições des
 
 
 *Luciano Ramalho*<br/>
-São Paulo, August 23, 2021
+São Paulo, 23 de agosto de 2021
