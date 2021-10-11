@@ -17,7 +17,7 @@ Em Python uma AST pode ser construída com listas, dicionários, e/ou objetos an
 Ex: `parse('(* 2 pi)')` resulta em `['*', 2, 'pi']`.
 Traduções: _analisador sintático_ ou _analisador_.
 
-**prefixo**: símbolo que antecede uma ou mais expressões, por exemplo o operador aritmético prefixo soma:
+**prefixo**: símbolo que antecede uma ou mais expressões, por exemplo o operador aritmético prefixo
 `+ a b c d` devolve a soma dos quatro valores.
 Em Scheme, expressões prefixas são delimitadas por parêntesis `(+ a b c d)`. Ver: _infixo_.
 
