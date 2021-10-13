@@ -21,21 +21,22 @@ Caso seja algo novo, sinta-se livre para criar uma nova issue.
 
 O mesmo vale para typos (erros ortograficos).
 
-## Criando pull requests
+## Contribuindo
 
 Você decidiu contribuir para o projeto! Yay!
 
-Faça um fork do projeto e crie uma nova branch. Mais detalhes [aqui](https://docs.github.com/pt/enterprise/2.17/user/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork).
+- Faça um fork do projeto, clone o repositorio e crie uma nova branch. Mais detalhes [aqui](https://docs.github.com/pt/enterprise/2.17/user/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork).
 
-Aqui algumas dicas:
+- Sugerimos que crie um ambiente virtual (Python 3.7) para poder instalar todas as dependencias do projeto.
 
-* Caso decida trabalhar em alguma _issue_, comente na _issue_ escolhida. Dessa forma,
+- Realize as modificações necessarias/desejadas.
+
+- Caso o arquivo modificado seja de extensão `ipynb` (jupyter notebook), rodar o comando `jupytext --to py <CAMINHO/NOME DO ARQUIVO NOTEBOOK>` para gerar o arquivo python.
+    - No caso se modificações em notebooks, o arquivo `ipynb` não é enviado no PR. Será gerado depois do merge.
+
+_Dica: Caso decida trabalhar em alguma _issue_, comente na _issue_ escolhida. Dessa forma,
 outras pessoas saberão que tem alguém trabalhando nela. Caso tenha ficado perdido ou com
-dúvidas, peça ajuda.
-
-* Instale o as dependencias que estão no `requirements.txt`.
-
-* Quando finalizar suas modificações no notebook (arquivo `.ipynb`), execute o comando `jupytext --to py <NOME DO ARQUIVO NOTEBOOK>.`
+dúvidas, peça ajuda._
 
 
 Sentiu falta de algo nesse guia? Conta pra gente!
