@@ -60,7 +60,7 @@
 #
 # * `lis.py` é um lindo exemplo de código Python idiomático.
 #
-# Norvig descreve `lis.py` em um texto intitulado. 
+# Norvig descreve `lis.py` em um texto intitulado.
 # [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Altamente recomendado.
 #
 # Antes de examinar o código do interpretador em Python, vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp anteriormente.
@@ -69,7 +69,7 @@
 #
 # Todo código Scheme é formado por expressões.
 # Não existem operadores infixos:
-# todas as expressões usam notação prefixa como 
+# todas as expressões usam notação prefixa como
 # `(+ x 13)` em vez de `x + 13`.
 # A mesma notação prefixa é usada para chamadas de funções—ex. `(gcd x 13)`—e
 # instruções especiais—ex. `(define x 13)`, que corresponde à
@@ -163,24 +163,26 @@ Environment = MutableMapping[Symbol, object]
 
 # Os tipos são definidos são:
 #
-# `Symbol`: É apenas um apelido para o tipo `str`. Em _list.py_, `Symbol` é utilizado pelos identificadores,
-# não há nenhum tipo que seja string com operaçoẽs como slicing, splitting etc.
+# `Symbol`: Apenas um apelido para o tipo `str`.
+# Em _list.py_, instâncias de `Symbol` são usadas como identificadores;
+# não há um tipo string com operaçoẽs como fatiamento, particionamento com `split` etc.
 #
-# `Atom`: Um elemento simples de sintaxe como um número ou um `Symbol`, um `Atom` é o contrário de uma estrutura composta de diversas partes como uma lista.
+# `Atom`: Elemento sintático simples: um número ou um `Symbol`.
+# Um átomo é o contrário de uma estrutura composta de diversas partes como uma lista.
 #
-# `Expression`: Programas escritos utilizando Scheme são compostos por expressões feitas com `Atoms` e listas, que provavelmente estarão aninhadas.
+# `Expression`: Programas em Scheme são formados por expressões feitas com átomos e listas, possivelmente aninhadas.
 #
-# > **NOTA**: O segundo interpretador escrito pelo Norvigs,
+# > **NOTA**: O segundo interpretador escrito por Norvig,
 # [`lispy.py`](https://github.com/fluentpython/example-code-2e/blob/master/18-with-match/lispy/original/lispy.py),
-# suporta string como um tipo, assim como também aceitar funcionalidades avançadas como macros de sintax,
-# continuations e tail calls.
-# No entanto, `lispy.py` é quase três vezes mais longo do que o `lis.py` e mais difícil de entender.
+# suporta string como um tipo de dado, assim como também aceita funcionalidades avançadas como macros de sintaxe,
+# chamadas de cauda eficientes e _continuations_.
+# No entanto, `lispy.py` é quase três vezes mais longo do que `lis.py`, e mais difícil de entender.
 
 # ## O parser
 #
-# O parser de Norvig são 36 linhas de código que demonstram o poder do Python aplicado ao manuseio de 
-# sintaxes recursivas simples de S-expression—sem string data,
-# comentários, macros, e outras features do Scheme padrão que tornam o parsing mais complicado (essas features são implementadas em `lispy.py`). 
+# O parser de Norvig são 36 linhas de código que demonstram o poder de Python aplicado ao manuseio de
+# sintaxes recursivas simples de S-expression—sem strings como dados,
+# comentários, macros, e outros recursos de Scheme padrão que complicam a análise sintática (esses recursos são implementadas em `lispy.py`).
 
 # +
 def parse(program: str) -> Expression:
@@ -220,15 +222,15 @@ def parse_atom(token: str) -> Atom:
 
 # -
 
-# A função principal desse grupo é `parse`, que toma uma S-expression como uma `str` 
-# e devolve um objeto `Expression`: um `Atom` ou uma `list` que podem conter mais atoms e listas aninhadas. 
+# A função principal desse grupo é `parse`, que toma uma S-expression como uma `str`
+# e devolve um objeto `Expression`: um `Atom` ou `list` que pode conter mais átomos e listas aninhadas.
 #
 # Norvig usa um truque inteligente em `tokenize`:
-# ele adiciona espaços antes e depois de cada parênteses no input e depois divide, 
+# ele adiciona espaços antes e depois de cada parênteses no input e depois divide,
 # resultando em uma lista de tokens sintáticos com `(` e `)`
 # como tokens distintos.
 # Esse atalho funciona porque não existe um tipo de string no pequeno Scheme do _lis.py_, então todo `(` ou `)` é um delimitador de expressão.
-# O código parsing recursivo está em `read_from_tokens`. 
+# O código parsing recursivo está em `read_from_tokens`.
 # Eu não vou explicar isso agora porque quero focar nas outras parter do interpretador.
 #
 # Abaixo, estão alguns exemplos do nível mais alto da função `parse`.
@@ -249,16 +251,31 @@ parse('''
 # As regras do parsing para esse subconjunto do Scheme são simples:
 #
 # 1. Um token que se parece com um número é parseado como um `float` ou `int`.
-# 2. Qualquer outra coisa que não for `(` ou `)` é parseado como um `Symbol` - uma `str` a ser usada como identificador. Isso inclui texto fonte como `+`. `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python. 
+# 2. Qualquer outra coisa que não for `(` ou `)` é parseado como um `Symbol` - uma `str` a ser usada como identificador. Isso inclui texto fonte como `+`. `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
 # 3. Expressões dentro de `(` e `)` são recursivamente parseadas como listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
 #
 # Usando terminologia do interpretador Python, a saída de `parse` é uma **AST** (Abstract Syntax Tree ou Árvore de Sintaxe Abstrata):
 # uma representação conveniente do programa Scheme como listas aninhadas formando uma estrutura em forma de árvore,
 # onde a lista mais exterior é o tronco, as listas interiores são os ramos e atoms são as folhas.
-
+#
+# Veja a AST do exemplo `(define double (lambda (n) (* n 2)))` como um diagrama em árvore:
+#
+# ```
+#                               '*'  'n'   2
+#                         'n'    └────┼────┘
+#                          │          │
+#            'lambda'     [ ]        [ ]
+#                └─────────┼──────────┘
+#                          │
+# 'define'   'double'     [ ]
+#     └─────────┼──────────┘
+#               │
+#              [ ]
+# ```
+#
 # ### Exercício 0
 #
-# Substitua a elipse `...` com a AST para a S-expression dada, para fazer a comparação ser `True`. 
+# Substitua a elipse `...` com a AST para a S-expression dada, para fazer a comparação ser `True`.
 # Para rodar o código na célula, aperte `【CTRL】【ENTER】`.
 
 parse('9') == ...
@@ -309,7 +326,7 @@ def standard_env() -> Environment:
     return env
 
 
-# O mapeamento `env` é carregado com: 
+# O mapeamento `env` é carregado com:
 #
 # * todas as funções do módulo `math` do Python;
 # * operadores selecionados do módulo `op` do Python;
@@ -521,14 +538,14 @@ run('(factorial 10)')
 
 # **Step 3.2.** Edit the `standard_env` function above to re-implement `+` to make the expression above return `True`.
 #
-# > **HINT 3.2.1**: Hidden below is the source code for a variadic version of Python's `sum()`. Consider doing the exercise without revealing the hint. To reveal the code, uncomment the `print()` line and run the cell. 
+# > **HINT 3.2.1**: Hidden below is the source code for a variadic version of Python's `sum()`. Consider doing the exercise without revealing the hint. To reveal the code, uncomment the `print()` line and run the cell.
 
 from base64 import b64decode
 blob = (b'ZGVmIHZhcmlhZGljX3N1bSgqYXJncyk6CiAgICByZXR1cm4g'
         b'c3VtKGFyZ3MpCgp2YXJpYWRpY19zdW0oMSwgMiwgMywgNCk=')
 # print(b64decode(blob).decode('utf8'))
 
-# > **HINT 3.2.2**: the same function in a single line of Python. Try to do the exercise without revealing the hint. To reveal it, uncomment the `print()` line and run the cell. 
+# > **HINT 3.2.2**: the same function in a single line of Python. Try to do the exercise without revealing the hint. To reveal it, uncomment the `print()` line and run the cell.
 
 blob = b'ZiA9IGxhbWJkYSAqYXJnczogc3VtKGFyZ3MpCmYoMSwgMiwgMywgNCk='
 # print(b64decode(blob).decode('utf8'))
@@ -554,7 +571,7 @@ def standard_env() -> Environment:
             '<=': op.le,
             '=': op.eq,
             'abs': abs,
-            'append': lambda *args: list(chain(*args)),          
+            'append': lambda *args: list(chain(*args)),
             'apply': lambda proc, args: proc(*args),
             'begin': lambda *x: x[-1],
             'car': lambda x: x[0],
@@ -658,7 +675,7 @@ def evaluate(x: Expression, env: Environment) -> Any:
 # ### Evaluate `(lambda (var…) body)`
 #
 # ```python
-#     elif x[0] == 'lambda':                       
+#     elif x[0] == 'lambda':
 #         _, parms, body = x
 #         return Procedure(parms, body, env)
 # ```
@@ -777,8 +794,8 @@ lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
 fact_src = '''
 (define ! (lambda (n)
-    (if (< n 2) 
-        1 
+    (if (< n 2)
+        1
         (* n (! (- n 1)))
 )))
 
@@ -820,21 +837,21 @@ run(quicksort_src)
 raiz2_scm = """
 (define raiz2 (lambda (x)
     (raiz2-iter 1.0 x)))
-    
+
 (define raiz2-iter (lambda (chute x)
     (if (próximo? chute x)
         chute
         (raiz2-iter (melhorar chute x) x))))
-        
+
 (define próximo? (lambda (chute x)
     (< (abs (- (* chute chute) x)) 0.001)))
-    
+
 (define melhorar (lambda (chute x)
     (média chute (/ x chute))))
-    
+
 (define média (lambda (x y)
     (/ (+ x y) 2)))
-    
+
 (raiz2 12345654321)
 """
 run(raiz2_scm)
@@ -846,7 +863,7 @@ run(raiz2_scm)
 # Isso é denominado uma chamada de cauda ou [*tail call*](https://en.wikipedia.org/wiki/Tail_call).
 #
 # Em contraste, o [Fatorial recursivo simples](#Fatorial-recursivo-simples)
-# não é um exemplo de recursão de cauda: 
+# não é um exemplo de recursão de cauda:
 # o resultado da chamada recursiva é multiplicado por `n` antes de ser devolvido.
 #
 # O sufixo `-iter` é comumente usado em Scheme para funções que fazem iteração por recursão de cauda. É comum que tais funções utilizem um parâmetro acumulador, que vai gradualmente acumulando resultados parciais. Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
@@ -863,7 +880,7 @@ fact_src = '''
         )
     )
 )
-      
+
 (! 5)
 '''
 run(fact_src)
