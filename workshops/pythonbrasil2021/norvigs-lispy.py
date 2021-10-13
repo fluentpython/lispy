@@ -22,10 +22,10 @@
 #
 # * [Introdução](#Introdução)
 # * [Sintaxe de Scheme](#Sintaxe-de-Scheme)
-# * [Imports e tipos](#Imports-e-tipos)
-# * [O parser](#O-parser)
+# * [Imports and types](#Imports-and-types)
+# * [The Parser](#The-Parser)
 #   * [Exercise 0](#Exercise-0)
-# * [Ambiente básico para aritmética](#Ambiente-básico-para-aritmética)
+# * [The Built-in Environment](#The-Built-in-Environment)
 # * [A Calculator](#A-Calculator)
 # * [Non-interactive execution](#Non-interactive-execution)
 #   * [Exercise 1](#Exercise-1)
@@ -35,7 +35,7 @@
 # * [`Procedure`: a class to represent a closure](#Procedure:-a-class-to-represent-a-closure)
 # * [Evaluate with `lambda`, `if`, and `quote`](#Evaluate-with-lambda,-if,-and-quote)
 # * [The REPL](#The-REPL)
-# * [Exemplos](#Exemplos)
+# * [Examples](#Examples)
 # * [Syntactic sugar](#Syntactic-sugar)
 #
 # > **LICENSES**:<br>
@@ -60,7 +60,7 @@
 #
 # * `lis.py` é um lindo exemplo de código Python idiomático.
 #
-# Norvig descreve `lis.py` em um texto intitulado.
+# Norvig descreve `lis.py` em um texto intitulado. 
 # [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Altamente recomendado.
 #
 # Antes de examinar o código do interpretador em Python, vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp anteriormente.
@@ -69,7 +69,7 @@
 #
 # Todo código Scheme é formado por expressões.
 # Não existem operadores infixos:
-# todas as expressões usam notação prefixa como
+# todas as expressões usam notação prefixa como 
 # `(+ x 13)` em vez de `x + 13`.
 # A mesma notação prefixa é usada para chamadas de funções—ex. `(gcd x 13)`—e
 # instruções especiais—ex. `(define x 13)`, que corresponde à
@@ -163,26 +163,24 @@ Environment = MutableMapping[Symbol, object]
 
 # Os tipos são definidos são:
 #
-# `Symbol`: Apenas um apelido para o tipo `str`.
-# Em _list.py_, instâncias de `Symbol` são usadas como identificadores;
-# não há um tipo string com operaçoẽs como fatiamento, particionamento com `split` etc.
+# `Symbol`: É apenas um apelido para o tipo `str`. Em _list.py_, `Symbol` é utilizado pelos identificadores,
+# não há nenhum tipo que seja string com operaçoẽs como slicing, splitting etc.
 #
-# `Atom`: Elemento sintático simples: um número ou um `Symbol`.
-# Um átomo é o contrário de uma estrutura composta de diversas partes como uma lista.
+# `Atom`: Um elemento simples de sintaxe como um número ou um `Symbol`, um `Atom` é o contrário de uma estrutura composta de diversas partes como uma lista.
 #
-# `Expression`: Programas em Scheme são formados por expressões feitas com átomos e listas, possivelmente aninhadas.
+# `Expression`: Programas escritos utilizando Scheme são compostos por expressões feitas com `Atoms` e listas, que provavelmente estarão aninhadas.
 #
-# > **NOTA**: O segundo interpretador escrito por Norvig,
+# > **NOTA**: O segundo interpretador escrito pelo Norvigs,
 # [`lispy.py`](https://github.com/fluentpython/example-code-2e/blob/master/18-with-match/lispy/original/lispy.py),
-# suporta string como um tipo de dado, assim como também aceita funcionalidades avançadas como macros de sintaxe,
-# chamadas de cauda eficientes e _continuations_.
-# No entanto, `lispy.py` é quase três vezes mais longo do que `lis.py`, e mais difícil de entender.
+# suporta string como um tipo, assim como também aceitar funcionalidades avançadas como macros de sintax,
+# continuations e tail calls.
+# No entanto, `lispy.py` é quase três vezes mais longo do que o `lis.py` e mais difícil de entender.
 
-# ## O parser
+# ## The Parser
 #
-# O parser de Norvig são 36 linhas de código que demonstram o poder de Python aplicado ao manuseio de
-# sintaxes recursivas simples de S-expression—sem strings como dados,
-# comentários, macros, e outros recursos de Scheme padrão que complicam a análise sintática (esses recursos são implementadas em `lispy.py`).
+# Norvig's parser is 36 lines of code showcasing the power of Python applied to handling the
+# simple recursive syntax of S-expression—without string data,
+# comments, macros, and other features of standard Scheme that make parsing more complicated (these features are implemented in `lispy.py`).
 
 # +
 def parse(program: str) -> Expression:
@@ -222,21 +220,21 @@ def parse_atom(token: str) -> Atom:
 
 # -
 
-# A função principal desse grupo é `parse`, que toma uma S-expression como uma `str`
-# e devolve um objeto `Expression`: um `Atom` ou `list` que pode conter mais átomos e listas aninhadas.
+# The main function of that group is `parse` which takes an S-expressions as a `str`
+# and returns an `Expression` object: an `Atom` or a `list` that may contain more atoms and nested lists.
 #
-# Norvig usa um truque inteligente em `tokenize`:
-# ele adiciona espaços antes e depois de cada parênteses no input e depois divide,
-# resultando em uma lista de tokens sintáticos com `(` e `)`
-# como tokens distintos.
-# Esse atalho funciona porque não existe um tipo de string no pequeno Scheme do _lis.py_, então todo `(` ou `)` é um delimitador de expressão.
-# O código parsing recursivo está em `read_from_tokens`.
-# Eu não vou explicar isso agora porque quero focar nas outras parter do interpretador.
+# Norvig uses a smart trick in `tokenize`:
+# he adds spaces before and after each parenthesis in the input and then splits it,
+# resulting in a list of syntactic tokens with `'('` and `')'`
+# as separate tokens.
+# This shortcut works because there is no string type in the little Scheme of _lis.py_, so every `'('` or `')'` is an expression delimiter.
+# The recursive parsing code is in `read_from_tokens`.
+# I will not explain it now because I want to focus on the other parts of the interpreter.
 #
-# Abaixo, estão alguns exemplos do nível mais alto da função `parse`.
+# Below are some examples of the top-level `parse` function.
 #
-# > **DICA**: Para executar o código em cada uma das células e selecionar a próxima, use `【SHIFT】【ENTER】`.<br>
-# Se acontecer `NameError: name 'parse' is not defined`, use o comando ***Cell > Run All Above*** do menu para executar as células acima, incluindo aquela onde está a definição da função `parse`.
+# > **TIP**:  To run the code in each cell and select the next, use `【SHIFT】【ENTER】`.<br>
+# If you get `NameError: name 'parse' is not defined`, use the menu command ***Cell > Run All Above***.
 
 parse('1.5')
 
@@ -248,35 +246,20 @@ parse('''
       (* n 2)))
 ''')
 
-# As regras do parsing para esse subconjunto do Scheme são simples:
+# The parsing rules for this subset of Scheme are simple:
 #
-# 1. Um token que se parece com um número é parseado como um `float` ou `int`.
-# 2. Qualquer outra coisa que não for `(` ou `)` é parseado como um `Symbol` - uma `str` a ser usada como identificador. Isso inclui texto fonte como `+`. `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
-# 3. Expressões dentro de `(` e `)` são recursivamente parseadas como listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
+# 1. A token that looks like a number is parsed as a `float` or `int`.
+# 2. Anything else that is not `'('` or `')'` is parsed as a `Symbol`—a `str` to be used as an identifier. This includes source text like `+`, `set!`, and `make-counter` that are valid identifiers in Scheme but not in Python.
+# 3. Expressions inside `'('` and `')'` are recursively parsed as lists containing atoms or nested lists that may contain atoms and more nested lists.
 #
-# Usando terminologia do interpretador Python, a saída de `parse` é uma **AST** (Abstract Syntax Tree ou Árvore de Sintaxe Abstrata):
-# uma representação conveniente do programa Scheme como listas aninhadas formando uma estrutura em forma de árvore,
-# onde a lista mais exterior é o tronco, as listas interiores são os ramos e atoms são as folhas.
+# Using terminology of the Python interpreter, the output of `parse` is an **AST** (Abstract Syntax Tree):
+# a convenient representation of the Scheme program as nested lists forming a tree-like structure,
+# where the outermost list is the trunk, inner lists are the branches, and atoms are the leaves.
+
+# ### Exercise 0
 #
-# Veja a AST do exemplo `(define double (lambda (n) (* n 2)))` como um diagrama em árvore:
-#
-# ```
-#                               '*'  'n'   2
-#                         'n'    └────┼────┘
-#                          │          │
-#            'lambda'     [ ]        [ ]
-#                └─────────┼──────────┘
-#                          │
-# 'define'   'double'     [ ]
-#     └─────────┼──────────┘
-#               │
-#              [ ]
-# ```
-#
-# ### Exercício 0
-#
-# Substitua a elipse `...` com a AST para a S-expression dada, para fazer a comparação ser `True`.
-# Para rodar o código na célula, aperte `【CTRL】【ENTER】`.
+# Replace the ellipis `...` with the AST for the given S-expressions, to make the comparison `True`.
+# To run the code in the cell, hit `【CTRL】【ENTER】`. 
 
 parse('9') == ...
 
@@ -289,10 +272,11 @@ parse('(* c (/ 9 5))') == ...
 parse('(+ 32 (* (/ 9 5) c ))') == ...
 
 
-# ## Ambiente básico para aritmética
+# ## Built-in Environment for a Calculator
 #
-# A função `standard_env()` constrói e devolve um `Environment` carregado
-# com funções pré definidas, similar ao módulo `__builtins__` do Python que está sempre disponível.
+#
+# The `standard_env()` function builds and returns an `Environment` loaded
+# with predefined functions, similar to Python's `__builtins__` module that is always available.
 
 def standard_env() -> Environment:
     "An environment for an s-expression calculator."
@@ -326,12 +310,12 @@ def standard_env() -> Environment:
     return env
 
 
-# O mapeamento `env` é carregado com:
+# The `env` mapping is loaded with:
 #
-# * todas as funções do módulo `math` do Python;
-# * operadores selecionados do módulo `op` do Python;
-# * simples mas poderosas funções construídas com `lambda` do Python;
-# * built-ins do Python renomeados, por exemplo `callable` como `procedure` ou diretamente mapeados como `round`.
+# * all functions from Python's `math` module;
+# * selected operators from Python's `op` module;
+# * simple but powerful functions built with Python's `lambda`;
+# * Python built-ins renamed like `callable` as `procedure?` or directly mapped like `round`.
 
 # ## A Calculator
 #
@@ -447,9 +431,9 @@ env['a'], env['b']
 
 # The `run()` function evaluates a string of one or more S-expressions as a program.
 
-# ## Non-interactive execution with `run()`
+# ## Execução não-interativa com `run()`
 #
-# The following functions take Scheme source code as a string and execute it.
+# As funções a seguir pegam o código fonte do Scheme como string e executam.
 
 # +
 def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
@@ -470,7 +454,7 @@ def run(source: str, env: Optional[Environment] = None) -> Any:
 
 # -
 
-# With `run()` we don't need `(begin …)` to evaluate several expressions—but `begin` is still useful in other situations.
+# Com `run()` nós não precisamos do `(begin …)` para avaliar diversas expressões - mas o `begin` ainda é útil em outras situações.
 
 percent = """
 (define a 126)
@@ -479,13 +463,14 @@ percent = """
 """
 run(percent)
 
-# ### Exercise 1
+# ### Exercício 1
 #
-# This is the formula to convert temperatures from Celsius to Fahrenheit:
+# Essa é a fórmula para converter temperaturas de Celsius para Fahrenheit:
 #
 # `f = (9 / 5) * c + 32`
 #
-# Here is the code to convert 20°C to °F:
+# Aqui está o código para converter 20°C para °F:
+#
 
 c_to_f = """
 (define c 20)
@@ -493,11 +478,11 @@ c_to_f = """
 """
 run(c_to_f)
 
-# The inverse conversion function is:
+# A função da conversão inversa é:
 #
 # `c = (f − 32) * 5 / 9`
 #
-# In the code below, replace `(+ 1 2)` with the expression to convert 68°F to °C.
+# No código abaixo, substitua `(+ 1 2)` com a expressão para converter 68°F para °C.
 
 f_to_c = """
 (define f 68)
@@ -505,47 +490,47 @@ f_to_c = """
 """
 run(f_to_c)
 
-# ### Exercise 2
+# ### Exercicio 2
 #
-# Python's `math` module includes a `factorial` function, which is part of the environment returned by `standard_env`:
+# O módulo `math` do Python inclui uma função `factorial`, que é parte do ambiente retornardo pelo `standard_env`:
 
 run('(factorial 10)')
 
-# Scheme accepts `!` as an identifier. Your task is to make Python's `factorial` available through the `!` symbol in Scheme.
+# O Scheme aceita `!` como um identificador. Sua tarefa é fazer o `factorial` do Python ficar disponível por meio do símbolo `!` no Scheme. 
 #
-# **Step 2.1** Uncomment the expression below and run it to see an error. Look at the last line of the error output. What is the error? Do you understand why that is the error?
+# **Passo 2.1** Descomente a expressão abaixo e execute para ver um erro. Olhe para a última linha da saída do erro. Qual é o erro? Você entende porque esse é o erro?
 
 # +
 # run('(! 10)') == 3628800
 # -
 
-# **Step 2.2.** Edit the `standard_env` function above to add an entry for `!`,
-# mapping to Python's `math.factorial` function.
+# **Passo 2.2.** Edite a função `standard_env` acima para adicionar uma entrada para `!`,
+# mapeando para a função `math.factorial` do Python. 
 #
-# **Step 2.3.** Run the expression above to confirm that the result is `True`.
-#
+# **Passo 2.3.** Execute a exressão acima para confirmar que o resultado é `True`. 
 
-# ### Exercise 3
+# ### Exercício 3
 #
-# In standard Scheme, the `+` operator is variadic, i.e. it accepts any number of arguments.
-# With 0 arguments, `(+)` returns `0`; otherwise it returns the sum of all arguments.
+# Em um Scheme padrão, o operador `+` é variável, ou seja, aceita qualquer número de argumentos. 
+# Com 0 argumentos, `(+)` retorna `0`; caso sontrário retorna a soma de todos os argumentos. 
 #
-# **Step 3.1.** Uncomment the expression below and run it to see an error. Does the error make sense to you?
+# **Step 3.1.** Descomente a expressão abaixo e execute para ver um erro. O erro faz sentido para você?
 
 # +
 # run('(= 10 (+ 1 2 3 4))')
 # -
 
-# **Step 3.2.** Edit the `standard_env` function above to re-implement `+` to make the expression above return `True`.
+# **Passo 3.2.** Edite a função `standard_env` acima para reimplementar o `+` para fazer a expressão acima retornar `True`.
 #
-# > **HINT 3.2.1**: Hidden below is the source code for a variadic version of Python's `sum()`. Consider doing the exercise without revealing the hint. To reveal the code, uncomment the `print()` line and run the cell.
+# > **DICA 3.2.1**: escondida abaixo está uma versão variável do `sum` do Python. Considere resolver o exercício sem revelar a dica. Para revelar o código, descomente a linha do `print()` e execute a célula.
+#
 
 from base64 import b64decode
 blob = (b'ZGVmIHZhcmlhZGljX3N1bSgqYXJncyk6CiAgICByZXR1cm4g'
         b'c3VtKGFyZ3MpCgp2YXJpYWRpY19zdW0oMSwgMiwgMywgNCk=')
 # print(b64decode(blob).decode('utf8'))
 
-# > **HINT 3.2.2**: the same function in a single line of Python. Try to do the exercise without revealing the hint. To reveal it, uncomment the `print()` line and run the cell.
+# > **DICA 3.2.2**: a mesma função em uma única linha do Python. Tente resolver o exercício sem revelar a dica. Para revelar, descomente a linha do `print()` e execute a célula.
 
 blob = b'ZiA9IGxhbWJkYSAqYXJnczogc3VtKGFyZ3MpCmYoMSwgMiwgMywgNCk='
 # print(b64decode(blob).decode('utf8'))
@@ -571,7 +556,7 @@ def standard_env() -> Environment:
             '<=': op.le,
             '=': op.eq,
             'abs': abs,
-            'append': lambda *args: list(chain(*args)),
+            'append': lambda *args: list(chain(*args)),          
             'apply': lambda proc, args: proc(*args),
             'begin': lambda *x: x[-1],
             'car': lambda x: x[0],
@@ -675,7 +660,7 @@ def evaluate(x: Expression, env: Environment) -> Any:
 # ### Evaluate `(lambda (var…) body)`
 #
 # ```python
-#     elif x[0] == 'lambda':
+#     elif x[0] == 'lambda':                       
 #         _, parms, body = x
 #         return Procedure(parms, body, env)
 # ```
@@ -788,14 +773,14 @@ def lispstr(exp: object) -> str:
 
 lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
-# ## Exemplos
+# ## Examples
 #
-# ### Fatorial recursivo simples
+# ### Simple recursive factorial
 
 fact_src = '''
 (define ! (lambda (n)
-    (if (< n 2)
-        1
+    (if (< n 2) 
+        1 
         (* n (! (- n 1)))
 )))
 
@@ -805,111 +790,105 @@ run(fact_src)
 
 # ### Quicksort
 #
-# O [algoritmo recursivo de ordenação](https://pt.wikipedia.org/wiki/Quicksort) elegante inventado por Tony Hoare.
+# Tony Hoare's elegant [recursive sorting algorithm](https://en.wikipedia.org/wiki/Quicksort).
 #
-# Observe o uso de `quote` para criar uma lista de números na última linha, e também o uso das funções de tratamento de listas `null?`, `car`, `cdr`, `append`, `list`, e `filter` da linguagem Scheme.
+# Note the use of `quote` to create a list of numbers, and the use of Scheme list handling functions: `null?`, `car`, `cdr`, `append`, `list`, and `filter`.
 
 quicksort_src = """
 (define quicksort (lambda (lst)
     (if (null? lst)
         lst
         (begin
-            (define pivô (car lst))
-            (define resto (cdr lst))
+            (define pivot (car lst))
+            (define rest (cdr lst))
             (append
                 (quicksort
-                    (filter (lambda (x) (< x pivô)) resto))
-                (list pivô)
+                    (filter (lambda (x) (< x pivot)) rest))
+                (list pivot)
                 (quicksort
-                    (filter (lambda (x) (>= x pivô)) resto)))
+                    (filter (lambda (x) (>= x pivot)) rest)))
 ))))
 
 (quicksort (quote (2 1 6 3 4 0 8 9 7 5)))
 """
 run(quicksort_src)
 
-# ### Raiz quadrada por aproximação
+# ### Square root algorithm
 #
-# Algoritmo conhecido como [método bibilônio](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
-# um antigo caso especial do [Método de Newton–Raphson](https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Newton%E2%80%93Raphson).
-# Este código foi adaptado de um [examplo](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html) do livro *Structure and Interpretation of Computer Programs*.
+# This is known as the [Babylonian method](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
+# an ancient special case of [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method).
+# This code is adapted from an [example](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html) in the book *Structure and Interpretation of Computer Programs*.
 
-raiz2_scm = """
-(define raiz2 (lambda (x)
-    (raiz2-iter 1.0 x)))
-
-(define raiz2-iter (lambda (chute x)
-    (if (próximo? chute x)
-        chute
-        (raiz2-iter (melhorar chute x) x))))
-
-(define próximo? (lambda (chute x)
-    (< (abs (- (* chute chute) x)) 0.001)))
-
-(define melhorar (lambda (chute x)
-    (média chute (/ x chute))))
-
-(define média (lambda (x y)
+sqrt_src = """
+(define sqrt (lambda (x)
+    (sqrt-iter 1.0 x)))
+    
+(define sqrt-iter (lambda (guess x)
+    (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x))))
+        
+(define good-enough? (lambda (guess x)
+    (< (abs (- (* guess guess) x)) 0.001)))
+    
+(define improve (lambda (guess x)
+    (average guess (/ x guess))))
+    
+(define average (lambda (x y)
     (/ (+ x y) 2)))
-
-(raiz2 12345654321)
+    
+(sqrt 123454321)
 """
-run(raiz2_scm)
+run(sqrt_src)
 
-# ### Fatorial com recursão de cauda
+# ### Tail-recursive factorial
 #
-# A função `fatorial-iter` faz recursão de cauda:
-# a chamada recursiva é devolvida como resultado diretamente.
-# Isso é denominado uma chamada de cauda ou [*tail call*](https://en.wikipedia.org/wiki/Tail_call).
+# The `factorial-iter` function is tail-recursive: the recursive call is returned as the result. That's a
+# [*tail call*](https://en.wikipedia.org/wiki/Tail_call).
 #
-# Em contraste, o [Fatorial recursivo simples](#Fatorial-recursivo-simples)
-# não é um exemplo de recursão de cauda:
-# o resultado da chamada recursiva é multiplicado por `n` antes de ser devolvido.
-#
-# O sufixo `-iter` é comumente usado em Scheme para funções que fazem iteração por recursão de cauda. É comum que tais funções utilizem um parâmetro acumulador, que vai gradualmente acumulando resultados parciais. Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
+# In contrast, the [Simple recursive factorial](#Simple-recursive-factorial) is not tail recursive: the result of the recursive call is multiplied by `n` before it is returned.
 
 fact_src = '''
 (define ! (lambda (n)
-    (fatorial-iter n 1)))
+    (factorial-iter n 1)))
 
-(define fatorial-iter
-    (lambda (n produto)
+(define factorial-iter
+    (lambda (n product)
         (if (= n 1)
-            produto
-            (fatorial-iter (- n 1) (* n produto))
+            product
+            (factorial-iter (- n 1) (* n product))
         )
     )
 )
-
+      
 (! 5)
 '''
 run(fact_src)
 
-# > **NOTA**: `lis.py` não implementa chamadas de cauda eficientes, um recurso conhecido em inglês como _proper tail call_ (PTC) ou _tail call optimization_ (TCO), conforme o autor.
-# Portanto, não há vantagem em fazer recursão de cauda. Porém
-# [`lispy.py`](https://github.com/norvig/pytudes/blob/main/py/lispy.py) e
-# [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py)
-# implementam PTC, o que significa que nesses interpretadores uma recursão de cauda não faz a pilha crescer a cada iteração.
+# > **NOTE**: `lis.py` does not implement proper tail calls (PTC)—a.k.a. tail call optimization (TCO).
+# Therefore, there is no advantage in writing tail recursive functions. But
+# [`lispy.py`](https://github.com/norvig/pytudes/blob/main/py/lispy.py) and
+# [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py) implement PTC, so tail-recursion does not grow the stack, and tail-recursive code is more efficient.
 
-# ### Máximo divisor comum
+# ### Greatest common divisor
 #
-# O [algoritmo de Euclides](https://pt.wikipedia.org/wiki/Algoritmo_de_Euclides).
+# The [Euclidean algorihm](https://en.wikipedia.org/wiki/Euclidean_algorithm).
 #
-# > **NOTA**: Este exemplo usa `lambda` dentro de `define` em vez da sintaxe abreviada com `define`
-# ilustrada na em [Sintaxe de Scheme](#Syntaxe-de-Scheme). Leia mais a seguir.
+# > **NOTE**: This is example uses `lambda` inside `define` instead of the shortcut `define` form listed in 
+# [Scheme Syntax](#Scheme-Syntax), which creates named procedures directly. See discussion below.
 
-mdc_scm = '''
-(define resto (lambda (m n)
+gcd_src = '''
+(define mod (lambda (m n)
     (- m (* n (quotient m n)))))
 
-(define mdc (lambda (m n)
+(define gcd (lambda (m n)
     (if (= n 0)
         m
-        (mdc n (resto m n)))))
+        (gcd n (mod m n)))))
 
-(mdc 18 45)
+(gcd 18 45)
 '''
-run(mdc_scm)
+run(gcd_src)
 
 # ## Syntactic sugar
 #
