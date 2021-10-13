@@ -35,7 +35,7 @@
 # * [`Procedure`: a class to represent a closure](#Procedure:-a-class-to-represent-a-closure)
 # * [Evaluate with `lambda`, `if`, and `quote`](#Evaluate-with-lambda,-if,-and-quote)
 # * [The REPL](#The-REPL)
-# * [Examples](#Examples)
+# * [Exemplos](#Exemplos)
 # * [Syntactic sugar](#Syntactic-sugar)
 #
 # > **LICENSES**:<br>
@@ -771,9 +771,9 @@ def lispstr(exp: object) -> str:
 
 lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
-# ## Examples
+# ## Exemplos
 #
-# ### Simple recursive factorial
+# ### Fatorial recursivo simples
 
 fact_src = '''
 (define ! (lambda (n)
@@ -788,73 +788,78 @@ run(fact_src)
 
 # ### Quicksort
 #
-# Tony Hoare's elegant [recursive sorting algorithm](https://en.wikipedia.org/wiki/Quicksort).
+# O [algoritmo recursivo de ordenação](https://pt.wikipedia.org/wiki/Quicksort) elegante inventado por Tony Hoare.
 #
-# Note the use of `quote` to create a list of numbers, and the use of Scheme list handling functions: `null?`, `car`, `cdr`, `append`, `list`, and `filter`.
+# Observe o uso de `quote` para criar uma lista de números na última linha, e também o uso das funções de tratamento de listas `null?`, `car`, `cdr`, `append`, `list`, e `filter` da linguagem Scheme.
 
 quicksort_src = """
 (define quicksort (lambda (lst)
     (if (null? lst)
         lst
         (begin
-            (define pivot (car lst))
-            (define rest (cdr lst))
+            (define pivô (car lst))
+            (define resto (cdr lst))
             (append
                 (quicksort
-                    (filter (lambda (x) (< x pivot)) rest))
-                (list pivot)
+                    (filter (lambda (x) (< x pivô)) resto))
+                (list pivô)
                 (quicksort
-                    (filter (lambda (x) (>= x pivot)) rest)))
+                    (filter (lambda (x) (>= x pivô)) resto)))
 ))))
 
 (quicksort (quote (2 1 6 3 4 0 8 9 7 5)))
 """
 run(quicksort_src)
 
-# ### Square root algorithm
+# ### Raiz quadrada por aproximação
 #
-# This is known as the [Babylonian method](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
-# an ancient special case of [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method).
-# This code is adapted from an [example](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html) in the book *Structure and Interpretation of Computer Programs*.
+# Algoritmo conhecido como [método bibilônio](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
+# um antigo caso especial do [Método de Newton–Raphson](https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Newton%E2%80%93Raphson).
+# Este código foi adaptado de um [examplo](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html) do livro *Structure and Interpretation of Computer Programs*.
 
-sqrt_src = """
-(define sqrt (lambda (x)
-    (sqrt-iter 1.0 x)))
+raiz2_scm = """
+(define raiz2 (lambda (x)
+    (raiz2-iter 1.0 x)))
     
-(define sqrt-iter (lambda (guess x)
-    (if (good-enough? guess x)
-        guess
-        (sqrt-iter (improve guess x) x))))
+(define raiz2-iter (lambda (chute x)
+    (if (próximo? chute x)
+        chute
+        (raiz2-iter (melhorar chute x) x))))
         
-(define good-enough? (lambda (guess x)
-    (< (abs (- (* guess guess) x)) 0.001)))
+(define próximo? (lambda (chute x)
+    (< (abs (- (* chute chute) x)) 0.001)))
     
-(define improve (lambda (guess x)
-    (average guess (/ x guess))))
+(define melhorar (lambda (chute x)
+    (média chute (/ x chute))))
     
-(define average (lambda (x y)
+(define média (lambda (x y)
     (/ (+ x y) 2)))
     
-(sqrt 123454321)
+(raiz2 12345654321)
 """
-run(sqrt_src)
+run(raiz2_scm)
 
-# ### Tail-recursive factorial
+# ### Fatorial com recursão de cauda
 #
-# The `factorial-iter` function is tail-recursive: the recursive call is returned as the result. That's a
-# [*tail call*](https://en.wikipedia.org/wiki/Tail_call).
+# A função `fatorial-iter` faz recursão de cauda:
+# a chamada recursiva é devolvida como resultado diretamente.
+# Isso é denominado uma chamada de cauda ou [*tail call*](https://en.wikipedia.org/wiki/Tail_call).
 #
-# In contrast, the [Simple recursive factorial](#Simple-recursive-factorial) is not tail recursive: the result of the recursive call is multiplied by `n` before it is returned.
+# Em contraste, o [Fatorial recursivo simples](#Fatorial-recursivo-simples)
+# não é um exemplo de recursão de cauda: 
+# o resultado da chamada recursiva é multiplicado por `n` antes de ser devolvido.
+#
+# O sufixo `-iter` é comumente usado em Scheme para funções que fazem iteração por recursão de cauda. É comum que tais funções utilizem um parâmetro acumulador, que vai gradualmente acumulando resultados parciais. Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
 
 fact_src = '''
 (define ! (lambda (n)
-    (factorial-iter n 1)))
+    (fatorial-iter n 1)))
 
-(define factorial-iter
-    (lambda (n product)
+(define fatorial-iter
+    (lambda (n produto)
         (if (= n 1)
-            product
-            (factorial-iter (- n 1) (* n product))
+            produto
+            (fatorial-iter (- n 1) (* n produto))
         )
     )
 )
@@ -863,30 +868,31 @@ fact_src = '''
 '''
 run(fact_src)
 
-# > **NOTE**: `lis.py` does not implement proper tail calls (PTC)—a.k.a. tail call optimization (TCO).
-# Therefore, there is no advantage in writing tail recursive functions. But
-# [`lispy.py`](https://github.com/norvig/pytudes/blob/main/py/lispy.py) and
-# [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py) implement PTC, so tail-recursion does not grow the stack, and tail-recursive code is more efficient.
+# > **NOTA**: `lis.py` não implementa chamadas de cauda eficientes, um recurso conhecido em inglês como _proper tail call_ (PTC) ou _tail call optimization_ (TCO), conforme o autor.
+# Portanto, não há vantagem em fazer recursão de cauda. Porém
+# [`lispy.py`](https://github.com/norvig/pytudes/blob/main/py/lispy.py) e
+# [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py)
+# implementam PTC, o que significa que nesses interpretadores uma recursão de cauda não faz a pilha crescer a cada iteração.
 
-# ### Greatest common divisor
+# ### Máximo divisor comum
 #
-# The [Euclidean algorihm](https://en.wikipedia.org/wiki/Euclidean_algorithm).
+# O [algoritmo de Euclides](https://pt.wikipedia.org/wiki/Algoritmo_de_Euclides).
 #
-# > **NOTE**: This is example uses `lambda` inside `define` instead of the shortcut `define` form listed in 
-# [Scheme Syntax](#Scheme-Syntax), which creates named procedures directly. See discussion below.
+# > **NOTA**: Este exemplo usa `lambda` dentro de `define` em vez da sintaxe abreviada com `define`
+# ilustrada na em [Sintaxe de Scheme](#Syntaxe-de-Scheme). Leia mais a seguir.
 
-gcd_src = '''
-(define mod (lambda (m n)
+mdc_scm = '''
+(define resto (lambda (m n)
     (- m (* n (quotient m n)))))
 
-(define gcd (lambda (m n)
+(define mdc (lambda (m n)
     (if (= n 0)
         m
-        (gcd n (mod m n)))))
+        (mdc n (resto m n)))))
 
-(gcd 18 45)
+(mdc 18 45)
 '''
-run(gcd_src)
+run(mdc_scm)
 
 # ## Syntactic sugar
 #
