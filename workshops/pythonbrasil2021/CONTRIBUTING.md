@@ -37,7 +37,7 @@ Mais detalhes [aqui](https://docs.github.com/pt/enterprise/2.17/user/github/coll
 
 - Sugerimos que crie um ambiente virtual (Python 3.7) para poder instalar todas as dependencias do projeto.
 
-- Realize as modificações necessarias/desejadas.
+- Faça as modificações desejadas.
 
 - Caso o arquivo modificado seja o Jupyter Notebook `norvigs-lispy.ipynb`,
 execute o comando a seguir para gerar o arquivo `.py` correspondente,
