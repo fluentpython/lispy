@@ -39,11 +39,22 @@ Mais detalhes [aqui](https://docs.github.com/pt/enterprise/2.17/user/github/coll
 
 - Realize as modificações necessarias/desejadas.
 
-- Caso o arquivo modificado seja de extensão `ipynb` (jupyter notebook),
-rodar o comando `jupytext --to py <CAMINHO/NOME DO ARQUIVO NOTEBOOK>` para gerar o arquivo python.
+- Caso o arquivo modificado seja o Jupyter Notebook `norvigs-lispy.ipynb`,
+execute o comando a seguir para gerar o arquivo `.py` correspondente,
+que é mais fácil de revisar usando as ferramentas de comparação de código (_diff tools_).
+
+```
+$ jupytext --to py norvigs-lispy.ipynb
+```
+
+- Se preferir editar o arquivo `norvigs-lispy.py`, execute o comando inverso para sincronizar o notebook:
+
+```
+$ jupytext --to notebook norvigs-lispy.py
+```
+
+Sentiu falta de algo nesse guia? Conta pra gente! <!-- como? -->
 
 > **DICA:** Caso decida trabalhar em alguma _issue_, comente na _issue_ escolhida.
 Dessa forma, outras pessoas saberão que tem alguém trabalhando nela.
 Caso tenha ficado perdido ou com dúvidas, peça ajuda. <!-- como? -->
-
-Sentiu falta de algo nesse guia? Conta pra gente! <!-- como? -->
