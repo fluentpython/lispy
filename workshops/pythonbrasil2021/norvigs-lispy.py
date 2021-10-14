@@ -57,7 +57,7 @@
 # * Depois de estudar como funciona um interpretador,
 # passei a entender mais precisamente como funcionam Python e linguagens em geral—interpretadas ou compiladas.
 #
-# * A simplicidade de Scheme é uma aula magna de design de linguagens;
+# * A simplicidade de Scheme é uma aula magna de design de linguagens.
 #
 # * `lis.py` é um lindo exemplo de código Python idiomático.
 #
