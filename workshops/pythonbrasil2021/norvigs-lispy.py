@@ -37,7 +37,7 @@
 # * [Evaluate with `lambda`, `if`, and `quote`](#Evaluate-with-lambda,-if,-and-quote)
 # * [O REPL](#O-REPL)
 # * [Exemplos](#Exemplos)
-# * [Syntactic sugar](#Syntactic-sugar)
+# * [Açúcar Sintático](#Açúcar-Sintático)
 #
 # > **LICENSES**:<br>
 #   Code © 2010-2018 Peter Norvig, [MIT License](https://github.com/fluentpython/lispy/blob/main/LICENSE)<br>
@@ -918,21 +918,24 @@ run(mdc_scm)
 # > **NOTA**: Este exemplo usa `lambda` dentro de `define` em vez da sintaxe abreviada com `define`
 # ilustrada na função `mdc` em [Sintaxe de Scheme](#Sintaxe-de-Scheme). Leia mais a seguir.
 
-# ## Syntactic sugar
+# ## Açúcar Sintático
 #
-# Standard Scheme provides an alternative syntax for `define` that allows defining named functions without `lambda`.
+# Por padrão Scheme tem uma sintaxe alternativa para o `define` que nos deixa definir funções nomeadas
+# sem usar a palavra reservada `lambda`.
 #
-# The syntax is: `(define (name parms…) body…)`, where:
+# A sintaxe é: `(define (name params...) body...)`, onde:
 #
-# `name`: the name of the function to be defined (a `Symbol`);
+# `name`: é o nome da função a ser definida (um `Symbol`);
 #
-# `parms…`: 0 or more symbols declaring the parameter names;
+# `params...`: zero ou mais `Symbols` declarando o nome dos parâmetros;
 #
-# `body…`: 1 or more expressions to be used as the body of the function.
+# `body...`: uma ou mais expressões para serem usadas como o corpo da função.
 #
-# That's is an example of _syntactic sugar_: new syntax that does not add any functionality to the language, but makes it more convenient to use.
+# Isso é um exemplo de _açúcar sintático_: uma sintaxe nova que não adiciona nenhuma funcionalidade a linguagem,
+# mas facilita o uso da mesma tornando-a mais conveniente.
 #
-# The version of `gcd` shown in [Scheme Syntax](#Scheme-Syntax) uses that shortcut syntax. Here it is again:
+# A versão do `gcd` apresentada na seção [Sintaxe de Scheme](#Sintaxe-de-Scheme) usa esse atalho de sintaxe.
+# Aqui podemos ver ele denovo:
 #
 # ```lisp
 # (define (mod m n)
@@ -946,10 +949,10 @@ run(mdc_scm)
 # (gcd 18 45)
 # ```
 #
-# ### Take-home exercise
+# ### Exercício para casa
 #
-# Check your understanding of `lis.py` by implementing the shortcut syntax of `define` in the `evaluate()` function.
-# Test your work by running the example below. The result should be 9.
+# Valide seu entendimento do `lis.py` implementando o atalho de sintaxe `define` na função `evaluate()`.
+# Teste sua solução rodando o exemplo abaixo, o resultado deve ser 9.
 #
 
 gcd2_src = '''
