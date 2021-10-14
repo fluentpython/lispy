@@ -834,7 +834,10 @@ run(fatorial_scm)
 # não é um exemplo de recursão de cauda:
 # o resultado da chamada recursiva é multiplicado por `n` antes de ser devolvido.
 #
-# O sufixo `-iter` é comumente usado em Scheme para funções que fazem iteração por recursão de cauda. É comum que tais funções utilizem um parâmetro acumulador, que vai gradualmente acumulando resultados parciais. Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
+# O sufixo `-iter` é comumente usado em Scheme para funções que fazem iteração por recursão de cauda.
+# É comum que tais funções utilizem um parâmetro acumulador,
+# que vai gradualmente acumulando resultados parciais.
+# Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
 #
 # > **NOTA**: `lis.py` não implementa chamadas de cauda eficientes, um recurso conhecido em inglês como _proper tail call_ (PTC) ou _tail call optimization_ (TCO), conforme o autor.
 # Portanto, não há vantagem em fazer recursão de cauda. Porém
@@ -919,52 +922,40 @@ run(mdc_scm)
 
 # ## Açúcar Sintático
 #
-# Por padrão Scheme tem uma sintaxe alternativa para o `define` que nos deixa definir funções nomeadas
+# Por padrão Scheme tem uma sintaxe alternativa para `define` que permite definir funções nomeadas
 # sem usar a palavra reservada `lambda`.
 #
-# A sintaxe é: `(define (name params...) body...)`, onde:
+# A sintaxe é: `(define (name params…) body…)`, onde:
 #
 # `name`: é o nome da função a ser definida (um `Symbol`);
 #
-# `params...`: zero ou mais `Symbols` declarando o nome dos parâmetros;
+# `params…`: zero ou mais símbolos declarando o nome dos parâmetros;
 #
-# `body...`: uma ou mais expressões para serem usadas como o corpo da função.
+# `body…`: uma ou mais expressões para serem usadas como o corpo da função.
 #
-# Isso é um exemplo de _açúcar sintático_: uma sintaxe nova que não adiciona nenhuma funcionalidade a linguagem,
-# mas facilita o uso da mesma tornando-a mais conveniente.
+# Isso é um exemplo de _açúcar sintático_:
+# uma sintaxe nova que não adiciona nenhuma funcionalidade a linguagem,
+# mas facilita o uso dela, tornando-a mais conveniente.
 #
-# A versão do `gcd` apresentada na seção [Sintaxe de Scheme](#Sintaxe-de-Scheme) usa esse atalho de sintaxe.
-# Aqui podemos ver ele denovo:
-#
-# ```lisp
-# (define (mod m n)
-#     (- m (* n (quotient m n))))
-#
-# (define (gcd m n)
-#     (if (= n 0)
-#         m
-#         (gcd n (mod m n))))
-#
-# (gcd 18 45)
-# ```
+# A versão de `mdc` apresentada na seção [Sintaxe de Scheme](#Sintaxe-de-Scheme)
+# usa esse atalho sintático.
 #
 # ### Exercício para casa
 #
-# Valide seu entendimento do `lis.py` implementando o atalho de sintaxe `define` na função `evaluate()`.
-# Teste sua solução rodando o exemplo abaixo, o resultado deve ser 9.
+# Valide seu entendimento do `lis.py` modificando a função `evaluate()`
+# para permitir o atalho sintático `define` para funções nomeadas.<br>
+# Teste sua solução rodando o exemplo abaixo. O resultado deve ser `9`.
 #
 
-gcd2_src = '''
-(define (mod m n)
+mdc2_scm = '''
+(define (resto m n)
     (- m (* n (quotient m n))))
-
-(define (gcd m n)
+(define (mdc m n)
     (if (= n 0)
         m
-        (gcd n (mod m n))))
-
-(gcd 18 45)
+        (mdc n (resto m n))))
+(mdc 18 45)
 '''
-# run(gcd2_src)
+# run(mdc2_scm)
 
 
