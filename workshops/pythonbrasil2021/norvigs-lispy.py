@@ -746,20 +746,19 @@ run(source)
 
 # ## O REPL
 #
-# O REPL (Read-Eval-Print-Loop) feito pelo Norvig é fácil de entender porém não é
+# O REPL (Read-Eval-Print-Loop) de Norvig é fácil de entender porém não é
 # muito amigavél. Se nenhum argumento é passado na linha de comando para o _lisp.py_,
 # a função `repl()` é invocada pela função `main()` definida no final do módulo.
-# Um prompt irá aparecer `lis.py>`, nele devemos digitar as expressões corretamente e completas, se esquecermos de
-# fechar um paretenses o _lis.py_ irá quebrar.
+# Um prompt `lis.py>` aparece, e nele devemos digitar expressões corretas e completas;
+# se esquecermos de fechar um paretenses o _lis.py_ irá quebrar.
 #
-# > **NOTA**: Como eu estudei os dois scripts feitos pelo Norvig, _lis.py_ e _lispy.py_,
+# > **NOTA**: Quando estudei os scripts _lis.py_ e _lispy.py_ feitos por Norvig,
 #   criei um fork chamado [`mylis`](https://github.com/fluentpython/lispy/blob/main/mylis)
-#   com algumas funcionalidades a mais, como um REPL que aceita expressões parciais que podem
-#   ser continuadas nas próximas linhas, similar como o REPL do Python sabe que não terminamos
-#   e nos apresenta um segundo prompt `...` até que entremos um expressão ou statement completo
-#   que possa ser interpretado.
-#   `mylis` também consegue tratar alguns erros para evitar falhas porém ainda é fácil de quebrar.
-#
+#   com algumas funcionalidades a mais,
+#   como um REPL que aceita expressões parciais que podem ser continuadas nas próximas linhas,
+#   semelhante ao REPL de Python que sabe que não terminamos e nos apresenta um segundo prompt
+#   `...` até que entremos um expressão ou instrução completa que possa ser interpretada.
+#   `mylis` também consegue tratar alguns erros um pouco melhor, porém ainda é fácil de quebrar.
 
 # +
 def repl(prompt: str = 'lis.py> ') -> NoReturn:
@@ -781,17 +780,17 @@ def lispstr(exp: object) -> str:
 
 # -
 
-# A função `repl` chama a função `standard_env()` para que funções built-in fiquem disponíveis
-# no escopo global, então entra em um loop infinito lendo e fazendo o parse de cada linha entrada
-# pelo usuário, depois interpreta essas linhas no escopo global mostrando o resultado a menos que ele seja `None`.
-# A variável `global_env` pode ser modificada pelo `evaluate`.
+# A função `repl()` chama a função `standard_env()` para instalar funções essenciais no ambiente global,
+# então entra em um loop infinito lendo e fazendo o parse de cada linha digitada pelo usuário,
+# interpreta cada linha no ambiente global, e mostra o resultado—exceto quando é `None`.
+# A variável `global_env` pode ser modificada pela função `evaluate()`.
 #
-# A função `lispstr` faz o inverso da função `parse`:
-#
-# Dado um objeto Python que representa uma expressão, `lispstr` retorna o código em Scheme para ela.
+# A função `lispstr()` faz o inverso de `parse()`:
+# dado um objeto Python que representa uma expressão,
+# `lispstr` retorna o código-fonte em Scheme para essa expressão.
 # Por exemplo:
 
-lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])  # Irá retornar: '(+ 32 (* (/ 9 5) c))'
+lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
 # ## Exemplos
 #
