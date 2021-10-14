@@ -54,8 +54,8 @@
 # Porque você deveria estudar `lis.py`?
 # Para mim esses foram alguns motivos:
 #
-# * Depeois de aprender como funciona um interpretador,
-# passei a entender com mais profundidade como funciona a Python e linguagens em geral—interpretadas ou compiladas.
+# * Depois de estudar como funciona um interpretador,
+# passei a entender mais precisamente como funcionam Python e linguagens em geral—interpretadas ou compiladas.
 #
 # * A simplicidade de Scheme é uma aula magna de design de linguagens;
 #
@@ -64,7 +64,8 @@
 # Norvig descreve `lis.py` em um texto intitulado.
 # [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Altamente recomendado.
 #
-# Antes de examinar o código do interpretador em Python, vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp anteriormente.
+# Antes de examinar o código do interpretador em Python,
+# vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp anteriormente.
 
 # ## Sintaxe de Scheme
 #
