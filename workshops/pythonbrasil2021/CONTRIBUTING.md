@@ -23,6 +23,11 @@ https://github.com/fluentpython/lispy/pulls[pull request]
 já tenha sido criado por outra pessoa com a mesma sugestão.
 Em caso afirmativo, veja se pode contribuir com ela.
 
+> **DICA:** Caso decida trabalhar em alguma _issue_,
+indique sua intenção em um comentário na _issue_ escolhida.
+Dessa forma, outras pessoas saberão que tem alguém trabalhando nela.
+Caso tenha ficado perdido ou com dúvidas, peça ajuda. <!-- como? -->
+
 Caso seja algo novo, crie uma nova
 https://github.com/fluentpython/lispy/issues[issue].
 
@@ -37,24 +42,30 @@ Mais detalhes [aqui](https://docs.github.com/pt/enterprise/2.17/user/github/coll
 
 - Sugerimos que crie um ambiente virtual (Python 3.7) para poder instalar todas as dependencias do projeto.
 
-- Faça as modificações desejadas.
+- Faça as modificações desejadas no arquivo `norvigs-lispy.py`.
 
-- Caso o arquivo modificado seja o Jupyter Notebook `norvigs-lispy.ipynb`,
-execute o comando a seguir para gerar o arquivo `.py` correspondente,
-que é mais fácil de revisar usando as ferramentas de comparação de código (_diff tools_).
-
-```
-$ jupytext --to py norvigs-lispy.ipynb
-```
-
-- Se preferir editar o arquivo `norvigs-lispy.py`, execute o comando inverso para sincronizar o notebook:
+- Gere uma cópia local do Jupyter Notebook `norvigs-lispy.ipynb` através deste comando:
 
 ```
 $ jupytext --to notebook norvigs-lispy.py
 ```
 
-Sentiu falta de algo nesse guia? Conta pra gente! <!-- como? -->
+- Confira seu trabalho vizualizando `norvigs-lispy.ipynb` no navegador:
 
-> **DICA:** Caso decida trabalhar em alguma _issue_, comente na _issue_ escolhida.
-Dessa forma, outras pessoas saberão que tem alguém trabalhando nela.
-Caso tenha ficado perdido ou com dúvidas, peça ajuda. <!-- como? -->
+```
+$ jupyter notebook norvigs-lispy.ipynb
+```
+
+- Caso faça alterações no Jupyter Notebook,
+execute o comando a seguir para atualizar o arquivo `norvigs-lispy.py`:
+
+```
+$ jupytext --to py norvigs-lispy.ipynb
+```
+
+> **IMPORTANTE:** Não esqueça de atualizar o `norvigs-lispy.py` sempre que fizer alterações no Jupyter Notebook,
+porque o arquivo `norvigs-lispy.ipynb` não vai para o repositório!
+O motivo é que `git`, `Github` e ferramentas auxiliares não conseguem mostrar claramente as diferenças entre arquivos `.ipynb`,
+o que dificulta a revisão das alterações feitas.
+
+Sentiu falta de algo nesse guia? Conta pra gente! <!-- como? -->
