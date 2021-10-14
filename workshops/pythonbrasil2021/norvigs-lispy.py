@@ -26,22 +26,23 @@
 # * [O parser](#O-parser)
 #   * [Exercício 0](#Exercício-0)
 # * [Ambiente básico para aritmética](#Ambiente-básico-para-aritmética)
-# * [A Calculator](#A-Calculator)
+# * [Uma calculadora](#Uma-calculadora)
 # * [Execução não interativa](#Execução-não-interativa)
 #   * [Exercício 1](#Exercício-1)
 #   * [Exercício 2](#Exercício-2)
 #   * [Exercício 3](#Exercício-3)
 # * [User defined procedures](#User-defined-procedures)
 # * [Um ambiente mais completo](#Um-ambiente-mais-completo)
-# * [`Procedure`: uma clase que representa uma _clojure_](#Procedure:-uma-clase-que-representa-uma-clojure)
+# * [`Procedure`: uma clase que representa uma _closure_](#Procedure:-uma-classe-que-representa-uma-closure)
 # * [Avaliador com `lambda`, `if` e `quote`](#Avaliador-com-lambda,-if-e-quote)
 # * [O REPL](#O-REPL)
 # * [Exemplos](#Exemplos)
 # * [Açúcar Sintático](#Açúcar-Sintático)
+#   * [Exercício para casa](#Exercício-para-casa)
 #
-# > **LICENSES**:<br>
-#   Code © 2010-2018 Peter Norvig, [MIT License](https://github.com/fluentpython/lispy/blob/main/LICENSE)<br>
-#   Text © 2022 Luciano Ramalho, [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+# > **LICENÇAS**:<br>
+#   Código © 2010-2018 Peter Norvig, [MIT License](https://github.com/fluentpython/lispy/blob/main/LICENSE)<br>
+#   Texto © 2022 Luciano Ramalho, [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 #
 
 # ## Introdução
@@ -341,7 +342,7 @@ def standard_env() -> Environment:
 
 # ## Uma calculadora
 #
-# A primeira versão do `evaluate` trata expressões usando funções embutidas e váriavies definidas pela usuária. 
+# A primeira versão da função `evaluate` trata expressões com funções embutidas e váriavies definidas pela usuária. 
 #
 # > **NOTA**: o parser de Norvig é simples e sólido, mas seu avaliador é simples e frágil. Ele omitiu a verificação de erros para manter a lógica simples de ser acompanhada. Nas palavras dele: "Lispy não tenta detectar, reportar razoavelmente, ou se recuperar de erros. Lispy espera que o programador seja perfeito." ([fonte](https://norvig.com/lispy.html)).
 
@@ -373,29 +374,27 @@ evaluate(parse('(* (/ 123 876) 100)'), standard_env())
 
 # Agora vamos estudar cada parte do `if/elif/...` em `evaluate`.
 
-# ### Evaluate symbol
+# ### Avaliar símbolo
 #
 # ```python
 #     if isinstance(x, Symbol):
 #         return env[x]
 # ```
 #
-# Se a expressão é um `Symbol`, então procure no ambiente.
-#
-#
+# Se a expressão é um `Symbol`, então obtenha seu valor no ambiente.
 
 evaluate('pi', standard_env())
 
 evaluate('+', standard_env())
 
-# ### Evaluate outros atoms
+# ### Avaliar outros átomos
 #
 # ```python
 #     elif not isinstance(x, list):
 #         return x
 # ```
 #
-# Se a expressão não é um `list`e nem um `Symbol` (devido à verificação anterior), então assuma que é uma constante literal e retorne como está. 
+# Se a expressão não é `list` e nem `Symbol` (devido à verificação anterior), então assuma que é uma constante literal cujo valor é ela própria. Simplesmente devolva-a. 
 
 evaluate(1.5, standard_env())
 
@@ -407,13 +406,13 @@ evaluate(1.5, standard_env())
 #         env[var] = evaluate(exp, env)
 # ```
 #
-# Se a expressão é um `list` começando com a palavra-chave `define`, então deveria ser seguido por um `Symbol` e uma `Expression`. Recursivamente avalie a expressão no ambiente e armazene em `env` usando o `Symbol` como chave.
+# Se a expressão é uma lista começando com a palavra reservada `define`, deveria ser seguida por um `Symbol` e uma `Expression`. Recursivamente avalie a expressão no ambiente e armazene o resultado em `env` usando o `Symbol` como chave.
 
 env = standard_env()
 evaluate(parse('(define answer (* 7 6))'), env)
 env['answer']
 
-# ### Evaluate chamada de função `(proc arg…)`
+# ### Avaliar chamada de função `(proc arg…)`
 #
 # ```python
 #     else:
@@ -423,17 +422,20 @@ env['answer']
 #         return proc(*arg_values)
 # ```
 #
-# Se a expressão é um `list` que não começa com a palavra-chave, então: 
+# Se a expressão é uma `list` que não começa com uma palavra reservada, então: 
 #
-# 1. Avalie a primeira expressão - deveria retornar uma procedure (também conhecida como função).
+# 1. Avalie a primeira expressão—seu valor deve ser um procedimento (_procedure_ é o termo usado na comunidade Scheme; na comunidade Python dizemos _função_).
 # 2. Avalie as expressões restantes (os valores dos argumentos).
-# 3. Chame a procedure com os valores dos argumentos.
+# 3. Chame a procedure passando os valores dos argumentos.
 
 evaluate(['quotient', 8, 3], standard_env())
 
 evaluate(['*', ['/', 123, 876], 100], standard_env())
 
-# `evaluate` consegue processar expressões profundamentes aninhadas, mas somente uma expressão no nível mais alto. Para agrupar várias expressões e uma só, use a função `(begin...)`. Todos os argumentos após o `begin` são avaliados antes que o `begin` seja chamado, e o `begin` retorna o valor do último argumento. Por exemplo: 
+# `evaluate()` consegue processar expressões profundamentes aninhadas, mas somente uma expressão no nível mais alto.
+# Para agrupar várias expressões, use a função `(begin...)`.
+# A função `evaluate()` avalia todos os argumentos antes de invocar `begin`, e `begin` simplesmente devolve o valor do último argumento passado.
+# Por exemplo: 
 
 env = standard_env()
 percent = """
@@ -445,16 +447,16 @@ percent = """
 """
 evaluate(parse(percent), env)
 
-# Após o último código, `env` agora possui duas variáveis: `a` e `b`.
+# Após rodar o código acima, as variáveis `a` e `b` agora estão definidas no ambiente `env`:
 
 env['a'], env['b']
 
 
-# A função `run()` avalia uma string de uma ou mais S-expressions como um programa.
+# Para avaliar um programa inteiro, use a função `run()`, descrita a seguir.
 
 # ## Execução não-interativa
 #
-# As funções a seguir aceitam o código fonte de um programa em Scheme como uma string e o executam.
+# As funções a seguir aceitam o código fonte de um programa em Scheme como uma string formada por uma sequência de S-expressions e as executam em sequência.
 
 # +
 def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
@@ -509,7 +511,7 @@ f_to_c = """
 (define f 68)
 (+ 1 2)
 """
-run(f_to_c)
+run(f_to_c) == 20
 
 # ### Exercicio 2
 #
@@ -603,11 +605,11 @@ def standard_env() -> Environment:
     return env
 
 
-# ## `Procedure`: uma clase que representa uma _clojure_
+# ## `Procedure`: uma classe que representa uma _closure_
 #
 # A próxima melhoria do `evaluate()` será incluir `(lambda …)` para permitir que
-# usuários consigam definir funções (os autores do Scheme preferem o termo *procedure*).<br>
-# Para dar suporte a `lambda`, precisamos de uma classe que represente uma procedure.
+# usuários definam funções, ou _procedimentos_ no jargão de Scheme.
+# Para implementar `lambda`, precisamos de uma classe que represente um procedimento.
 
 class Procedure:
     """A user-defined Scheme procedure."""
@@ -623,9 +625,9 @@ class Procedure:
         return evaluate(self.body, env)
 
 
-# A classe `Procedure` poderia muito bem ser nomeada como `Clojure`,
+# A classe `Procedure` poderia muito bem ser nomeada `Closure`,
 # porque é isso o que ela representa:<br>
-# uma definição de função junto com um ambiente capturado quando a função foi definida.
+# uma definição de função junto com um ambiente capturado quando a função é definida.
 #
 # Os parâmetros obrigatórios para criar uma `Procedure` são:
 #
@@ -634,13 +636,14 @@ class Procedure:
 #
 # `body`: o corpo da função como uma expressão que será interpretada quando a função for chamada.
 #
-# `env`: o ambiente onde a função é criada. Isso é o que torna ela uma
-# [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)).
+# `env`: o ambiente onde a função é criada. Isso é o torna o procedimento uma
+# [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)) ou
+# [*clausura*](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) (o termo em PT não é muito usado, mas o [artigo na Wikipédia](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) é útil).
 #
-# O método `__init__` apenas guarda os parâmetros que são passados. Nenhum deles é processado quando a função é definida.
+# O método `__init__` apenas guarda os argumentos recebidos. Nenhum deles é avaliado quando a função é definida.
 #
-# O ambiente é usado quando a função é chamada para fornecer os valores de
-# [variáveis não locais](https://en.wikipedia.org/wiki/Non-local_variable):<br>
+# O ambiente `self.env` é usado quando a função é chamada para fornecer os valores de
+# [variáveis não-locais](https://en.wikipedia.org/wiki/Non-local_variable):<br>
 # variáveis que aparecem no corpo da função mas que não são parâmetros ou variáveis locais.
 #
 # Vamos criar uma `Procedure` "na mão" para ver como funciona:
@@ -651,10 +654,10 @@ dobro(4)
 
 # ## Avaliador com `lambda`, `if` e `quote`
 #
-# Para transformar a calculadora em um subconjunto do Scheme,
-# nós precisamos suportar funções definidas pelo usuário,
-# condicionais e o `(quote …)` para lidar com as expressões
-# como dados ao invés de interpreta-las.
+# Para transformar a calculadora em um subconjunto digno da linguagem Scheme,
+# precisamos permitir funções definidas pelo usuário,
+# condicionais e a instrução `(quote …)` para lidar com expressões
+# como dados ao invés de interpretá-las.
 #
 
 def evaluate(x: Expression, env: Environment) -> Any:
@@ -685,7 +688,7 @@ def evaluate(x: Expression, env: Environment) -> Any:
         return proc(*arg_values)
 
 
-# ### Avaliador `(lambda (var…) body)`
+# ### Avaliar `(lambda (var…) body)`
 #
 # ```python
 #     elif x[0] == 'lambda':
@@ -693,9 +696,9 @@ def evaluate(x: Expression, env: Environment) -> Any:
 #         return Procedure(parms, body, env)
 # ```
 #
-# Se a expressão for uma `lista` onde o primeiro elemento for a
-# palavra chave `lambda`, seguido por uma lista de zero ou mais símbolos,
-# e um `body` composto por uma única expressão, então criamos e retornamos uma `Procedure`.
+# Se a expressão for uma `list` onde o primeiro elemento é a
+# palavra reservada `lambda`, seguida por uma lista de zero ou mais símbolos,
+# e finalmente um `body` (corpo) formado por uma única expressão, então criamos e devolvemos uma `Procedure`.
 #
 # Exemplo:
 
@@ -707,9 +710,9 @@ porcentagem(15, 20)
 # use `lambda` com `define`.
 #
 # > **NOTA**: Essa versão de `lis.py` só aceita uma única expressão como corpo de uma função.
-#   Use `(begin …)` para encapsular várias expressões. O resultado da função será o valor da última expressão.
+#   Use `(begin …)` para criar um `body` várias expressões. O resultado da função será o valor da última expressão.
 
-# ### Avaliador `(quote exp)`
+# ### Avaliar `(quote exp)`
 #
 # ```python
 #     elif x[0] == 'quote':
@@ -717,19 +720,19 @@ porcentagem(15, 20)
 #         return exp
 # ```
 #
-# Se a expressão for uma `lista` onde o primeiro elemento
-# for a palavra chave `quote` seguido por uma única expressão,
-# retorna a expressão sem interpretá-la.
+# Se a expressão for uma `list` onde o primeiro elemento
+# é a palavra reservada `quote` seguida por uma única expressão,
+# devolva a expressão sem interpretá-la.
 #
 # Exemplos:
 
-run('(quote no-such-name)')  # símbolo não definido, iria causar um erro caso fosse interpretado
+run('(quote no-such-name)')  # símbolo não definido, iria causar um erro se fosse interpretado
 
 run('(quote (99 bottles of beer))')  # 99 não é o nome de uma função ou palavra reservada
 
-run('(quote (/ 10 0))')  # aqui seria lançada uma exceção de divisão por zero caso fosse interpretado
+run('(quote (/ 10 0))')  # se interpretada, a expressão causaria uma exceção de divisão por zero
 
-# ### Avaliador `(if test consequence alternative)`
+# ### Avaliar `(if test consequence alternative)`
 #
 # ```python
 #     elif x[0] == 'if':
@@ -740,9 +743,9 @@ run('(quote (/ 10 0))')  # aqui seria lançada uma exceção de divisão por zer
 #             return evaluate(alternative, env)
 # ```
 #
-# Se a expressão for uma `lista` onde o primeiro elemento for a palavra chave `if`,
-# seguido por exatamente três expressões, interpretamos a variável `test`.
-# Se o resultado for `True` interpretamos a `consequence`; caso contrário interpretamos a `alternative`.
+# Se a expressão é uma `list` onde o primeiro elemento é a palavra reservada `if`,
+# seguida por exatamente três expressões, avaliamos a expressão `test`.
+# Se o resultado for `True` avaliamos `consequence`; caso contrário avaliamos `alternative`.
 #
 # Exemplos:
 
@@ -751,12 +754,12 @@ run('(if (= 3 3) 1 0)')
 run('(if (= 3 30) 1 0)')
 
 source = '''
-(define pass-fail
-    (lambda (grade)
-        (if (>= grade 5)
-            (quote PASS)
-            (quote FAIL))))
-(pass-fail 7)
+(define avaliar
+    (lambda (nota)
+        (if (>= nota 5)
+            (quote PASSOU)
+            (quote NÃO-PASSOU))))
+(avaliar 7)
 '''
 run(source)
 
@@ -780,7 +783,7 @@ run(source)
 # +
 def repl(prompt: str = 'lis.py> ') -> NoReturn:
     "A prompt-read-evaluate-print loop."
-    global_env: Environment = standard_env()
+    global_env = standard_env()
     while True:
         val = evaluate(parse(input(prompt)), global_env)
         if val is not None:
@@ -967,10 +970,12 @@ run(mdc_scm)
 mdc2_scm = '''
 (define (resto m n)
     (- m (* n (quotient m n))))
+    
 (define (mdc m n)
     (if (= n 0)
         m
         (mdc n (resto m n))))
+        
 (mdc 18 45)
 '''
 # run(mdc2_scm)
