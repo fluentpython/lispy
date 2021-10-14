@@ -182,9 +182,8 @@ Environment = MutableMapping[Symbol, object]
 
 # ## O parser
 #
-# O parser de Norvig são 36 linhas de código que demonstram o poder de Python aplicado ao manuseio de
-# sintaxes recursivas simples de S-expression—sem strings como dados,
-# comentários, macros, e outros recursos de Scheme padrão que complicam a análise sintática (esses recursos são implementadas em `lispy.py`).
+# O parser de Norvig são 36 linhas de código que demonstram o poder de Python aplicado ao tratamento de
+# sintaxes recursivas simples de S-expression—sem comentários, tipo string, macros, e outros recursos de Scheme padrão que complicam a análise léxica (esses recursos são implementadas em `lispy.py`).
 
 # +
 def parse(program: str) -> Expression:
@@ -224,18 +223,26 @@ def parse_atom(token: str) -> Atom:
 
 # -
 
-# A função principal desse grupo é `parse`, que toma uma S-expression como uma `str`
+# A função principal desse grupo é `parse`, que toma o código-fonte de uma S-expression como uma `str`
 # e devolve um objeto `Expression`: um `Atom` ou `list` que pode conter mais átomos e listas aninhadas.
 #
-# Norvig usa um truque inteligente em `tokenize`:
-# ele adiciona espaços antes e depois de cada parênteses no input e depois divide,
-# resultando em uma lista de tokens sintáticos com `(` e `)`
-# como tokens distintos.
-# Esse atalho funciona porque não existe um tipo de string no pequeno Scheme do _lis.py_, então todo `(` ou `)` é um delimitador de expressão.
-# O código parsing recursivo está em `read_from_tokens`.
-# Eu não vou explicar isso agora porque quero focar nas outras parter do interpretador.
+# O primeiro estágio de um parser é a análise léxica: identificar onde começam e terminam as "palavras" da linguagem, conhecidas tecnicamente como _tokens_ ou _itens léxicos_. Isso é feito pela função `tokenize`.
 #
-# Abaixo, estão alguns exemplos do nível mais alto da função `parse`.
+# Norvig usa um truque esperto em `tokenize`:
+# ele coloca espaços antes e depois de cada parênteses no código-fonte, e depois quebra com `.split()`,
+# resultando em uma lista de tokens com `(` e `)`
+# como itens distintos. Por exemplo, `(f 1)` é transformada em uma lista com quatro itens: `['(', 'f', '1', ')']`.
+#
+# Esse atalho funciona porque não existe um tipo de string no pequeno Scheme do _lis.py_,
+# então todo `(` ou `)` é um delimitador de expressão.
+#
+# As regras de análise léxica para esse subconjunto do Scheme são simples:
+#
+# 1. Um token que se parece com um número é convertido em `float` ou `int`.
+# 2. Qualquer outra coisa que não for `(` ou `)` é entendida como `Symbol`—uma `str` a ser usada como identificador. Isso inclui código fonte como `+`, `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
+# 3. Expressões dentro de `(` e `)` são recursivamente parseadas como listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
+#
+# O código de parsing recursivo está em `read_from_tokens`, que recebe uma lista de itens léxicos e devolve listas e/ou átomos. Em uma primeira leitura, vale a pena considerar `read_from_tokens` como uma caixa preta, e se concentrar na função de alto nível `parse`. Veja alguns exemplos com `parse`:
 #
 # > **DICA**: Para executar o código em cada uma das células e selecionar a próxima, use `【SHIFT】【ENTER】`.<br>
 # Se acontecer `NameError: name 'parse' is not defined`, use o comando ***Cell > Run All Above*** do menu para executar as células acima, incluindo aquela onde está a definição da função `parse`.
@@ -250,12 +257,6 @@ parse('''
       (* n 2)))
 ''')
 
-# As regras do parsing para esse subconjunto do Scheme são simples:
-#
-# 1. Um token que se parece com um número é parseado como um `float` ou `int`.
-# 2. Qualquer outra coisa que não for `(` ou `)` é parseado como um `Symbol` - uma `str` a ser usada como identificador. Isso inclui texto fonte como `+`. `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
-# 3. Expressões dentro de `(` e `)` são recursivamente parseadas como listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
-#
 # Usando a terminologia do interpretador Python, a saída de `parse` é uma **AST** (*Abstract Syntax Tree* ou *Árvore Sintática Abstrata*):
 # uma representação conveniente do programa Scheme como listas aninhadas formando uma estrutura em forma de árvore,
 # onde a lista mais externa é o tronco, as listas internas são ramos e os átomos são folhas.
