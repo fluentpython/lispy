@@ -35,7 +35,7 @@
 # * [Um ambiente mais completo](#Um-ambiente-mais-completo)
 # * [`Procedure`: a class to represent a closure](#Procedure:-a-class-to-represent-a-closure)
 # * [Evaluate with `lambda`, `if`, and `quote`](#Evaluate-with-lambda,-if,-and-quote)
-# * [The REPL](#The-REPL)
+# * [O REPL](#O-REPL)
 # * [Exemplos](#Exemplos)
 # * [Syntactic sugar](#Syntactic-sugar)
 #
@@ -744,21 +744,21 @@ source = '''
 run(source)
 
 
-# ## The REPL
+# ## O REPL
 #
-# Norvig's REPL (Read-Eval-Print-Loop) is easy to undersand but not user-friendly.
-# If no command-line arguments are given to _lis.py_,
-# the `repl()` function is invoked by `main()`—defined at the end of the module.
-# At the `lis.py>` prompt we must enter correct and complete expressions—if
-# we forget to close one parenthesis, _lis.py_ crashes.
+# O REPL (Read-Eval-Print-Loop) feito pelo Norvig é fácil de entender porém não é
+# muito amigavél. Se nenhum argumento é passado na linha de comando para o _lisp.py_,
+# a função `repl()` é invocada pela função `main()` definida no final do módulo.
+# Um prompt irá aparecer `lis.py>`, nele devemos digitar as expressões corretamente e completas, se esquecermos de
+# fechar um paretenses o _lis.py_ irá quebrar.
 #
-# > **NOTE**: As I studied Norvig's _lis.py_ and _lispy.py_, I started a fork named
-#   [`mylis`](https://github.com/fluentpython/lispy/blob/main/mylis)
-#   which adds some features, including a REPL that accepts partial S-expressions
-#   and prompts for the continuation, similar to how Python's REPL
-#   knows we are not finished and presents the secondary prompt `...` until
-#   we enter a complete expression or statement that can be evaluated.
-#   `mylis` also handles a few errors gracefully, but it's still easy to crash.
+# > **NOTA**: Como eu estudei os dois scripts feitos pelo Norvig, _lis.py_ e _lispy.py_,
+#   criei um fork chamado [`mylis`](https://github.com/fluentpython/lispy/blob/main/mylis)
+#   com algumas funcionalidades a mais, como um REPL que aceita expressões parciais que podem
+#   ser continuadas nas próximas linhas, similar como o REPL do Python sabe que não terminamos
+#   e nos apresenta um segundo prompt `...` até que entremos um expressão ou statement completo
+#   que possa ser interpretado.
+#   `mylis` também consegue tratar alguns erros para evitar falhas porém ainda é fácil de quebrar.
 #
 
 # +
@@ -781,17 +781,17 @@ def lispstr(exp: object) -> str:
 
 # -
 
-# Function `repl` calls `standard_env()` to provide built-in functions for the global environment,
-# then enters an infinite loop reading and parsing each input line,
-# evaluating it in the global environment and displaying the result—unless it's `None`.
-# The `global_env` may be modified by `evaluate`.
+# A função `repl` chama a função `standard_env()` para que funções built-in fiquem disponíveis
+# no escopo global, então entra em um loop infinito lendo e fazendo o parse de cada linha entrada
+# pelo usuário, depois interpreta essas linhas no escopo global mostrando o resultado a menos que ele seja `None`.
+# A variável `global_env` pode ser modificada pelo `evaluate`.
 #
-# `lispstr` is the inverse function of `parse`:
-# given a Python object representing an expression,
-# `parse` returns the Scheme source code for it.
-# For example:
+# A função `lispstr` faz o inverso da função `parse`:
+#
+# Dado um objeto Python que representa uma expressão, `lispstr` retorna o código em Scheme para ela.
+# Por exemplo:
 
-lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
+lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])  # Irá retornar: '(+ 32 (* (/ 9 5) c))'
 
 # ## Exemplos
 #
