@@ -18,8 +18,8 @@ para manter a compatibilidade com a versão mais recente do https://mybinder.org
 
 Você é mais que bem-vinda a sugerir melhorias ao tutorial.
 Pedimos apenas que que verifique se nenhum
-https://github.com/fluentpython/lispy/issues[issue] ou
-https://github.com/fluentpython/lispy/pulls[pull request]
+[issue](https://github.com/fluentpython/lispy/issues) ou
+[pull request](https://github.com/fluentpython/lispy/pulls)
 já tenha sido criado por outra pessoa com a mesma sugestão.
 Em caso afirmativo, veja se pode contribuir com ela.
 
@@ -28,8 +28,7 @@ indique sua intenção em um comentário na _issue_ escolhida.
 Dessa forma, outras pessoas saberão que tem alguém trabalhando nela.
 Caso tenha ficado perdido ou com dúvidas, peça ajuda. <!-- como? -->
 
-Caso seja algo novo, crie uma nova
-https://github.com/fluentpython/lispy/issues[issue].
+Caso seja algo novo, crie uma nova [issue](https://github.com/fluentpython/lispy/issues).
 
 O mesmo vale para typos (erros ortograficos).
 
