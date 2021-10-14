@@ -274,6 +274,9 @@ parse('''
 #              [ ]
 # ```
 #
+# A árvore acima corresponde à AST `['define', 'double', ['lambda', ['n'], ['*', 'n', 2]]]`.<br>
+# Note que todos os elementos da AST são objetos da linguagem Python.
+#
 # ### Exercício 0
 #
 # Substitua as reticências `...` com a AST correspondente à cada S-expression, para obter o resultado `True`.
