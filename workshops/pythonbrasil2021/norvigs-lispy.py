@@ -33,8 +33,8 @@
 #   * [Exercício 3](#Exercício-3)
 # * [User defined procedures](#User-defined-procedures)
 # * [Um ambiente mais completo](#Um-ambiente-mais-completo)
-# * [`Procedure`: a class to represent a closure](#Procedure:-a-class-to-represent-a-closure)
-# * [Evaluate with `lambda`, `if`, and `quote`](#Evaluate-with-lambda,-if,-and-quote)
+# * [`Procedure`: uma clase que representa uma _clojure_](#Procedure:-uma-clase-que-representa-uma-clojure)
+# * [Avaliador com `lambda`, `if` e `quote`](#Avaliador-com-lambda,-if-e-quote)
 # * [O REPL](#O-REPL)
 # * [Exemplos](#Exemplos)
 # * [Açúcar Sintático](#Açúcar-Sintático)
@@ -602,14 +602,16 @@ def standard_env() -> Environment:
     return env
 
 
-# ## `Procedure`: a class to represent a closure
+# ## `Procedure`: uma clase que representa uma _clojure_
 #
-# The next improvement to `evaluate()` will include the `(lambda …)` form to allow user-defined functions (the authors of Scheme prefer the term *procedure*). To support `lambda`, we need a class to represent a procedure:
+# A próxima melhoria do `evaluate()` será incluir `(lambda …)` para permitir que
+# usuários consigam definir funções (os autores do Scheme preferem o termo *procedure*).<br>
+# Para dar suporte a `lambda`, precisamos de uma classe que represente uma procedure.
 
 class Procedure:
-    "A user-defined Scheme procedure."
+    """A user-defined Scheme procedure."""
 
-    def __init__(self, parms: List[Symbol], body: Expression, env: Environment):
+    def __init__(self, parms: List[Symbol], body: Expression, env: Environment) -> None:
         self.parms = parms
         self.body = body
         self.env = env
@@ -620,37 +622,42 @@ class Procedure:
         return evaluate(self.body, env)
 
 
-# The `Procedure` class could very well be named `Closure`,
-# because that's what it represents:
-# a function definition together with an environment captured when the function is defined.
-# The required parameters to create a `Procedure` are:
+# A classe `Procedure` poderia muito bem ser nomeada como `Clojure`,
+# porque é isso o que ela representa:<br>
+# uma definição de função junto com um ambiente capturado quando a função foi definida.
 #
-# `parms`: the function parameter names as a list of symbols. This list may be empty.
+# Os parâmetros obrigatórios para criar uma `Procedure` são:
 #
-# `body`: the body of the function as an expression to be evaluated when the function is invoked.
+# `params`: uma lista de símbolos que representam os nomes dos parâmetros da função.
+# A lista pode estar vazia.
 #
-# `env`: the environment where the function is created. This is what makes it a [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)).
+# `body`: o corpo da função como uma expressão que será interpretada quando a função for chamada.
 #
-# The `__init__` method simply stores the arguments passed. None of them is evaluated when the function is defined.
+# `env`: o ambiente onde a função é criada. Isso é o que torna ela uma
+# [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)).
 #
-# The environment is used when the function is called to provide the values of
-# the [*non-local variables*](https://en.wikipedia.org/wiki/Non-local_variable):
-# variables that appear in the body of the function but that
-# are not parameters or local variables.
+# O método `__init__` apenas guarda os parâmetros que são passados. Nenhum deles é processado quando a função é definida.
 #
-# Let's create a `Procedure` "by-hand" to see how it works:
+# O ambiente é usado quando a função é chamada para fornecer os valores de
+# [variáveis não locais](https://en.wikipedia.org/wiki/Non-local_variable):<br>
+# variáveis que aparecem no corpo da função mas que não são parâmetros ou variáveis locais.
+#
+# Vamos criar uma `Procedure` "na mão" para ver como funciona:
 
-double = Procedure(['n'], ['*', 'n', 2], standard_env())
-double(4)
+dobro = Procedure(['n'], ['*', 'n', 2], standard_env())
+dobro(4)
 
 
-# ## Evaluate with `lambda`, `if`, and `quote`
+# ## Avaliador com `lambda`, `if` e `quote`
 #
-# To transform the calculator into a worthy subset of Scheme, we need to support user defined functions, conditionals and the `(quote …)` form to handle S-expressions as data—instead of evaluating them.
+# Para transformar a calculadora em um subconjunto do Scheme,
+# nós precisamos suportar funções definidas pelo usuário,
+# condicionais e o `(quote …)` para lidar com as expressões
+# como dados ao invés de interpreta-las.
 #
 
 def evaluate(x: Expression, env: Environment) -> Any:
-    "Evaluate an expression in an environment."
+    """Evaluate an expression in an environment."""
     if isinstance(x, str):                       # variable reference
         return env[x]
     elif not isinstance(x, list):                # constant literal
@@ -677,7 +684,7 @@ def evaluate(x: Expression, env: Environment) -> Any:
         return proc(*arg_values)
 
 
-# ### Evaluate `(lambda (var…) body)`
+# ### Avaliador `(lambda (var…) body)`
 #
 # ```python
 #     elif x[0] == 'lambda':
@@ -685,18 +692,23 @@ def evaluate(x: Expression, env: Environment) -> Any:
 #         return Procedure(parms, body, env)
 # ```
 #
-# If the expression is a `list` starting with the keyword `lambda`, followed by a list of 0 or more symbols, and a single `body` expression, then build and return a `Procedure`.
+# Se a expressão for uma `lista` onde o primeiro elemento for a
+# palavra chave `lambda`, seguido por uma lista de zero ou mais símbolos,
+# e um `body` composto por uma única expressão, então criamos e retornamos uma `Procedure`.
 #
-# Example:
+# Exemplo:
 
-percent = run('(lambda (a b) (* (/ a b) 100))')
-percent(15, 20)
+porcentagem = run('(lambda (a b) (* (/ a b) 100))')
+porcentagem(15, 20)
 
-# The result of `(lambda …)` is an anonymous function, so it is not stored in the environment. To create a named function, use `lambda` with `define`.
+# O resultado de `(lambda …)` é uma função anônima,
+# ela não é salva no ambiente. Para criar uma função nomeada,
+# use `lambda` com `define`.
 #
-# > **NOTE**: This version of `lis.py` only accepts a single expression as the `body` of the function. Use `(begin …)` to wrap multiple expressions. The result of the function will be the value of the last expression.
+# > **NOTA**: Essa versão de `lis.py` só aceita uma única expressão como corpo de uma função.
+#   Use `(begin …)` para encapsular várias expressões. O resultado da função será o valor da última expressão.
 
-# ### Evaluate `(quote exp)`
+# ### Avaliador `(quote exp)`
 #
 # ```python
 #     elif x[0] == 'quote':
@@ -704,17 +716,19 @@ percent(15, 20)
 #         return exp
 # ```
 #
-# If the expression is a `list` starting with the keyword `quote` followed by a single expression, return the expression without evaluating it.
+# Se a expressão for uma `lista` onde o primeiro elemento
+# for a palavra chave `quote` seguido por uma única expressão,
+# retorna a expressão sem interpretá-la.
 #
-# Examples:
+# Exemplos:
 
-run('(quote no-such-name)')  # undefined symbol, would raise error if evaluated
+run('(quote no-such-name)')  # símbolo não definido, iria causar um erro caso fosse interpretado
 
-run('(quote (99 bottles of beer))')  # 99 is not the name of a function or reserved word
+run('(quote (99 bottles of beer))')  # 99 não é o nome de uma função ou palavra reservada
 
-run('(quote (/ 10 0))')  # this would raise division by zero if evaluated
+run('(quote (/ 10 0))')  # aqui seria lançada uma exceção de divisão por zero caso fosse interpretado
 
-# ### Evaluate `(if test consequence alternative)`
+# ### Avaliador `(if test consequence alternative)`
 #
 # ```python
 #     elif x[0] == 'if':
@@ -725,9 +739,11 @@ run('(quote (/ 10 0))')  # this would raise division by zero if evaluated
 #             return evaluate(alternative, env)
 # ```
 #
-# If the expression is a `list` starting with the keyword `if`, followed by exactly three expressions, evaluate `test`. If true, evaluate `consequence`; otherwise evaluate `alternative`.
+# Se a expressão for uma `lista` onde o primeiro elemento for a palavra chave `if`,
+# seguido por exatamente três expressões, interpretamos a variável `test`.
+# Se o resultado for `True` interpretamos a `consequence`; caso contrário interpretamos a `alternative`.
 #
-# Example:
+# Exemplos:
 
 run('(if (= 3 3) 1 0)')
 
