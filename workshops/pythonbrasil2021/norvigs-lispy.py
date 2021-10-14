@@ -338,12 +338,11 @@ def standard_env() -> Environment:
 # * simples mas poderosas funções construídas com `lambda` do Python;
 # * built-ins do Python renomeados, por exemplo `callable` como `procedure?` ou diretamente mapeados como `round`.
 
-# ## A Calculator
+# ## Uma calculadora
 #
-# This first version of `evaluate` handles expressions using built-in functions and user-defined variables.
+# A primeira versão do `evaluate` trata expressões usando funções embutidas e váriavies definidas pela usuária. 
 #
-# > **NOTE**: Norvig's parser is simple and solid, but his evaluator is simple and fragile. He ommited error checking to keep the logic easy to follow. In his words: "Lispy does not attempt to detect, reasonably report, or recover from errors. Lispy expects the programmer to be perfect." ([source](https://norvig.com/lispy.html)).
-#
+# > **NOTA**: o parser de Norvig é simples e sólido, mas seu avaliador é simples e frágil. Ele omitiu a verificação de erros para manter a lógica simples de ser acompanhada. Nas palavras dele: "Lispy não tenta detectar, reportar razoavelmente, ou se recuperar de erros. Lispy espera que o programador seja perfeito." ([fonte](https://norvig.com/lispy.html)).
 
 def evaluate(x: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
@@ -361,17 +360,17 @@ def evaluate(x: Expression, env: Environment) -> Any:
         return proc(*arg_values)
 
 
-# Run these examples to see `evaluate` in action.
+# Execute esses exemplos para ver o `evaluate` em ação.
 #
-# A curious square:
+# Um quadrado curioso:
 
 evaluate(parse('(* 11111 11111)'), standard_env())
 
-# If there are 876 candidates, and 123 were approved, what percentage was approved?
+# Se existem 876 candidatas e 123 foram aprovadas, que porcentagem foi aprovada?
 
 evaluate(parse('(* (/ 123 876) 100)'), standard_env())
 
-# Now let's study each part of the `if/elif/…` in `evaluate`.
+# Agora vamos estudar cada parte do `if/elif/...` em `evaluate`.
 
 # ### Evaluate symbol
 #
@@ -380,7 +379,7 @@ evaluate(parse('(* (/ 123 876) 100)'), standard_env())
 #         return env[x]
 # ```
 #
-# If the expression is a `Symbol`, then look it up in the environment.
+# Se a expressão é um `Symbol`, então procure no ambiente.
 #
 #
 
@@ -388,14 +387,14 @@ evaluate('pi', standard_env())
 
 evaluate('+', standard_env())
 
-# ### Evaluate other atoms
+# ### Evaluate outros atoms
 #
 # ```python
 #     elif not isinstance(x, list):
 #         return x
 # ```
 #
-# If the expression is not a `list` and not a `Symbol` (because of the preceding check), then assume it is a constant literal and return it as is.
+# Se a expressão não é um `list`e nem um `Symbol` (devido à verificação anterior), então assuma que é uma constante literal e retorne como está. 
 
 evaluate(1.5, standard_env())
 
@@ -407,13 +406,13 @@ evaluate(1.5, standard_env())
 #         env[var] = evaluate(exp, env)
 # ```
 #
-# If the expression is a `list` starting with the keyword `define`, then it should be followed by a `Symbol` and an `Expression`. Recursively evaluate the expression in environment, and store it in `env` using the `Symbol` as key.
+# Se a expressão é um `list` começando com a palavra-chave `define`, então deveria ser seguido por um `Symbol` e uma `Expression`. Recursivamente avalie a expressão no ambiente e armazene em `env` usando o `Symbol` como chave.
 
 env = standard_env()
 evaluate(parse('(define answer (* 7 6))'), env)
 env['answer']
 
-# ### Evaluate function call `(proc arg…)`
+# ### Evaluate chamada de função `(proc arg…)`
 #
 # ```python
 #     else:
@@ -423,17 +422,17 @@ env['answer']
 #         return proc(*arg_values)
 # ```
 #
-# If the expression is a `list` that does not start with a keyword, then:
+# Se a expressão é um `list` que não começa com a palavra-chave, então: 
 #
-# 1. Evaluate the first expression—it should return a procedure (a.k.a. function).
-# 2. Evaluate the remaining expressions (the argument values)
-# 3. Call the procedure with the argument values.
+# 1. Avalie a primeira expressão - deveria retornar uma procedure (também conhecida como função).
+# 2. Avalie as expressões restantes (os valores dos argumentos).
+# 3. Chame a procedure com os valores dos argumentos.
 
 evaluate(['quotient', 8, 3], standard_env())
 
 evaluate(['*', ['/', 123, 876], 100], standard_env())
 
-# `evaluate` can process deeply nested expressions, but only one expression at the top level. To bundle several expressions into one, use the `(begin ...)` function. All the arguments after `begin` are evaluated before `begin` is called, and `begin` returns the value of the last argument. For example:
+# `evaluate` consegue processar expressões profundamentes aninhadas, mas somente uma expressão no nível mais alto. Para agrupar várias expressões e uma só, use a função `(begin...)`. Todos os argumentos após o `begin` são avaliados antes que o `begin` seja chamado, e o `begin` retorna o valor do último argumento. Por exemplo: 
 
 env = standard_env()
 percent = """
@@ -445,12 +444,12 @@ percent = """
 """
 evaluate(parse(percent), env)
 
-# After the previous code, `env` now holds two variables: `a` and `b`.
+# Após o último código, `env` agora possui duas variáveis: `a` e `b`.
 
 env['a'], env['b']
 
 
-# The `run()` function evaluates a string of one or more S-expressions as a program.
+# A função `run()` avalia uma string de uma ou mais S-expressions como um programa.
 
 # ## Execução não-interativa
 #
