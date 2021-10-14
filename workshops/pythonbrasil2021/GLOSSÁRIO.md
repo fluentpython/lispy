@@ -21,6 +21,10 @@ Traduções: _analisador sintático_ ou _analisador_.
 `+ a b c d` devolve a soma dos quatro valores.
 Em Scheme, expressões prefixas são delimitadas por parêntesis `(+ a b c d)`. Ver: _infixo_.
 
-**varíadico**: um parâmetro em uma função que aceita zero ou mais argumentos. Ex.: `def soma(*p): return sum(p)` cria uma função com o parâmetro variádico `p`, podendo ser usada como `soma()`, `soma(1, 2)`, ou `soma(1, 2, 3, 4)`, ou `soma(*range(1_000_000))`.
-Em Scheme, alguns operadores como `+`, `*`, `=`, `<` são variádicos: `(+ 1 2 3 4)`.
+**prompt**: sinal gráfico que um programa exibe para indicar que está esperando uma entrada.
+Por exemplo, o prompt padrão do Python é `>>>`.
 
+**REPL**: REPL ou Read-Eval-Print-Loop é um programa interativo quem exibe um _prompt_ onde digitamos comandos ou expressões e o programa interpreta o que digitamos, mostra o resultado, e volta para o estado inicial exibindo o prompt e esperando novas instruções do usuário.
+
+**varíadico**: um parâmetro em uma função que aceita zero ou mais argumentos. Ex.: `def soma(*p): return sum(p)` cria uma função com o parâmetro variádico `p`, podendo ser usada como `soma()`, `soma(1, 2)`, ou `soma(1, 2, 3, 4)`, ou `soma(*range(1_000_000))`.
+Em Scheme, alguns operadores como `+`, `*`, `=`, `<=` são variádicos. Por exemplo, `(+ 1 2 3 4)` devolve o valor `10`.
