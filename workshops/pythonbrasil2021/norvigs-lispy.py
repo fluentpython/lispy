@@ -13,7 +13,7 @@
 #     name: python3
 # ---
 
-# # O `lis.py` de Norvig
+# # O *lis.py* de Norvig
 #
 #
 # ![Norvig's lispy](lispy.png)
@@ -48,25 +48,26 @@
 # ## Introdução
 #
 # [Peter Norvig](https://norvig.com/) da universidade Stanford criou
-# [`lis.py`](https://github.com/norvig/pytudes/blob/main/py/lis.py):
+# [*lis.py*](https://github.com/norvig/pytudes/blob/main/py/lis.py):
 # um interpretador em 132 linhas de código Python legível,
 # para parte da linguagem Scheme—um dialeto de Lisp.
 #
-# Porque você deveria estudar `lis.py`?
+# Porque você deveria estudar *lis.py*?
 # Para mim esses foram alguns motivos:
 #
 # * Depois de estudar como funciona um interpretador,
-# passei a entender mais precisamente como funcionam Python e linguagens em geral—interpretadas ou compiladas.
+# entendi mais precisamente como funciona Python e linguagens em geral—interpretadas ou compiladas.
 #
 # * A simplicidade de Scheme é uma aula magna de design de linguagens.
 #
-# * `lis.py` é um lindo exemplo de código Python idiomático.
+# * *lis.py* é um lindo exemplo de código Python idiomático.
 #
-# Norvig descreve `lis.py` em um texto intitulado.
-# [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Altamente recomendado.
+# Norvig descreve *lis.py* em um texto intitulado
+# [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html).
+# Leitura recomendada!
 #
 # Antes de examinar o código do interpretador em Python,
-# vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp anteriormente.
+# vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp antes.
 
 # ## Sintaxe de Scheme
 #
@@ -74,13 +75,14 @@
 # Não existem operadores infixos:
 # todas as expressões usam notação prefixa como
 # `(+ x 13)` em vez de `x + 13`.
-# A mesma notação prefixa é usada para chamadas de funções—ex. `(gcd x 13)`—e
+# A mesma notação prefixa é usada para chamadas de funções—ex. `(mdc x 13)`—e
 # instruções especiais—ex. `(define x 13)`, que corresponde à
 # instrução de atribuição em Python: `x = 13`.
 #
-# A notação usada em Scheme e na maioria dos dialetos de Lisp (como Clojure) é chamada de _S-expression_ ou _expressão-S_.
+# Essa notação com prefixa com parêntesis é chamada _S-expression_ ou _expressão-S_.
+# É a mesma notação usada em Lisp e outros dialetos, como Clojure.
 #
-# Eis um exemplo simples em Scheme, para calcular o máximo divisor comum:
+# Eis um exemplo simples em Scheme, para calcular o MDC (Máximo Divisor Comum):
 #
 #
 # ```lisp
@@ -110,41 +112,52 @@ def mdc(m, n):
 print(mdc(18, 45))
 # -
 
-# > **DICA**: Clique na célula acima para selecioná-la, então tecle `【CTRL】【ENTER】` para executá-la.
-# <br>O resultado aparecerá abaixo da célula.
+# > **DICA**: Clique na célula acima para selecioná-la,
+# então tecle `【CTRL】【ENTER】` para executá-la.
+# O resultado aparecerá abaixo da célula.
+#
+# Assim como temos `%` em Python, Scheme tem a função `modulo`.
+# Implementei `resto` apenas para mostrar duas definições de funções.
+# Em Python é mais eficiente usar um laço `while` do que recursão,
+# mas eu queria que os exemplos ficassem parecidos para
+# ajudar você a entender o código em Scheme.
 #
 # Scheme não tem estruturas de laço como `while` ou `for`.
-# Iteração é feita através de recursão.
-# Note como não há atribuições nos exemplos em Scheme ou Python acima.
-# O uso extensivo de recursão e o uso reduzido de atribuição
+# Para repetir instruções usa-se recursão.
+# Note como não há atribuições de variáveis nos exemplos em Scheme e Python acima.
+# Fazer muita recursão e pouca atribuição
 # são duas características típicas de programação em um estilo funcional.
 #
-# Em Python idiomático eu usaria o operador `%` em vez de reinventar `resto`,
-# e seria mais eficiente usar um laço `while` do que recursão.
-# Mas eu queria mostrar duas definições de funções, e
-# que os exemplos ficassem parecidos para ajudar você a ler o código em Scheme.
-#
-# Agora vamos estudar o código de uma versão de `lis.py` para Python 3.7.
-# O código completo com testes para Python 3.10 você pode encontrar no diretório
+# O código completo de *lis.py* para Python 3.10 incluindo testes você pode encontrar no diretório
 # [18-with-match/lispy/py3.10/](https://github.com/fluentpython/example-code-2e/tree/master/18-with-match/lispy/py3.10/)
 # do repositório [fluentpython/example-code-2e](https://github.com/fluentpython/example-code-2e).
+# Agora vamos estudar o código de uma versão de *lis.py* para Python 3.7,
+# que é a versão mais recente disponível no serviço [Binder](https://mybinder.org/),
+# sue usaremos nesta oficina.
+#
+# O código abaixo apenas confirma a versão do interpretador que está executando este Jupyter Notebook.
 
-# + [markdown] tags=[]
-# ## Imports e tipos
-#
-# O código escrito pelo Norvig não usa anotações de tipo, adicionei as anotações e fiz mais algumas pequenas mudanças.
-#
-# Esse notebook usa Python 3.7 para rodar no [Binder](https://mybinder.org/), portanto precisamos importar alguns tipos de coleções do módulo `typing`.
-#
-# > **DICA**: Clique na célula abaixo para selecioná-la e então aperte `【SHIFT】【ENTER】` para executá-la e selecionar a próxima célula.<br>Use `【CTRL】【ENTER】` para executar a célula e manter ela selecionada.<br>Use esses comandos para executar as células conforme você segue.
+# > **DICA:** Clique na célula abaixo para selecioná-la e então tecle
+#  `【SHIFT】【ENTER】` para executá-la e selecionar a próxima célula.<br>
+# Use `【CTRL】【ENTER】` para executar a célula e mantê-la selecionada.<br>
+
 # -
 
 import sys
 assert sys.version_info >= (3, 7), f'Esperado Python ≥ 3.7; instalado: {sys.version}'
 sys.version
 
+
+# + [markdown] tags=[]
+# ## Imports e tipos
+#
+# O código escrito pelo Norvig não usa anotações de tipo. Adicionei as anotações e fiz mais algumas pequenas mudanças.
+#
+# Como esse notebook usa Python 3.7, precisamos importar alguns tipos de coleções do módulo `typing`.
+
+
 # +
-################ lis.py: Scheme Interpreter in Python 3.10
+################ lis.py: Scheme Interpreter in Python
 ## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
 ## Type hints and minor additions by Luciano Ramalho
 
@@ -167,24 +180,25 @@ Environment = MutableMapping[Symbol, object]
 # Os tipos são definidos são:
 #
 # `Symbol`: Apenas um apelido para o tipo `str`.
-# Em _list.py_, instâncias de `Symbol` são usadas como identificadores;
-# não há um tipo string com operaçoẽs como fatiamento, particionamento com `split` etc.
+# Instâncias de `Symbol` são usadas como identificadores.
+# Em _lis.py_ não há um tipo de dado string com operaçoẽs como
+# fatiamento, particionamento (split), conversão de maiúsculas para minúsculas, etc.
 #
 # `Atom`: Elemento sintático simples: um número ou um `Symbol`.
 # Um átomo é o contrário de uma estrutura composta de diversas partes como uma lista.
 #
 # `Expression`: Programas em Scheme são formados por expressões feitas com átomos e listas, possivelmente aninhadas.
 #
-# > **NOTA**: O segundo interpretador escrito por Norvig,
-# [`lispy.py`](https://github.com/fluentpython/example-code-2e/blob/master/18-with-match/lispy/original/lispy.py),
+# > **NOTA**: O outro interpretador escrito por Norvig,
+# [*lispy.py*](https://github.com/fluentpython/example-code-2e/blob/master/18-with-match/lispy/original/lispy.py),
 # suporta string como um tipo de dado, assim como também aceita funcionalidades avançadas como macros de sintaxe,
 # chamadas de cauda eficientes e _continuations_.
-# No entanto, `lispy.py` é quase três vezes mais longo do que `lis.py`, e mais difícil de entender.
+# No entanto, *lispy.py* é quase três vezes mais longo do que *lis.py*, e mais difícil de entender.
 
 # ## O parser
 #
-# O parser de Norvig são 36 linhas de código que demonstram o poder de Python aplicado ao tratamento de
-# sintaxes recursivas simples de S-expression—sem comentários, tipo string, macros, e outros recursos de Scheme padrão que complicam a análise léxica (esses recursos são implementadas em `lispy.py`).
+# O parser de Norvig são 36 linhas de código que demonstram o poder de Python
+# aplicado ao tratamento da sintaxes recursivas de expressões-S.
 
 # +
 def parse(program: str) -> Expression:
@@ -224,26 +238,36 @@ def parse_atom(token: str) -> Atom:
 
 # -
 
-# A função principal desse grupo é `parse`, que toma o código-fonte de uma S-expression como uma `str`
+# A função principal desse grupo é `parse`, que toma o código-fonte de uma expressão-S como uma `str`
 # e devolve um objeto `Expression`: um `Atom` ou `list` que pode conter mais átomos e listas aninhadas.
 #
-# O primeiro estágio de um parser é a análise léxica: identificar onde começam e terminam as "palavras" da linguagem, conhecidas tecnicamente como _tokens_ ou _itens léxicos_. Isso é feito pela função `tokenize`.
+# O primeiro estágio de um parser é a análise léxica:
+# identificar e separar as "palavras" da linguagem,
+# conhecidas tecnicamente como _tokens_ ou _itens léxicos_.
+# Isso é feito pela função `tokenize`.
 #
 # Norvig usa um truque esperto em `tokenize`:
 # ele coloca espaços antes e depois de cada parênteses no código-fonte, e depois quebra com `.split()`,
 # resultando em uma lista de tokens com `(` e `)`
 # como itens distintos. Por exemplo, `(f 1)` é transformada em uma lista com quatro itens: `['(', 'f', '1', ')']`.
 #
-# Esse atalho funciona porque não existe um tipo de string no pequeno Scheme do _lis.py_,
-# então todo `(` ou `)` é um delimitador de expressão.
+# Esse truque funciona porque o dialeto Scheme simplificado de *lis.py*
+# não tem um tipo string, cometários, macros,
+# e outros recursos de Scheme padrão que complicam a análise léxica.
+# Com essa simplificação, sabemos que todo `(` ou `)` é um delimitador de expressão em *lis.py*.
+# (Norvig implementou esses recursos em *lispy.py*.)
 #
-# As regras de análise léxica para esse subconjunto do Scheme são simples:
+# O resultado da análise léxica alimenta a análise sintática em `read_from_tokens`,
+# que recebe uma lista de itens léxicos e devolve uma `Expression`.
+#
+# A regras de anáise sintática (_parsing_) para esse subconjunto do Scheme são simples:
 #
 # 1. Um token que se parece com um número é convertido em `float` ou `int`.
 # 2. Qualquer outra coisa que não for `(` ou `)` é entendida como `Symbol`—uma `str` a ser usada como identificador. Isso inclui código fonte como `+`, `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
 # 3. Expressões dentro de `(` e `)` são recursivamente parseadas como listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
 #
-# O código de parsing recursivo está em `read_from_tokens`, que recebe uma lista de itens léxicos e devolve listas e/ou átomos. Em uma primeira leitura, vale a pena considerar `read_from_tokens` como uma caixa preta, e se concentrar na função de alto nível `parse`. Veja alguns exemplos com `parse`:
+# Em uma primeira leitura, vale a pena considerar `read_from_tokens` como uma caixa preta,
+# e se concentrar na função de alto nível `parse`. Veja alguns exemplos com `parse`:
 #
 # > **DICA**: Para executar o código em cada uma das células e selecionar a próxima, use `【SHIFT】【ENTER】`.<br>
 # Se acontecer `NameError: name 'parse' is not defined`, use o comando ***Cell > Run All Above*** do menu para executar as células acima, incluindo aquela onde está a definição da função `parse`.
@@ -258,8 +282,11 @@ parse('''
       (* n 2)))
 ''')
 
-# Usando a terminologia do interpretador Python, a saída de `parse` é uma **AST** (*Abstract Syntax Tree* ou *Árvore Sintática Abstrata*):
-# uma representação conveniente do programa Scheme como listas aninhadas formando uma estrutura em forma de árvore,
+# Usando a terminologia de teoria de linguagens de programação
+# o objeto `Expression` produzido por `parse` é uma
+# **AST** (*Abstract Syntax Tree* ou *Árvore Sintática Abstrata*):
+# uma representação conveniente do programa Scheme na forma de
+# objetos Python aninhados formando uma estrutura em de árvore,
 # onde a lista mais externa é o tronco, as listas internas são ramos e os átomos são folhas.
 #
 # Veja a AST do exemplo `(define double (lambda (n) (* n 2)))` como um diagrama em árvore:
@@ -282,7 +309,7 @@ parse('''
 #
 # ### Exercício 0
 #
-# Substitua as reticências `...` com a AST correspondente à cada S-expression, para obter o resultado `True`.
+# Substitua as reticências `...` com a AST correspondente à cada expressão-S, para obter o resultado `True`.
 # Para rodar o código na célula, tecle `【CTRL】【ENTER】`.
 
 parse('9') == ...
@@ -342,7 +369,7 @@ def standard_env() -> Environment:
 
 # ## Uma calculadora
 #
-# A primeira versão da função `evaluate` trata expressões com funções embutidas e váriavies definidas pela usuária. 
+# A primeira versão da função `evaluate` trata expressões com funções embutidas e váriavies definidas pela usuária.
 #
 # > **NOTA**: o parser de Norvig é simples e sólido, mas seu avaliador é simples e frágil. Ele omitiu a verificação de erros para manter a lógica simples de ser acompanhada. Nas palavras dele: "Lispy não tenta detectar, reportar razoavelmente, ou se recuperar de erros. Lispy espera que o programador seja perfeito." ([fonte](https://norvig.com/lispy.html)).
 
@@ -394,7 +421,7 @@ evaluate('+', standard_env())
 #         return x
 # ```
 #
-# Se a expressão não é `list` e nem `Symbol` (devido à verificação anterior), então assuma que é uma constante literal cujo valor é ela própria. Simplesmente devolva-a. 
+# Se a expressão não é `list` e nem `Symbol` (devido à verificação anterior), então assuma que é uma constante literal cujo valor é ela própria. Simplesmente devolva-a.
 
 evaluate(1.5, standard_env())
 
@@ -422,7 +449,7 @@ env['answer']
 #         return proc(*arg_values)
 # ```
 #
-# Se a expressão é uma `list` que não começa com uma palavra reservada, então: 
+# Se a expressão é uma `list` que não começa com uma palavra reservada, então:
 #
 # 1. Avalie a primeira expressão—seu valor deve ser um procedimento (_procedure_ é o termo usado na comunidade Scheme; na comunidade Python dizemos _função_).
 # 2. Avalie as expressões restantes (os valores dos argumentos).
@@ -435,7 +462,7 @@ evaluate(['*', ['/', 123, 876], 100], standard_env())
 # `evaluate()` consegue processar expressões profundamentes aninhadas, mas somente uma expressão no nível mais alto.
 # Para agrupar várias expressões, use a função `(begin...)`.
 # A função `evaluate()` avalia todos os argumentos antes de invocar `begin`, e `begin` simplesmente devolve o valor do último argumento passado.
-# Por exemplo: 
+# Por exemplo:
 
 env = standard_env()
 percent = """
@@ -456,7 +483,7 @@ env['a'], env['b']
 
 # ## Execução não-interativa
 #
-# As funções a seguir aceitam o código fonte de um programa em Scheme como uma string formada por uma sequência de S-expressions e as executam em sequência.
+# As funções a seguir aceitam o código fonte de um programa em Scheme como uma string formada por uma sequência de expressão-Ss e as executam em sequência.
 
 # +
 def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
@@ -709,7 +736,7 @@ porcentagem(15, 20)
 # ela não é salva no ambiente. Para criar uma função nomeada,
 # use `lambda` com `define`.
 #
-# > **NOTA**: Essa versão de `lis.py` só aceita uma única expressão como corpo de uma função.
+# > **NOTA**: Essa versão de *lis.py* só aceita uma única expressão como corpo de uma função.
 #   Use `(begin …)` para criar um `body` várias expressões. O resultado da função será o valor da última expressão.
 
 # ### Avaliar `(quote exp)`
@@ -859,9 +886,9 @@ run(fatorial_scm)
 # que vai gradualmente acumulando resultados parciais.
 # Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
 #
-# > **NOTA**: `lis.py` não implementa chamadas de cauda eficientes, um recurso conhecido em inglês como _proper tail call_ (PTC) ou _tail call optimization_ (TCO), conforme o autor.
+# > **NOTA**: *lis.py* não implementa chamadas de cauda eficientes, um recurso conhecido em inglês como _proper tail call_ (PTC) ou _tail call optimization_ (TCO), conforme o autor.
 # Portanto, não há vantagem em fazer recursão de cauda. Porém
-# [`lispy.py`](https://github.com/norvig/pytudes/blob/main/py/lispy.py) e
+# [*lispy.py*](https://github.com/norvig/pytudes/blob/main/py/lispy.py) e
 # [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py)
 # implementam PTC, o que significa que nesses interpretadores uma recursão de cauda não faz a pilha crescer a cada iteração.
 
@@ -890,7 +917,7 @@ quicksort_scm = """
 """
 run(quicksort_scm)
 
-# > **NOTA**: o código acima funciona em `lis.py`, mas não em Scheme padrão. A forma `define` não pode ser usada naquele contexto em Scheme padrão; em vez dela, usaríamos a forma `let`—que não existe em `lis.py`.
+# > **NOTA**: o código acima funciona em *lis.py*, mas não em Scheme padrão. A forma `define` não pode ser usada naquele contexto em Scheme padrão; em vez dela, usaríamos a forma `let`—que não existe em *lis.py*.
 
 # ### Raiz quadrada por aproximação
 #
@@ -962,7 +989,7 @@ run(mdc_scm)
 #
 # ### Exercício para casa
 #
-# Valide seu entendimento do `lis.py` modificando a função `evaluate()`
+# Valide seu entendimento do *lis.py* modificando a função `evaluate()`
 # para permitir o atalho sintático `define` para funções nomeadas.<br>
 # Teste sua solução rodando o exemplo abaixo. O resultado deve ser `9`.
 #
@@ -970,12 +997,12 @@ run(mdc_scm)
 mdc2_scm = '''
 (define (resto m n)
     (- m (* n (quotient m n))))
-    
+
 (define (mdc m n)
     (if (= n 0)
         m
         (mdc n (resto m n))))
-        
+
 (mdc 18 45)
 '''
 # run(mdc2_scm)
