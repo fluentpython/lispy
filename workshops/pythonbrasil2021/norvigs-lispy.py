@@ -260,17 +260,21 @@ def parse_atom(token: str) -> Atom:
 # O resultado da análise léxica alimenta a análise sintática em `read_from_tokens`,
 # que recebe uma lista de itens léxicos e devolve uma `Expression`.
 #
-# A regras de anáise sintática (_parsing_) para esse subconjunto do Scheme são simples:
+# A regras de análise sintática (_parsing_) para esse subconjunto do Scheme são simples:
 #
 # 1. Um token que se parece com um número é convertido em `float` ou `int`.
-# 2. Qualquer outra coisa que não for `(` ou `)` é entendida como `Symbol`—uma `str` a ser usada como identificador. Isso inclui código fonte como `+`, `set` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
-# 3. Expressões dentro de `(` e `)` são recursivamente parseadas como listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
+# 2. Qualquer outra coisa que não for `(` ou `)` é entendida como `Symbol`—uma `str` a ser usada como identificador.
+# Isso inclui código fonte como `+`, `set!` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
+# 3. Expressões dentro de `(` e `)` são recursivamente parseadas como
+# listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
 #
 # Em uma primeira leitura, vale a pena considerar `read_from_tokens` como uma caixa preta,
 # e se concentrar na função de alto nível `parse`. Veja alguns exemplos com `parse`:
 #
 # > **DICA**: Para executar o código em cada uma das células e selecionar a próxima, use `【SHIFT】【ENTER】`.<br>
-# Se acontecer `NameError: name 'parse' is not defined`, use o comando ***Cell > Run All Above*** do menu para executar as células acima, incluindo aquela onde está a definição da função `parse`.
+# Se acontecer `NameError: name 'parse' is not defined`,
+# use o comando ***Cell > Run All Above*** do menu para executar as células acima,
+# incluindo aquela onde está a definição da função `parse`.
 
 parse('1.5')
 
@@ -329,7 +333,7 @@ parse('(+ 32 (* (/ 9 5) c ))') == ...
 # o módulo `__builtins__` de Python.
 #
 # Em *lis.py*, a função `standard_env()` constrói e devolve um `Environment` carregado
-# com funções pré definidas.
+# com funções pré-definidas.
 # Por enquanto usaremos uma versão simplificada, adepois colocaremos mais funções.
 
 def standard_env() -> Environment:
@@ -650,15 +654,20 @@ def standard_env() -> Environment:
     )
     return env
 
-def lispstr(exp: object) -> str:
+# A função `(display …)` exibe resultados, mas não emite uma quebra de linha.
+# Para isso é preciso chamar `(newline)` (assim mesmo, sem argumentos).
+#
+# A chamada `(display x)` invoca `lispstr(x)`, que faz o inverso de `parse()`.
+# Dado um objeto Python que representa uma expressão,
+# `lispstr` devolve o código-fonte em Scheme para essa expressão.
+
+def lispstr(exp: Expression) -> str:
     "Convert a Python object back into a Lisp-readable string."
     if isinstance(exp, list):
         return '(' + ' '.join(map(lispstr, exp)) + ')'
     else:
         return str(exp)
 
-# Dado um objeto Python que representa uma expressão,
-# `lispstr` retorna o código-fonte em Scheme para essa expressão.
 # Por exemplo:
 
 lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
@@ -668,10 +677,6 @@ lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 # A próxima melhoria do `evaluate()` será incluir `(lambda …)` para permitir que
 # usuários definam funções, ou _procedimentos_ no jargão de Scheme.
 # Para implementar `lambda`, precisamos de uma classe que represente um procedimento.
-
-# A função `(display x)` usa `lispstr(x)`, que faz o inverso de `parse()`. `(display …)` não emite uma quebra de linha. Para isso é preciso chamar `(newline)` (assim mesmo, sem argumentos).
-
-run('(display (/ 8060598 191919))')
 
 
 class Procedure:
