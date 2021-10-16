@@ -495,7 +495,7 @@ env['a'], env['b']
 
 # Para avaliar um programa inteiro, use a função `run()`, descrita a seguir.
 
-# ## Execução não-interativa
+# ## Execução não-iterativa
 #
 # As funções a seguir aceitam o código fonte de um programa em Scheme
 # como uma string formada por uma sequência de expressões-S, e as executam em ordem.
@@ -699,7 +699,7 @@ class Procedure:
 #
 # Os parâmetros obrigatórios para criar uma `Procedure` são:
 #
-# `params`: uma lista de símbolos que representam os nomes dos parâmetros da função.
+# `parms`: uma lista de símbolos que representam os nomes dos parâmetros da função.
 # A lista pode estar vazia.
 #
 # `body`: o corpo da função como uma expressão que será interpretada quando a função for chamada.
@@ -850,7 +850,7 @@ run(source)
 
 def repl(prompt: str = 'lis.py> ') -> NoReturn:
     "A prompt-read-evaluate-print loop."
-    global_env = standard_env()
+    global_env: Environment = ChainMap({}, standard_env())
     while True:
         val = evaluate(parse(input(prompt)), global_env)
         if val is not None:
