@@ -15,4 +15,4 @@
 (define média (lambda (x y)
     (/ (+ x y) 2)))
     
-(raiz2 12345654321)
+(display (raiz2 12345654321))

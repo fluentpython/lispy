@@ -325,8 +325,12 @@ parse('(+ 32 (* (/ 9 5) c ))') == ...
 
 # ## Ambiente básico para aritmética
 #
-# A função `standard_env()` constrói e devolve um `Environment` carregado
-# com funções pré definidas, similar ao módulo `__builtins__` do Python que está sempre disponível.
+# Qualquer linguagem útil precisa fornecer funções pré-definidas, prontas para usar, como
+# o módulo `__builtins__` de Python.
+#
+# Em *lis.py*, a função `standard_env()` constrói e devolve um `Environment` carregado
+# com funções pré definidas.
+# Por enquanto usaremos uma versão simplificada, adepois colocaremos mais funções.
 
 def standard_env() -> Environment:
     "An environment for an s-expression calculator."
@@ -353,6 +357,7 @@ def standard_env() -> Environment:
             'not': op.not_,
             'number?': lambda x: isinstance(x, (int, float)),
             'procedure?': callable,
+            'modulo': op.mod,
             'round': round,
             'symbol?': lambda x: isinstance(x, Symbol),
         }
@@ -421,7 +426,9 @@ evaluate('+', standard_env())
 #         return x
 # ```
 #
-# Se a expressão não é `list` e nem `Symbol` (devido à verificação anterior), então assuma que é uma constante literal cujo valor é ela própria. Simplesmente devolva-a.
+# Se a expressão não é `list` e nem `Symbol` (devido à verificação anterior),
+# então assuma que é uma constante literal cujo valor é ela própria.
+# Simplesmente devolva-a.
 
 evaluate(1.5, standard_env())
 
@@ -433,7 +440,10 @@ evaluate(1.5, standard_env())
 #         env[var] = evaluate(exp, env)
 # ```
 #
-# Se a expressão é uma lista começando com a palavra reservada `define`, deveria ser seguida por um `Symbol` e uma `Expression`. Recursivamente avalie a expressão no ambiente e armazene o resultado em `env` usando o `Symbol` como chave.
+# Se a expressão é uma lista começando com a palavra reservada `define`,
+# deveria ser seguida por um `Symbol` e uma `Expression`.
+# Recursivamente avalie a expressão no ambiente e
+# armazene o resultado em `env` usando o `Symbol` como chave.
 
 env = standard_env()
 evaluate(parse('(define answer (* 7 6))'), env)
@@ -451,11 +461,11 @@ env['answer']
 #
 # Se a expressão é uma `list` que não começa com uma palavra reservada, então:
 #
-# 1. Avalie a primeira expressão—seu valor deve ser um procedimento (_procedure_ é o termo usado na comunidade Scheme; na comunidade Python dizemos _função_).
+# 1. Avalie a primeira expressão—seu valor deve ser um procedimento (_procedure_ é sinônimo de função na comunidade Scheme).
 # 2. Avalie as expressões restantes (os valores dos argumentos).
-# 3. Chame a procedure passando os valores dos argumentos.
+# 3. Invoque o procedimento passando os valores dos argumentos.
 
-evaluate(['quotient', 8, 3], standard_env())
+evaluate(['quotient', 11, 4], standard_env())
 
 evaluate(['*', ['/', 123, 876], 100], standard_env())
 
@@ -483,7 +493,8 @@ env['a'], env['b']
 
 # ## Execução não-interativa
 #
-# As funções a seguir aceitam o código fonte de um programa em Scheme como uma string formada por uma sequência de expressão-Ss e as executam em sequência.
+# As funções a seguir aceitam o código fonte de um programa em Scheme
+# como uma string formada por uma sequência de expressões-S, e as executam em ordem.
 
 # +
 def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
@@ -548,7 +559,8 @@ run('(factorial 10)')
 
 # A linguagem Scheme aceita `!` como um identificador. Sua tarefa é fazer `factorial()` de Python ficar disponível através do símbolo `!` em Scheme.
 #
-# **Passo 2.1** Descomente a expressão abaixo e execute para ver o erro. Veja para a última linha da saída do erro. Qual é o erro? Você entende porque esse é o erro?
+# **Passo 2.1** Descomente a expressão abaixo e execute para ver o erro. Veja para a última linha da saída do erro.
+# Qual é o erro? Você entende porque esse é o erro?
 
 # +
 # run('(! 10)') == 3628800
@@ -570,9 +582,12 @@ run('(factorial 10)')
 # run('(= 10 (+ 1 2 3 4))')
 # -
 
-# **Passo 3.2.** Edite a função `standard_env` acima para reimplementar o `+`, fazendo a expressão acima devolver `True`.
+# **Passo 3.2.** Edite a função `standard_env` acima para reimplementar o `+`,
+# fazendo a expressão acima devolver `True`.
 #
-# > **DICA 3.2.1**: Escondida abaixo está uma versão variável do `sum` do Python. Considere resolver o exercício sem revelar a dica. Para revelar o código, descomente a linha do `print()` e execute a célula.
+# > **DICA 3.2.1**: Escondida abaixo está uma versão variável do `sum` do Python.
+# Tente resolver o exercício sem revelar a dica.
+# Para revelar o código, descomente a linha do `print()` e execute a célula.
 #
 
 from base64 import b64decode
@@ -580,7 +595,9 @@ blob = (b'ZGVmIHZhcmlhZGljX3N1bSgqYXJncyk6CiAgICByZXR1cm4g'
         b'c3VtKGFyZ3MpCgp2YXJpYWRpY19zdW0oMSwgMiwgMywgNCk=')
 # print(b64decode(blob).decode('utf8'))
 
-# > **DICA 3.2.2**: A seguir, a mesma função em uma única linha do Python. Tente resolver o exercício sem revelar a dica. Para revelar, descomente a linha do `print()` e execute a célula.
+# > **DICA 3.2.2**: A seguir, a mesma função em uma única linha do Python.
+# Tente resolver o exercício sem revelar a dica.
+# Para revelar, descomente a linha do `print()` e execute a célula.
 
 blob = b'ZiA9IGxhbWJkYSAqYXJnczogc3VtKGFyZ3MpCmYoMSwgMiwgMywgNCk='
 # print(b64decode(blob).decode('utf8'))
@@ -612,6 +629,8 @@ def standard_env() -> Environment:
             'car': lambda x: x[0],
             'cdr': lambda x: x[1:],
             'cons': lambda x, y: [x] + y,
+            'display': lambda x: print(lispstr(x), end=''),
+            'newline': lambda: print(),
             'eq?': op.is_,
             'equal?': op.eq,
             'filter': lambda *args: list(filter(*args)),
@@ -631,12 +650,29 @@ def standard_env() -> Environment:
     )
     return env
 
+def lispstr(exp: object) -> str:
+    "Convert a Python object back into a Lisp-readable string."
+    if isinstance(exp, list):
+        return '(' + ' '.join(map(lispstr, exp)) + ')'
+    else:
+        return str(exp)
+
+# Dado um objeto Python que representa uma expressão,
+# `lispstr` retorna o código-fonte em Scheme para essa expressão.
+# Por exemplo:
+
+lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
 # ## `Procedure`: uma classe que representa uma _closure_
 #
 # A próxima melhoria do `evaluate()` será incluir `(lambda …)` para permitir que
 # usuários definam funções, ou _procedimentos_ no jargão de Scheme.
 # Para implementar `lambda`, precisamos de uma classe que represente um procedimento.
+
+# A função `(display x)` usa `lispstr(x)`, que faz o inverso de `parse()`. `(display …)` não emite uma quebra de linha. Para isso é preciso chamar `(newline)` (assim mesmo, sem argumentos).
+
+run('(display (/ 8060598 191919))')
+
 
 class Procedure:
     """A user-defined Scheme procedure."""
@@ -663,7 +699,7 @@ class Procedure:
 #
 # `body`: o corpo da função como uma expressão que será interpretada quando a função for chamada.
 #
-# `env`: o ambiente onde a função é criada. Isso é o torna o procedimento uma
+# `env`: o ambiente onde a função é criada. Isso é o que torna o procedimento uma
 # [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)) ou
 # [*clausura*](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) (o termo em PT não é muito usado, mas o [artigo na Wikipédia](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) é útil).
 #
@@ -807,7 +843,6 @@ run(source)
 #   `...` até que entremos um expressão ou instrução completa que possa ser interpretada.
 #   `mylis` também consegue tratar alguns erros um pouco melhor, porém ainda é fácil de quebrar.
 
-# +
 def repl(prompt: str = 'lis.py> ') -> NoReturn:
     "A prompt-read-evaluate-print loop."
     global_env = standard_env()
@@ -817,27 +852,10 @@ def repl(prompt: str = 'lis.py> ') -> NoReturn:
             print(lispstr(val))
 
 
-def lispstr(exp: object) -> str:
-    "Convert a Python object back into a Lisp-readable string."
-    if isinstance(exp, list):
-        return '(' + ' '.join(map(lispstr, exp)) + ')'
-    else:
-        return str(exp)
-
-
-# -
-
 # A função `repl()` chama a função `standard_env()` para instalar funções essenciais no ambiente global,
 # então entra em um loop infinito lendo e fazendo o parse de cada linha digitada pelo usuário,
 # interpreta cada linha no ambiente global, e mostra o resultado—exceto quando é `None`.
 # A variável `global_env` pode ser modificada pela função `evaluate()`.
-#
-# A função `lispstr()` faz o inverso de `parse()`:
-# dado um objeto Python que representa uma expressão,
-# `lispstr` retorna o código-fonte em Scheme para essa expressão.
-# Por exemplo:
-
-lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
 # ## Exemplos
 #
