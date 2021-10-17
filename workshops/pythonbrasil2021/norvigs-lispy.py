@@ -118,15 +118,16 @@ print(mdc(18, 45))
 #
 # Assim como temos `%` em Python, Scheme tem a função `modulo`.
 # Implementei `resto` apenas para mostrar duas definições de funções.
+#
 # Em Python é mais eficiente usar um laço `while` do que recursão,
 # mas eu queria que os exemplos ficassem parecidos para
 # ajudar você a entender o código em Scheme.
-#
 # Scheme não tem estruturas de laço como `while` ou `for`.
-# Para repetir instruções usa-se recursão.
+# Para repetir operações, usa-se recursão.
+#
 # Note como não há atribuições de variáveis nos exemplos em Scheme e Python acima.
-# Fazer muita recursão e pouca atribuição
-# são duas características típicas de programação em um estilo funcional.
+# Muita recursão e pouca atribuição
+# são características de programação em um estilo funcional.
 #
 # O código completo de *lis.py* para Python 3.10 incluindo testes você pode encontrar no diretório
 # [18-with-match/lispy/py3.10/](https://github.com/fluentpython/example-code-2e/tree/master/18-with-match/lispy/py3.10/)
@@ -512,6 +513,7 @@ def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
 
 
 def run(source: str, env: Optional[Environment] = None) -> Any:
+    result = None
     for result in run_lines(source, env):
         pass
     return result
@@ -706,7 +708,9 @@ class Procedure:
 #
 # `env`: o ambiente onde a função é criada. Isso é o que torna o procedimento uma
 # [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)) ou
-# [*clausura*](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) (o termo em PT não é muito usado, mas o [artigo na Wikipédia](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) é útil).
+# [*clausura*](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o))
+# (o termo em PT não é muito usado, mas o
+# [artigo na Wikipédia](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) é bom).
 #
 # O método `__init__` apenas guarda os argumentos recebidos. Nenhum deles é avaliado quando a função é definida.
 #
@@ -764,9 +768,10 @@ def evaluate(x: Expression, env: Environment) -> Any:
 #         return Procedure(parms, body, env)
 # ```
 #
-# Se a expressão for uma `list` onde o primeiro elemento é a
+# Se a expressão é uma `list` onde o primeiro elemento é a
 # palavra reservada `lambda`, seguida por uma lista de zero ou mais símbolos,
-# e finalmente um `body` (corpo) formado por uma única expressão, então criamos e devolvemos uma `Procedure`.
+# e finalmente um `body` formado por uma única expressão,
+# então criamos e devolvemos um objeto `Procedure`.
 #
 # Exemplo:
 
@@ -812,8 +817,9 @@ run('(quote (/ 10 0))')  # se interpretada, a expressão causaria uma exceção 
 # ```
 #
 # Se a expressão é uma `list` onde o primeiro elemento é a palavra reservada `if`,
-# seguida por exatamente três expressões, avaliamos a expressão `test`.
-# Se o resultado for `True` avaliamos `consequence`; caso contrário avaliamos `alternative`.
+# seguida por exatamente três expressões, avalie a expressão `test`.
+# Se o resultado é `True`, avalie `consequence` devolva seu valor;
+# caso contrário, avalie `alternative` e devolva seu valor.
 #
 # Exemplos:
 
@@ -835,11 +841,35 @@ run(source)
 # ## O REPL
 #
 # O REPL (Read-Eval-Print-Loop) de Norvig é fácil de entender porém não é
-# muito amigavél. Se nenhum argumento é passado na linha de comando para o _lisp.py_,
-# a função `repl()` é invocada pela função `main()` definida no final do módulo.
-# Um prompt `lis.py>` aparece, e nele devemos digitar expressões corretas e completas;
-# se esquecermos de fechar um paretenses o _lis.py_ irá quebrar.
+# muito amigavél.
+# A função `repl()` exibe um prompt `lis.py>`,
+# e nele devemos digitar expressões corretas e completas;
+# se esquecermos de fechar um parêntesis o _lis.py_ irá quebrar.
 #
+# > **DICA**: O `repl()` não funciona bem dentro do Jupyter Notebook.
+#   É melhor experimentá-lo executando o arquivo _norvigs-lispy.py_ como um script:<br>
+#   `$ python3 norvigs-lispy.py`
+
+# +
+def repl(prompt: str = 'lis.py> ') -> NoReturn:
+    "A prompt-read-evaluate-print loop."
+    global_env: Environment = ChainMap({}, standard_env())
+    while True:
+        val = evaluate(parse(input(prompt)), global_env)
+        if val is not None:
+            print(lispstr(val))
+
+if __name__ == '__main__' and '__file__' in globals():
+    import readline  # activate readline
+    repl()
+# -
+
+# A função `repl()` chama a função `standard_env()` para instalar funções essenciais no ambiente global,
+# então entra em um loop infinito lendo e fazendo o parse de cada linha digitada pelo usuário,
+# interpretando cada linha no ambiente global, e mostrando o resultado—exceto quando é `None`.
+# A variável `global_env` pode ser modificada pela função `evaluate()`
+# quando se usa `(define …)` no escopo global.
+
 # > **NOTA**: Quando estudei os scripts _lis.py_ e _lispy.py_ feitos por Norvig,
 #   criei um fork chamado [`mylis`](https://github.com/fluentpython/lispy/blob/main/mylis)
 #   com algumas funcionalidades a mais,
@@ -848,22 +878,30 @@ run(source)
 #   `...` até que entremos um expressão ou instrução completa que possa ser interpretada.
 #   `mylis` também consegue tratar alguns erros um pouco melhor, porém ainda é fácil de quebrar.
 
-def repl(prompt: str = 'lis.py> ') -> NoReturn:
-    "A prompt-read-evaluate-print loop."
-    global_env = standard_env()
-    while True:
-        val = evaluate(parse(input(prompt)), global_env)
-        if val is not None:
-            print(lispstr(val))
-
-
-# A função `repl()` chama a função `standard_env()` para instalar funções essenciais no ambiente global,
-# então entra em um loop infinito lendo e fazendo o parse de cada linha digitada pelo usuário,
-# interpreta cada linha no ambiente global, e mostra o resultado—exceto quando é `None`.
-# A variável `global_env` pode ser modificada pela função `evaluate()`.
 
 # ## Exemplos
+
+# ### Máximo divisor comum
 #
+# O [algoritmo de Euclides](https://pt.wikipedia.org/wiki/Algoritmo_de_Euclides).
+
+mdc_scm = '''
+(define resto (lambda (m n)
+    (- m (* n (quotient m n)))))
+
+(define mdc (lambda (m n)
+    (if (= n 0)
+        m
+        (mdc n (resto m n)))))
+
+(mdc 18 45)
+'''
+run(mdc_scm)
+
+# > **NOTA**: Este exemplo usa `lambda` dentro de `define` em vez da sintaxe abreviada com `define`
+# ilustrada na função `mdc` em [Sintaxe de Scheme](#Sintaxe-de-Scheme).
+# Leia mais sobre essa sintaxe abreviada em [Açúcar Sintático](Açúcar-Sintático).
+
 # ### Fatorial recursivo simples
 
 fatorial_scm = '''
@@ -896,9 +934,12 @@ fatorial_scm = '''
 '''
 run(fatorial_scm)
 
-# A função `fatorial-iter` faz recursão de cauda:
+# Na função `fatorial-iter`,
 # a chamada recursiva é devolvida como resultado diretamente.
-# Isso é denominado uma chamada de cauda ou [*tail call*](https://en.wikipedia.org/wiki/Tail_call).
+# Isso é denominado uma _recursão de cauda_,
+# um caso particular de _chamada de cauda_ ou [*tail call*](https://en.wikipedia.org/wiki/Tail_call),
+# quando a última operação no caminho de execução de uma função é
+# devolver o resultado de invocar outra função (ou própria, no caso de recursão).
 #
 # Em contraste, o [Fatorial recursivo simples](#Fatorial-recursivo-simples)
 # não é um exemplo de recursão de cauda:
@@ -915,11 +956,61 @@ run(fatorial_scm)
 # [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py)
 # implementam PTC, o que significa que nesses interpretadores uma recursão de cauda não faz a pilha crescer a cada iteração.
 
+# ### Raiz quadrada por aproximação
+#
+# O [método babilônio](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
+# um algoritmo para calcular raiz quadrada usado desde a antiguidade.
+# É um caso especial do
+# [Método de Newton–Raphson](https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Newton%E2%80%93Raphson)
+# para calcular raízes de funções.
+# Adaptei o código abaixo de um
+# [exemplo](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html)
+# do livro clássico *Structure and Interpretation of Computer Programs*.
+
+raiz2_scm = """
+(define raiz2 (lambda (x)
+    (raiz2-iter 1.0 x)))
+
+(define raiz2-iter (lambda (chute x)
+    (if (aproximado? chute x)
+        chute
+        (raiz2-iter (melhorar chute x) x))))
+
+(define aproximado? (lambda (chute x)
+    (< (abs (- (* chute chute) x)) 0.001)))
+
+(define melhorar (lambda (chute x)
+    (média chute (/ x chute))))
+
+(define média (lambda (x y)
+    (/ (+ x y) 2)))
+
+(raiz2 12345654321)
+"""
+run(raiz2_scm)
+
+# ### Média de uma lista de números
+#
+# Um exemplo simples com operações de manipulação de lista: `null?`, `car`, `cdr`, `list`.
+
+média_scm = """
+(define média (lambda (lista)
+    (média-iter lista 0 0)))
+    
+(define média-iter (lambda (lista contador soma)
+    (if (null? lista)
+        (/ soma contador)
+        (média-iter (cdr lista) (+ contador 1) (+ soma (car lista))))))
+
+(média (list 1 2 3 4))
+"""
+run(média_scm)
+
 # ### Quicksort
 #
 # O [algoritmo recursivo de ordenação](https://pt.wikipedia.org/wiki/Quicksort) eficiente e elegante inventado por Tony Hoare.
 #
-# Observe na última linha o uso de `quote` para criar uma lista de números, e na função `quicksort` o uso de funções de tratamento de listas: `null?`, `car`, `cdr`, `append`, `list`, e `filter`.
+# Observe o uso de mais funções que operam com listas: `append` e `filter`. Veja em `standar_env()` que o significado de `append` em Scheme é concatenar listas (bem diferente do que faz o método `list.append()` em Python).
 
 quicksort_scm = """
 (define quicksort (lambda (lst)
@@ -936,63 +1027,23 @@ quicksort_scm = """
                     (filter (lambda (x) (>= x pivô)) resto)))
 ))))
 
-(quicksort (quote (2 1 6 3 4 0 8 9 7 5)))
+(display (quicksort (list 2 1 6 3 4 0 8 9 7 5)))
+(newline)
 """
 run(quicksort_scm)
 
-# > **NOTA**: o código acima funciona em *lis.py*, mas não em Scheme padrão. A forma `define` não pode ser usada naquele contexto em Scheme padrão; em vez dela, usaríamos a forma `let`—que não existe em *lis.py*.
-
-# ### Raiz quadrada por aproximação
-#
-# O [método bibilônio](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
-# um algoritmo para calcular raiz quadrada usado desde a antiguidade. É um caso especial do [Método de Newton–Raphson](https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Newton%E2%80%93Raphson) para cálculo de raízes de funções.
-# Este código foi adaptado de um [exemplo](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html) do livro *Structure and Interpretation of Computer Programs*.
-
-raiz2_scm = """
-(define raiz2 (lambda (x)
-    (raiz2-iter 1.0 x)))
-
-(define raiz2-iter (lambda (chute x)
-    (if (próximo? chute x)
-        chute
-        (raiz2-iter (melhorar chute x) x))))
-
-(define próximo? (lambda (chute x)
-    (< (abs (- (* chute chute) x)) 0.001)))
-
-(define melhorar (lambda (chute x)
-    (média chute (/ x chute))))
-
-(define média (lambda (x y)
-    (/ (+ x y) 2)))
-
-(raiz2 12345654321)
-"""
-run(raiz2_scm)
-
-# ### Máximo divisor comum
-#
-# O [algoritmo de Euclides](https://pt.wikipedia.org/wiki/Algoritmo_de_Euclides).
-
-mdc_scm = '''
-(define resto (lambda (m n)
-    (- m (* n (quotient m n)))))
-
-(define mdc (lambda (m n)
-    (if (= n 0)
-        m
-        (mdc n (resto m n)))))
-
-(mdc 18 45)
-'''
-run(mdc_scm)
-
-# > **NOTA**: Este exemplo usa `lambda` dentro de `define` em vez da sintaxe abreviada com `define`
-# ilustrada na função `mdc` em [Sintaxe de Scheme](#Sintaxe-de-Scheme). Leia mais a seguir.
+# > **NOTA**: o código acima funciona em *lis.py*, mas não em Scheme padrão.
+# A forma `define` não pode ser usada naquele contexto em Scheme padrão;
+# em vez dela, usaríamos a forma `let`—que não existe em *lis.py*.
+# O funcionamento de `define` em *lis.py* é uma simplificação feita por Norvig,
+# imitando a semântica de atribuições em Python.
+# Quando `define` ocorre no nível global, é criada ou atualizada uma variável no ambiente global.
+# No corpo de uma função, `define` cria ou atualiza uma variável
+# no primeiro dicionário do `ChainMap` que define o ambiente local.
 
 # ## Açúcar Sintático
 #
-# Por padrão Scheme tem uma sintaxe alternativa para `define` que permite definir funções nomeadas
+# Por padrão, Scheme tem uma sintaxe alternativa para `define` que permite definir funções nomeadas
 # sem usar a palavra reservada `lambda`.
 #
 # A sintaxe é: `(define (name params…) body…)`, onde:
@@ -1004,7 +1055,7 @@ run(mdc_scm)
 # `body…`: uma ou mais expressões para serem usadas como o corpo da função.
 #
 # Isso é um exemplo de _açúcar sintático_:
-# uma sintaxe nova que não adiciona nenhuma funcionalidade a linguagem,
+# uma sintaxe nova que não adiciona nenhuma funcionalidade à linguagem,
 # mas facilita o uso dela, tornando-a mais conveniente.
 #
 # A versão de `mdc` apresentada na seção [Sintaxe de Scheme](#Sintaxe-de-Scheme)
@@ -1030,4 +1081,10 @@ mdc2_scm = '''
 '''
 # run(mdc2_scm)
 
+# ## Fim
 
+# Parabéns por ter chegado até aqui!
+#
+# A célula a seguir torna mais fácil verificar que nenhuma célula acima está levantando uma exceção.
+
+run('(display (quote (Este é o lis.py de Norvig))) (newline)')
