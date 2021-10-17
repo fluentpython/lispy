@@ -51,10 +51,12 @@ escrevi as mudanças e adições descritas nos arquivos README em cada diretóri
 [How to Design Programs, Second Edition](https://htdp.org/)
 * Krishnamurthi, Shriram:
 [Programming Languages: Application and Interpretation](https://www.plai.org/) (PLAI)
+* Sperber, Michael; et. al. [Revised<sup>6</sup> Report on the Algorithmic Language Scheme](http://www.r6rs.org/)
 
 ### Interpretadores e ferramentas
 
 * [Racket](https://racket-lang.org/): the Language-Oriented Programming Language
+* [GNU Guile](https://www.gnu.org/software/guile/): GNU Ubiquitous Intelligent Language for Extensions
 * [Chicken Scheme](https://www.call-cc.org/): a practical and portable Scheme system
 * [A Meta-Circular Interpreter for Scheme](https://scheme.com/tspl4/examples.html#./examples:h7): example 12.7 from TSPL
 * [McCarthy's original Lisp](references/jmc.lisp)
