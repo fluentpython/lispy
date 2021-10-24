@@ -27,6 +27,14 @@ def test_LOOKUP_is_case_sensitive():
     assert False is got
 
 
+def test_EVAL_apply():
+    exp = '(ADD 1 2 3 4)'
+    apply_src = f'(apply (LOOKUP (FIRST (quote {exp})) ENV) (REST (quote {exp})))'
+    source = META_SCM + apply_src
+    got = mylis.run(source)
+    assert 10 is got
+
+
 @mark.parametrize('exp, want', [
     ('1.5', 1.5),
     ('EQUAL?', op.eq),
