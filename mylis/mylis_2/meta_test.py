@@ -4,6 +4,7 @@ from pathlib import Path
 from pytest import mark
 
 import mylis
+import lis
 
 META_SCM = Path('meta.scm').read_text()
 
@@ -46,6 +47,20 @@ def test_EVAL_apply():
     ('(MUL (DIV 300 400) 100)', 75),
 ])
 def test_EVAL(exp, want):
+    lis.TCO_ENABLED = False
     source = META_SCM + f'(EVAL (quote {exp}) ENV)'
     got = mylis.run(source)
     assert want == got
+    lis.TCO_ENABLED = True
+
+
+@mark.parametrize('exp, want', [
+    ('(1 2 3)', [1, 2, 3]),
+    ('((ADD 1 2) (ADD 3 4))', [3, 7]),
+])
+def test_EVLIS(exp, want):
+    lis.TCO_ENABLED = False
+    source = META_SCM + f'(EVLIS (quote {exp}) ENV)'
+    got = mylis.run(source)
+    assert want == got
+    lis.TCO_ENABLED = True
