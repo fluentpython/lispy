@@ -1,57 +1,43 @@
 import operator as op
+from pathlib import Path
+
+from pytest import mark
 
 import mylis
 
-env_scm = """
-(define standard-env (list
-    (list (quote not) not)
-    (list (quote eq?) eq?)
-))
-standard-env
-"""
+META_SCM = Path('meta.scm').read_text()
 
-def test_env_build():
-    got = mylis.run(env_scm)
-    assert got == [['not', op.not_], ['eq?', op.is_]]
 
-scan_scm = """
-(define l (quote (a b c)))
-(define (scan what where)
-    (cond ((null? where) #f)
-          ((equal? what (car where)) what)
-          (else (scan what (cdr where)))))
-"""
-
-def test_scan():
-    source = scan_scm + '(scan (quote a) l )'
+def test_ENV_data():
+    source = META_SCM + 'ENV'
     got = mylis.run(source)
-    assert got == 'a'
+    want = (['NOT', op.not_], ['EQ?', op.is_], ['EQUAL?', op.eq])
+    assert all(pair in got for pair in want)
 
 
-def test_scan_not_found():
-    source = scan_scm + '(scan (quote z) l )'
+def test_LOOKUP():
+    source = META_SCM + '(LOOKUP (quote EQ?) ENV)'
     got = mylis.run(source)
-    assert got is False
+    assert op.is_ == got
 
 
-lookup_scm = """
-(define env (list
-    (list (quote not) not)
-    (list (quote eq?) eq?)
-))
-(define (lookup what where)
-    (cond ((null? where) #f)
-          ((equal? what (car (car where))) (car (cdr (car where))))
-          (else (lookup what (cdr where)))))
-"""
-
-def test_lookup():
-    source = lookup_scm + '(lookup (quote eq?) env)'
+def test_LOOKUP_is_case_sensitive():
+    source = META_SCM + '(LOOKUP (quote eq?) ENV)'
     got = mylis.run(source)
-    assert got == op.is_
+    assert False is got
 
 
-def test_lookup_not_found():
-    source = lookup_scm + '(lookup (quote z) env )'
+@mark.parametrize('exp, want', [
+    ('1.5', 1.5),
+    ('EQUAL?', op.eq),
+    ('(QUOTE Ni!)', 'Ni!'),
+    ('(IF 1 10 20)', 10),
+    ('(IF 0 10 20)', 20),
+    ('(IF (EQUAL? 3 3) (QUOTE #T) (QUOTE #F))', '#T'),
+    ('(IF (EQUAL? 3 4) (QUOTE #T) (QUOTE #F))', '#F'),
+    ('(MUL (DIV 300 400) 100)', 75),
+])
+def test_EVAL(exp, want):
+    source = META_SCM + f'(EVAL (quote {exp}) ENV)'
     got = mylis.run(source)
-    assert got is False
+    assert want == got

@@ -1,0 +1,48 @@
+(define ENV (list
+    (list (quote NOT) not)
+    (list (quote EQ?) eq?)
+    (list (quote EQUAL?) equal?)
+    (list (quote ADD) +)
+    (list (quote SUB) -)
+    (list (quote MUL) *)
+    (list (quote DIV) /)
+))
+
+(define (LOOKUP name env)
+    (cond
+        ((null? env) #f)
+        ((equal? name (car (car env))) (car (cdr (car env))))
+        (else (LOOKUP name (cdr env)))))
+
+(define (REST list) (cdr list))
+(define (FIRST list) (car list))
+(define (SECOND list) (car (cdr list)))
+(define (THIRD list) (car (cdr (cdr list))))
+(define (FOURTH list) (car (cdr (cdr (cdr list)))))
+
+(define (EVLIS exps env)
+    (if (null? exps)
+        (quote ())
+        (cons (EVAL (FIRST exps) env)
+              (EVLIS (REST exps) env))
+    )
+)
+
+(define (EVAL exp env)
+    (cond
+        ((number? exp) exp)
+        ((symbol? exp) (LOOKUP exp env))
+        ((equal? (FIRST exp) (quote QUOTE))
+            (SECOND exp)
+        )
+        ((equal? (car exp) (quote IF))
+            (if (EVAL (SECOND exp))
+                (EVAL (THIRD exp))
+                (EVAL (FOURTH exp))
+            )
+        )
+        (else
+            (apply (LOOKUP (FIRST exp) ENV) (EVLIS (REST exp) ENV))
+        )
+    )
+)
