@@ -35,7 +35,7 @@ Unless otherwise noted, I wrote the changes and additions described in the READM
 * Butterick, Mathew: [Beautiful Racket—an introduction to language-oriented programming using Racket](https://beautifulracket.com/)
 * Felleisen, Matthias; Findler, Robert Bruce; Flatt, Matthew; Krishnamurthi, Shriram: [How to Design Programs, Second Edition](https://htdp.org/)
 * Krishnamurthi, Shriram: [Programming Languages: Application and Interpretation](https://www.plai.org/) (PLAI)
-* Sperber, Michael; et. al. [Revised<sup>6</sup> Report on the Algorithmic Language Scheme](http://www.r6rs.org/)
+* Sperber, Michael; et. al. [Revised<sup>6</sup> Report on the Algorithmic Language Scheme](http://www.r6rs.org/) (R<sup>6</sup>RS)
 
 ### Interpreters and tools
 

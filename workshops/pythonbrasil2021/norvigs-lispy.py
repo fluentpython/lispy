@@ -27,7 +27,7 @@
 #   * [Exercício 0](#Exercício-0)
 # * [Ambiente básico para aritmética](#Ambiente-básico-para-aritmética)
 # * [Uma calculadora](#Uma-calculadora)
-# * [Execução não interativa](#Execução-não-interativa)
+# * [Execução não-interativa](#Execução-não-interativa)
 #   * [Exercício 1](#Exercício-1)
 #   * [Exercício 2](#Exercício-2)
 #   * [Exercício 3](#Exercício-3)
@@ -701,7 +701,7 @@ class Procedure:
 #
 # Os parâmetros obrigatórios para criar uma `Procedure` são:
 #
-# `params`: uma lista de símbolos que representam os nomes dos parâmetros da função.
+# `parms`: uma lista de símbolos que representam os nomes dos parâmetros da função.
 # A lista pode estar vazia.
 #
 # `body`: o corpo da função como uma expressão que será interpretada quando a função for chamada.
@@ -996,7 +996,7 @@ run(raiz2_scm)
 média_scm = """
 (define média (lambda (lista)
     (média-iter lista 0 0)))
-    
+
 (define média-iter (lambda (lista contador soma)
     (if (null? lista)
         (/ soma contador)
@@ -1010,7 +1010,10 @@ run(média_scm)
 #
 # O [algoritmo recursivo de ordenação](https://pt.wikipedia.org/wiki/Quicksort) eficiente e elegante inventado por Tony Hoare.
 #
-# Observe o uso de mais funções que operam com listas: `append` e `filter`. Veja em `standar_env()` que o significado de `append` em Scheme é concatenar listas (bem diferente do que faz o método `list.append()` em Python).
+# Note as funções `append` e `filter` que operam com listas.
+# Confira em `standard_env()` que
+# o comportamento de `append` em Scheme é criar uma nova lista concatenando listas.
+# É mais parecido com `l1 + l2` em Python, e bem diferente de fazer `l1.append(l2)`.
 
 quicksort_scm = """
 (define quicksort (lambda (lst)
