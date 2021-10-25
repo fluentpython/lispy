@@ -44,8 +44,10 @@ def test_EVAL_apply():
     ('(IF 0 10 20)', 20),
     ('(IF (EQUAL? 3 3) (QUOTE #T) (QUOTE #F))', '#T'),
     ('(IF (EQUAL? 3 4) (QUOTE #T) (QUOTE #F))', '#F'),
-    ('(MUL (DIV 300 400) 100)', 75),
-    #('((LAMBDA (X) (MUL X 2)) 21))', 42),
+    ('(MUL 11111 11111)', 123454321),
+    ('(MUL (DIV 333 444) 100)', 75),
+    ('(ADD 32 (MUL 20 (DIV 9 5)))', 68),
+    #('((LAMBDA (X) (MUL X 2)) 21))', 42),  # WIP
 ])
 def test_EVAL(exp, want):
     lis.TCO_ENABLED = False
