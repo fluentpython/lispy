@@ -1,4 +1,4 @@
-(define ENV (list
+(define GLOBAL-ENV (list
     (list (quote NOT) not)
     (list (quote EQ?) eq?)
     (list (quote EQUAL?) equal?)
@@ -35,14 +35,17 @@
         ((equal? (FIRST exp) (quote QUOTE))
             (SECOND exp)
         )
-        ((equal? (car exp) (quote IF))
-            (if (EVAL (SECOND exp))
-                (EVAL (THIRD exp))
-                (EVAL (FOURTH exp))
+        ((equal? (FIRST exp) (quote IF))
+            (if (EVAL (SECOND exp) env)
+                (EVAL (THIRD exp) env)
+                (EVAL (FOURTH exp) env)
             )
         )
+        ((equal? (FIRST exp) (quote LAMBDA))
+            (lambda (SECOND exp) (THIRD exp))
+        )
         (else
-            (apply (LOOKUP (FIRST exp) ENV) (EVLIS (REST exp) ENV))
+            (apply (EVAL (FIRST exp) env) (EVLIS (REST exp) env))
         )
     )
 )

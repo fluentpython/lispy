@@ -9,28 +9,28 @@ import lis
 META_SCM = Path('meta.scm').read_text()
 
 
-def test_ENV_data():
-    source = META_SCM + 'ENV'
+def test_GLOBAL_ENV_data():
+    source = META_SCM + 'GLOBAL-ENV'
     got = mylis.run(source)
     want = (['NOT', op.not_], ['EQ?', op.is_], ['EQUAL?', op.eq])
     assert all(pair in got for pair in want)
 
 
 def test_LOOKUP():
-    source = META_SCM + '(LOOKUP (quote EQ?) ENV)'
+    source = META_SCM + '(LOOKUP (quote EQ?) GLOBAL-ENV)'
     got = mylis.run(source)
     assert op.is_ == got
 
 
 def test_LOOKUP_is_case_sensitive():
-    source = META_SCM + '(LOOKUP (quote eq?) ENV)'
+    source = META_SCM + '(LOOKUP (quote eq?) GLOBAL-ENV)'
     got = mylis.run(source)
     assert False is got
 
 
 def test_EVAL_apply():
     exp = '(ADD 1 2 3 4)'
-    apply_src = f'(apply (LOOKUP (FIRST (quote {exp})) ENV) (REST (quote {exp})))'
+    apply_src = f'(apply (LOOKUP (FIRST (quote {exp})) GLOBAL-ENV) (REST (quote {exp})))'
     source = META_SCM + apply_src
     got = mylis.run(source)
     assert 10 is got
@@ -45,10 +45,11 @@ def test_EVAL_apply():
     ('(IF (EQUAL? 3 3) (QUOTE #T) (QUOTE #F))', '#T'),
     ('(IF (EQUAL? 3 4) (QUOTE #T) (QUOTE #F))', '#F'),
     ('(MUL (DIV 300 400) 100)', 75),
+    #('((LAMBDA (X) (MUL X 2)) 21))', 42),
 ])
 def test_EVAL(exp, want):
     lis.TCO_ENABLED = False
-    source = META_SCM + f'(EVAL (quote {exp}) ENV)'
+    source = META_SCM + f'(EVAL (quote {exp}) GLOBAL-ENV)'
     got = mylis.run(source)
     assert want == got
     lis.TCO_ENABLED = True
@@ -56,11 +57,11 @@ def test_EVAL(exp, want):
 
 @mark.parametrize('exp, want', [
     ('(1 2 3)', [1, 2, 3]),
-    ('((ADD 1 2) (ADD 3 4))', [3, 7]),
+    ('((ADD 1 2 3) (ADD 3 4 5))', [6, 12]),
 ])
 def test_EVLIS(exp, want):
     lis.TCO_ENABLED = False
-    source = META_SCM + f'(EVLIS (quote {exp}) ENV)'
+    source = META_SCM + f'(EVLIS (quote {exp}) GLOBAL-ENV)'
     got = mylis.run(source)
     assert want == got
     lis.TCO_ENABLED = True
