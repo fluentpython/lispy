@@ -8,7 +8,8 @@ Why isn't if a function?
 Why does Python need to add keywords from time to time?
 What precisely is a closure, what problem does it solve, and how does it work?
 These are some of the fundamental questions you'll be able to answer after this tutorial:
-an interactive exploration of Peter Norvig's `lis.py`–an interpreter for a subset of the Scheme dialect of Lisp written in Python.
+an interactive exploration of Peter Norvig's `lis.py`–an interpreter for
+a subset of the Scheme dialect of Lisp written in Python.
 
 ## Description
 
@@ -37,7 +38,8 @@ representing functions with closures—among other topics.
 
 ## Format
 
-With Norvig's permission, I've updated `lis.py` and integrated it into a Jupyter notebook
+With Norvig's permission, I've updated `lis.py` and integrated it into a
+[Jupyter notebook](https://github.com/fluentpython/lispy/blob/main/workshops/thoughtworks2021/norvigs-lispy.ipynb)
 so that attendees can study and experiment with each major component as we build the interpreter.
 The notebook runs on Binder, so attendees don't need to install anything:
 they will do all experimentation and coding exercises using just a Web browser.
