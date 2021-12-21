@@ -38,12 +38,18 @@ representing functions with closures—among other topics.
 
 ## Format
 
+This is a 3-hour tutorial including with 30 minutes for exercises and 30 minutes for a break.
+The presentation is split in three parts, with exercises after each part.
+
+## Required software
+
+Attendees need a modern Web browser connected to the Internet.
+
 With Norvig's permission, I've updated `lis.py` and integrated it into a
 [Jupyter notebook](https://github.com/fluentpython/lispy/blob/main/workshops/thoughtworks2021/norvigs-lispy.ipynb)
 so that attendees can study and experiment with each major component as we build the interpreter.
 The notebook runs on Binder, so attendees don't need to install anything:
 they will do all experimentation and coding exercises using just a Web browser.
-We will do 30 minutes of exercises, split in three segments.
 
 Click [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fluentpython/lispy/HEAD?labpath=workshops%2Fthoughtworks2021%2Fnorvigs-lispy.ipynb)
  to run this tutorial's Jupyter notebook at Binder. 
