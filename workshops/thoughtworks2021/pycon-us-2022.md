@@ -46,4 +46,4 @@ they will do all experimentation and coding exercises using just a Web browser.
 We will do 30 minutes of exercises, split in three segments.
 
 Click [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fluentpython/lispy/HEAD?labpath=workshops%2Fthoughtworks2021%2Fnorvigs-lispy.ipynb)
- to run Jupyter Notebook at Binder. 
+ to run this tutorial's Jupyter notebook at Binder. 
