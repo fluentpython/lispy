@@ -29,9 +29,9 @@ Why should you study lis.py? This is what I got out of it:
 
 ## Audience
 
-This tutorial is for practicing Python programmers who want to learn idiomatic Python coding
-through a beautiful, powerful example showcasing modern Python best practices.
-Attendees will experiment with a functional interpreter,
+This tutorial is for practicing Python programmers who want to learn how a programming language works,
+through a beautiful, functional example showcasing modern Python best practices.
+Attendees will experiment with the building blocks of an interpreter,
 learning fundamental concepts about parsing,
 recursive evaluation of expressions and control structures,
 representing functions with closures—among other topics.
