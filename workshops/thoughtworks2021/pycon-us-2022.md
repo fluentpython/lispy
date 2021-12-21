@@ -13,7 +13,8 @@ a subset of the Scheme dialect of Lisp written in Python.
 
 ## Description
 
-Peter Norvig of Stanford University wrote `lis.py`:
+[Peter Norvig](https://norvig.com/) of Stanford University wrote
+[`lis.py`](https://github.com/norvig/pytudes/blob/main/py/lis.py):
 an interpreter for a subset of the Scheme dialect of Lisp in 132 lines of readable Python.
 I took Norvig's beautiful code, updated it to modern Python coding style,
 and integrated it into a Jupyter notebook with explanations as well as
