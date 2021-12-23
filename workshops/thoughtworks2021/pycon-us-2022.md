@@ -4,8 +4,8 @@
 
 ## Abstract
 
-Why isn't if a function?
-Why does Python need to add keywords from time to time?
+Why isn't `if` a function?
+Why does Python need to add keywords like `yield` or `async` from time to time?
 What precisely is a closure, what problem does it solve, and how does it work?
 These are some of the fundamental questions you'll be able to answer after this tutorial:
 an interactive exploration of Peter Norvig's `lis.py`–an interpreter for
@@ -16,7 +16,7 @@ a subset of the Scheme dialect of Lisp written in Python.
 [Peter Norvig](https://norvig.com/) of Stanford University wrote
 [`lis.py`](https://github.com/norvig/pytudes/blob/main/py/lis.py):
 an interpreter for a subset of the Scheme dialect of Lisp in 132 lines of readable Python.
-I took Norvig's beautiful code, updated it to modern Python coding style,
+I took Norvig's beautiful code, updated it to modern Python,
 and integrated it into a Jupyter notebook with explanations as well as
 interactive experiments and exercises checked automatically.
 
