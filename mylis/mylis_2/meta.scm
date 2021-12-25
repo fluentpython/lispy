@@ -1,4 +1,4 @@
-(define GLOBAL-ENV (list
+(define (GLOBAL-ENV) (list
     (list (quote NOT) not)
     (list (quote EQ?) eq?)
     (list (quote EQUAL?) equal?)
@@ -6,6 +6,9 @@
     (list (quote SUB) -)
     (list (quote MUL) *)
     (list (quote DIV) /)
+    (list (quote MAP) map)
+    (list (quote LIST) list)
+    (list (quote APPEND) append)
 ))
 
 (define (LOOKUP name env)
@@ -47,5 +50,14 @@
         (else
             (apply (EVAL (FIRST exp) env) (EVLIS (REST exp) env))
         )
+    )
+)
+
+(define (MAKE-PROCEDURE parms body definition-env)
+    (lambda (args)
+        (EVAL body
+            (APPEND
+                (MAP LIST parms args)
+                definition-env))
     )
 )

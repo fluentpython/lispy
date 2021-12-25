@@ -25,32 +25,19 @@ Expression: TypeAlias = Atom | list
 Environment: TypeAlias = MutableMapping[Symbol, object]
 
 
-class Procedure:
-    "A user-defined Scheme procedure."
-
-    def __init__(
-        self, parms: list[Symbol], body: list[Expression], env: Environment
-    ):
-        self.parms = parms
-        self.body = body
-        self.definition_env = env
-
-    def __call__(self, *args: Expression) -> Any:
-        local_env = dict(zip(self.parms, args))
-        env: Environment = ChainMap(local_env, self.definition_env)
-        for exp in self.body:
-            result = evaluate(exp, env)
-        return result
-
 def make_procedure(
-    parms: list[Symbol], body: list[Expression], definition_env: Environment
+        parms: list[Symbol],
+        body: list[Expression],
+        definition_env: Environment
     ) -> Callable[[Expression, ...], Any]:
+
     def procedure(*args: Expression) -> Any:
         local_env = dict(zip(parms, args))
         env: Environment = ChainMap(local_env, definition_env)
         for exp in body:
             result = evaluate(exp, env)
         return result
+
     return procedure
 
 ################ global environment

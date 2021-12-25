@@ -10,27 +10,27 @@ META_SCM = Path('meta.scm').read_text()
 
 
 def test_GLOBAL_ENV_data():
-    source = META_SCM + 'GLOBAL-ENV'
+    source = META_SCM + '(GLOBAL-ENV)'
     got = mylis.run(source)
     want = (['NOT', op.not_], ['EQ?', op.is_], ['EQUAL?', op.eq])
     assert all(pair in got for pair in want)
 
 
 def test_LOOKUP():
-    source = META_SCM + '(LOOKUP (quote EQ?) GLOBAL-ENV)'
+    source = META_SCM + '(LOOKUP (quote EQ?) (GLOBAL-ENV))'
     got = mylis.run(source)
     assert op.is_ == got
 
 
 def test_LOOKUP_is_case_sensitive():
-    source = META_SCM + '(LOOKUP (quote eq?) GLOBAL-ENV)'
+    source = META_SCM + '(LOOKUP (quote eq?) (GLOBAL-ENV))'
     got = mylis.run(source)
     assert False is got
 
 
 def test_EVAL_apply():
     exp = '(ADD 1 2 3 4)'
-    apply_src = f'(apply (LOOKUP (FIRST (quote {exp})) GLOBAL-ENV) (REST (quote {exp})))'
+    apply_src = f'(apply (LOOKUP (FIRST (quote {exp})) (GLOBAL-ENV)) (REST (quote {exp})))'
     source = META_SCM + apply_src
     got = mylis.run(source)
     assert 10 is got
@@ -51,7 +51,7 @@ def test_EVAL_apply():
 ])
 def test_EVAL(exp, want):
     lis.TCO_ENABLED = False
-    source = META_SCM + f'(EVAL (quote {exp}) GLOBAL-ENV)'
+    source = META_SCM + f'(EVAL (quote {exp}) (GLOBAL-ENV))'
     got = mylis.run(source)
     assert want == got
     lis.TCO_ENABLED = True
@@ -63,7 +63,21 @@ def test_EVAL(exp, want):
 ])
 def test_EVLIS(exp, want):
     lis.TCO_ENABLED = False
-    source = META_SCM + f'(EVLIS (quote {exp}) GLOBAL-ENV)'
+    source = META_SCM + f'(EVLIS (quote {exp}) (GLOBAL-ENV))'
     got = mylis.run(source)
     assert want == got
     lis.TCO_ENABLED = True
+
+
+def test_zip():
+    test = '(MAP LIST (QUOTE (1 2 3)) (QUOTE (a b c)))'
+    source = META_SCM + f'(EVAL (quote {test}) (GLOBAL-ENV))'
+    got = mylis.run(source)
+    assert [[1, 'a'], [2, 'b'], [3, 'c']] == got
+
+
+def test_MAKE_PROCEDURE():
+    test = '(MAKE-PROCEDURE (LIST A B) (QUOTE (MUL A B)) (GLOBAL-ENV))'
+    source = META_SCM + f'(EVAL (quote {test}) (GLOBAL-ENV))'
+    got = mylis.run(source)
+    assert [] == got
