@@ -6,159 +6,145 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.0
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
-# # O *lis.py* de Norvig
+# # Norvig's _lis.py_
 #
 #
 # ![Norvig's lispy](lispy.png)
 
 # Contents:
 #
-# * [Introdução](#Introdução)
-# * [Sintaxe de Scheme](#Sintaxe-de-Scheme)
-# * [Imports e tipos](#Imports-e-tipos)
-# * [O parser](#O-parser)
-#   * [Exercício 0](#Exercício-0)
-# * [Ambiente básico para aritmética](#Ambiente-básico-para-aritmética)
-# * [Uma calculadora](#Uma-calculadora)
-# * [Execução não-interativa](#Execução-não-interativa)
-#   * [Exercício 1](#Exercício-1)
-#   * [Exercício 2](#Exercício-2)
-#   * [Exercício 3](#Exercício-3)
+# * [Introduction](#Introduction)
+# * [Scheme Syntax](#Scheme-Syntax)
+# * [Imports and types](#Imports-and-types)
+# * [The Parser](#The-Parser)
+#   * [Exercise 0](#Exercise-0)
+# * [The Built-in Environment](#The-Built-in-Environment)
+# * [A Calculator](#A-Calculator)
+# * [Non-interactive execution](#Non-interactive-execution)
+#   * [Exercise 1](#Exercise-1)
+#   * [Exercise 2](#Exercise-2)
 # * [User defined procedures](#User-defined-procedures)
-# * [Um ambiente mais completo](#Um-ambiente-mais-completo)
-# * [`Procedure`: uma clase que representa uma _closure_](#Procedure:-uma-classe-que-representa-uma-closure)
-# * [Avaliador com `lambda`, `if` e `quote`](#Avaliador-com-lambda,-if-e-quote)
-# * [O REPL](#O-REPL)
-# * [Exemplos](#Exemplos)
-# * [Açúcar Sintático](#Açúcar-Sintático)
-#   * [Exercício para casa](#Exercício-para-casa)
+# * [A more complete environment](#A-more-complete-environment)
+# * [`Procedure`: a class to represent a closure](#Procedure:-a-class-to-represent-a-closure)
+# * [Evaluate with `lambda`, `if`, and `quote`](#Evaluate-with-lambda,-if,-and-quote)
+# * [The REPL](#The-REPL)
+# * [Examples](#Examples)
+# * [Syntactic sugar](#Syntactic-sugar)
 #
-# > **LICENÇAS**:<br>
-#   Código © 2010-2018 Peter Norvig, [MIT License](https://github.com/fluentpython/lispy/blob/main/LICENSE)<br>
-#   Texto © 2022 Luciano Ramalho, [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+# > **LICENSES**:<br>
+#   Code © 2010-2018 Peter Norvig, [MIT License](https://github.com/fluentpython/lispy/blob/main/LICENSE)<br>
+#   Text © 2022 Luciano Ramalho, [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 #
 
-# ## Introdução
+# ## Introduction
 #
-# [Peter Norvig](https://norvig.com/) da universidade Stanford criou
-# [*lis.py*](https://github.com/norvig/pytudes/blob/main/py/lis.py):
-# um interpretador em 132 linhas de código Python legível,
-# para parte da linguagem Scheme—um dialeto de Lisp.
+# [Peter Norvig](https://norvig.com/) of Stanford University wrote
+# [_lis.py_](https://github.com/norvig/pytudes/blob/main/py/lis.py):
+# an interpreter for a subset of the Scheme dialect of Lisp in 132 lines of readable Python code.
 #
-# Porque você deveria estudar *lis.py*?
-# Para mim esses foram alguns motivos:
+# Why should you study _lis.py_? This is what I got out of it:
 #
-# * Depois de estudar como funciona um interpretador,
-# entendi mais precisamente como funciona Python e linguagens em geral—interpretadas ou compiladas.
+# * Learning how an interpreter works gave me a deeper understanding of Python and programming languages in general—interpreted or compiled.
 #
-# * A simplicidade de Scheme é uma aula magna de design de linguagens.
+# * The simplicity of Scheme is a master class of language design.
 #
-# * *lis.py* é um lindo exemplo de código Python idiomático.
+# * _lis.py_ is a beautiful example of idiomatic Python code.
 #
-# Norvig descreve *lis.py* em um texto intitulado
-# [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html).
-# Leitura recomendada!
+# Norvig describes _lis.py_ in a post titled 
+# [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Highly recommended.
 #
-# Antes de examinar o código do interpretador em Python,
-# vamos ver um pouco de Scheme—caso você nunca tenha visto essa linguagem ou Lisp antes.
+# Before looking at the Python code, let’s get a little taste of Scheme—in case you haven’t seen it (or Lisp) before.
 
-# ## Sintaxe de Scheme
+# ## Scheme Syntax
 #
-# Todo código Scheme é formado por expressões.
-# Não existem operadores infixos:
-# todas as expressões usam notação prefixa como
-# `(+ x 13)` em vez de `x + 13`.
-# A mesma notação prefixa é usada para chamadas de funções—ex. `(mdc x 13)`—e
-# instruções especiais—ex. `(define x 13)`, que corresponde à
-# instrução de atribuição em Python: `x = 13`.
 #
-# Essa notação com prefixa com parêntesis é chamada _S-expression_ ou _expressão-S_.
-# É a mesma notação usada em Lisp e outros dialetos, como Clojure.
+# Everything in Scheme is an expression.
+# There are no infix operators:
+# all expressions use prefix notation like `(+ x 13)` instead of `x + 13`.
+# The same prefix notation is used for function calls—e.g. `(gcd x 13)`—and
+# special forms—e.g. `(define x 13)`,
+# which we'd write as the assignment statement `x = 13` in
+# Python.
 #
-# Eis um exemplo simples em Scheme, para calcular o MDC (Máximo Divisor Comum):
+# The parenthesized prefix notation is known as _S-expression_ syntax.
+# Lisp and Clojure use the same syntax.
 #
+# Here is a simple example in Scheme:
 #
 # ```lisp
-# (define (resto m n)
+# (define (mod m n)
 #     (- m (* n (quotient m n))))
 #
-# (define (mdc m n)
+# (define (gcd m n)
 #     (if (= n 0)
 #         m
-#         (mdc n (resto m n))))
+#         (gcd n (mod m n))))
 #
-# (display (mdc 18 45))
+# (display (gcd 18 45))
 # ```
 
-# O mesmo algoritmo em Python:
+# Here is the same algorithm in Python:
 
 # +
-def resto(m, n):
+def mod(m, n):
     return m - (m // n * n)
 
-def mdc(m, n):
+def gcd(m, n):
     if n == 0:
         return m
     else:
-        return mdc(n, resto(m, n))
+        return gcd(n, mod(m, n))
 
-print(mdc(18, 45))
+print(gcd(18, 45))
 # -
 
-# > **DICA**: Clique na célula acima para selecioná-la,
-# então tecle `【CTRL】【ENTER】` para executá-la.
-# O resultado aparecerá abaixo da célula.
+# > **TIP**: Click on the cell above to select it, then hit `【CTRL】【ENTER】` to execute it.
+# <br>The result will appear below the cell.
 #
-# Assim como temos `%` em Python, Scheme tem a função `modulo`.
-# Implementei `resto` apenas para mostrar duas definições de funções.
+# Scheme has no iterative control flow commands like `while` or `for`.
+# Iteration is done with recursion.
+# Note how there are no assignments in the Scheme and Python examples.
+# Extensive use of recursion and minimal use of assignment
+# are hallmarks of programming in a functional style.
 #
-# Em Python é mais eficiente usar um laço `while` do que recursão,
-# mas eu queria que os exemplos ficassem parecidos para
-# ajudar você a entender o código em Scheme.
-# Scheme não tem estruturas de laço como `while` ou `for`.
-# Para repetir operações, usa-se recursão.
+# In idiomatic Python I'd use the `%` operator instead of reinventing `mod`,
+# and it would be more efficient to use a `while` loop instead of recursion.
+# But I wanted to show two function definitions,
+# and make the examples as similar as possible,
+# to help you read the Scheme code.
 #
-# Note como não há atribuições de variáveis nos exemplos em Scheme e Python acima.
-# Muita recursão e pouca atribuição
-# são características de programação em um estilo funcional.
 #
-# O código completo de *lis.py* para Python 3.10 incluindo testes você pode encontrar no diretório
-# [18-with-match/lispy/py3.10/](https://github.com/fluentpython/example-code-2e/tree/master/18-with-match/lispy/py3.10/)
-# do repositório [fluentpython/example-code-2e](https://github.com/fluentpython/example-code-2e).
-# Agora vamos estudar o código de uma versão de *lis.py* para Python 3.7,
-# que é a versão mais recente disponível no serviço [Binder](https://mybinder.org/),
-# sue usaremos nesta oficina.
-#
-# O código abaixo apenas confirma a versão do interpretador que está executando este Jupyter Notebook.
+# Now let's review the code of the Python 3.7 version of _lis.py_.
+# The complete source code with tests for Python 3.10 is in the [18-with-match/lispy/py3.10/](https://github.com/fluentpython/example-code-2e/tree/master/18-with-match/lispy/py3.10/)
+# directory of the Github repository
+# [fluentpython/example-code-2e](https://github.com/fluentpython/example-code-2e).
 
-# > **DICA:** Clique na célula abaixo para selecioná-la e então tecle
-#  `【SHIFT】【ENTER】` para executá-la e selecionar a próxima célula.<br>
-# Use `【CTRL】【ENTER】` para executar a célula e mantê-la selecionada.<br>
+#
+# This notebook uses Python 3.7 to run on [Binder](https://mybinder.org/). The next code cell checks that you're using Python 3.7 or later.
+#
 
-# -
+#
+# > **TIP**: Click on the cell below to select it, then hit `【SHIFT】【ENTER】` to execute and select the next cell.<br> Use `【CTRL】【ENTER】` to execute a cell and keep it selected.<br>Use these commands to execute cells as you follow along.
 
 import sys
-assert sys.version_info >= (3, 7), f'Esperado Python ≥ 3.7; instalado: {sys.version}'
+assert sys.version_info >= (3, 7), f'Expected Python ≥ 3.7; found: {sys.version}'
 sys.version
 
-
-# + [markdown] tags=[]
-# ## Imports e tipos
+# ## Imports and types
 #
-# O código escrito pelo Norvig não usa anotações de tipo. Adicionei as anotações e fiz mais algumas pequenas mudanças.
+# Norvig's code does not use type hints. I added them, and made a few other small changes.
+# For Python 3.7 we need to import some types from `typing`.
 #
-# Como esse notebook usa Python 3.7, precisamos importar alguns tipos de coleções do módulo `typing`.
-
 
 # +
-################ lis.py: Scheme Interpreter in Python
+################ lis.py: Scheme Interpreter in Python 3.10
 ## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
 ## Type hints and minor additions by Luciano Ramalho
 
@@ -178,28 +164,28 @@ Environment = MutableMapping[Symbol, object]
 
 # -
 
-# Os tipos são definidos são:
+# The types defined are:
 #
-# `Symbol`: Apenas um apelido para o tipo `str`.
-# Instâncias de `Symbol` são usadas como identificadores.
-# Em _lis.py_ não há um tipo de dado string com operaçoẽs como
-# fatiamento, particionamento (split), conversão de maiúsculas para minúsculas, etc.
+# `Symbol`: Just an alias for `str`.
+# In _lis.py_, `Symbol` is used for identifiers,
+# there is no string data type with operations such as slicing, splitting etc.
 #
-# `Atom`: Elemento sintático simples: um número ou um `Symbol`.
-# Um átomo é o contrário de uma estrutura composta de diversas partes como uma lista.
+# `Atom`: A simple syntactic element such as a number or a `Symbol`—as opposed to a composite structure made of distinct parts, like a list.
 #
-# `Expression`: Programas em Scheme são formados por expressões feitas com átomos e listas, possivelmente aninhadas.
+# `Expression`: The building blocks of Scheme programs are expressions made of atoms and lists, possibly nested.
 #
-# > **NOTA**: O outro interpretador escrito por Norvig,
-# [*lispy.py*](https://github.com/fluentpython/example-code-2e/blob/master/18-with-match/lispy/original/lispy.py),
-# suporta string como um tipo de dado, assim como também aceita funcionalidades avançadas como macros de sintaxe,
-# chamadas de cauda eficientes e _continuations_.
-# No entanto, *lispy.py* é quase três vezes mais longo do que *lis.py*, e mais difícil de entender.
+# > **NOTE**: Norvig's second interpreter,
+# [`lispy.py`](https://github.com/fluentpython/example-code-2e/blob/master/18-with-match/lispy/original/lispy.py),
+# supports strings as a data type, as well as advanced features like
+# syntactic macros, continuations, and proper tail calls.
+# However, `lispy.py` is almost three times longer than _lis.py_—and
+# harder to understand.
 
-# ## O parser
+# ## The Parser
 #
-# O parser de Norvig são 36 linhas de código que demonstram o poder de Python
-# aplicado ao tratamento da sintaxes recursivas de expressões-S.
+# Norvig's parser is 36 lines of code showcasing the power of Python applied to handling the
+# simple recursive syntax of S-expression—without string data,
+# comments, macros, and other features of standard Scheme that make parsing more complicated (these features are implemented in `lispy.py`).
 
 # +
 def parse(program: str) -> Expression:
@@ -239,43 +225,36 @@ def parse_atom(token: str) -> Atom:
 
 # -
 
-# A função principal desse grupo é `parse`, que toma o código-fonte de uma expressão-S como uma `str`
-# e devolve um objeto `Expression`: um `Atom` ou `list` que pode conter mais átomos e listas aninhadas.
+# The main function of that group is `parse` which takes an S-expressions as a `str`
+# and returns an `Expression` object: an `Atom` or a `list` that may contain more atoms and nested lists.
 #
-# O primeiro estágio de um parser é a análise léxica:
-# identificar e separar as "palavras" da linguagem,
-# conhecidas tecnicamente como _tokens_ ou _itens léxicos_.
-# Isso é feito pela função `tokenize`.
+# The first task of a parser is lexical analysis: identify and extract the "words" of the language.
+# Language nerds call the "words" _tokens_. That task is done by `tokenize`.
 #
-# Norvig usa um truque esperto em `tokenize`:
-# ele coloca espaços antes e depois de cada parênteses no código-fonte, e depois quebra com `.split()`,
-# resultando em uma lista de tokens com `(` e `)`
-# como itens distintos. Por exemplo, `(f 1)` é transformada em uma lista com quatro itens: `['(', 'f', '1', ')']`.
 #
-# Esse truque funciona porque o dialeto Scheme simplificado de *lis.py*
-# não tem um tipo string, cometários, macros,
-# e outros recursos de Scheme padrão que complicam a análise léxica.
-# Com essa simplificação, sabemos que todo `(` ou `)` é um delimitador de expressão em *lis.py*.
-# (Norvig implementou esses recursos em *lispy.py*.)
+# Norvig uses a smart trick in `tokenize`:
+# he adds spaces before and after each parenthesis in the input and then splits it,
+# resulting in a list of syntactic tokens with `'('` and `')'`
+# as separate tokens.
 #
-# O resultado da análise léxica alimenta a análise sintática em `read_from_tokens`,
-# que recebe uma lista de itens léxicos e devolve uma `Expression`.
+# This shortcut works because there are no string literals or comments in the little Scheme of _lis.py_, so every `'('` or `')'` is an expression delimiter. (Norvig's _lispy.py_ supports strings, comments and much more.)
 #
-# A regras de análise sintática (_parsing_) para esse subconjunto do Scheme são simples:
+# Norvig feeds the result of lexical analysis to `read_from_tokens`,
+# the recursive function that assembles an `Expression`.
 #
-# 1. Um token que se parece com um número é convertido em `float` ou `int`.
-# 2. Qualquer outra coisa que não for `(` ou `)` é entendida como `Symbol`—uma `str` a ser usada como identificador.
-# Isso inclui código fonte como `+`, `set!` e `make-counter` que são identificadores válidos em Scheme mas não em Python.
-# 3. Expressões dentro de `(` e `)` são recursivamente parseadas como
-# listas contendo atoms ou listas aninhadas que podem conter atoms e mais listas aninhadas.
+# The parsing rules for this subset of Scheme are simple:
 #
-# Em uma primeira leitura, vale a pena considerar `read_from_tokens` como uma caixa preta,
-# e se concentrar na função de alto nível `parse`. Veja alguns exemplos com `parse`:
+# 1. A token that looks like a number is parsed as a `float` or `int`.
+# 2. Anything else that is not `'('` or `')'` is parsed as a `Symbol`—a `str` to be used as an identifier. This includes source text like `+`, `set!`, and `make-counter` that are valid identifiers in Scheme but not in Python.
+# 3. Expressions inside `'('` and `')'` are recursively parsed as lists containing atoms or nested lists that may contain atoms and more nested lists.
 #
-# > **DICA**: Para executar o código em cada uma das células e selecionar a próxima, use `【SHIFT】【ENTER】`.<br>
-# Se acontecer `NameError: name 'parse' is not defined`,
-# use o comando ***Cell > Run All Above*** do menu para executar as células acima,
-# incluindo aquela onde está a definição da função `parse`.
+# As you first study this code, I recommend you consider `read_from_tokens` a black box,
+# and focus on the input and output of the high level `parse` function.
+#
+# Below are some examples of `parse` in action.
+#
+# > **TIP**:  To run the code in each cell and select the next, use `【SHIFT】【ENTER】`.<br>
+# If you get `NameError: name 'parse' is not defined`, use the menu command ***Cell > Run All Above***.
 
 parse('1.5')
 
@@ -287,14 +266,13 @@ parse('''
       (* n 2)))
 ''')
 
-# Usando a terminologia de teoria de linguagens de programação
-# o objeto `Expression` produzido por `parse` é uma
-# **AST** (*Abstract Syntax Tree* ou *Árvore Sintática Abstrata*):
-# uma representação conveniente do programa Scheme na forma de
-# objetos Python aninhados formando uma estrutura em de árvore,
-# onde a lista mais externa é o tronco, as listas internas são ramos e os átomos são folhas.
 #
-# Veja a AST do exemplo `(define double (lambda (n) (* n 2)))` como um diagrama em árvore:
+# Using the jargon of programming language theory, the output of `parse` is an **AST** (Abstract Syntax Tree):
+# a convenient representation of the Scheme program as nested lists forming a tree-like structure,
+# where the outermost list is the trunk, inner lists are the branches, and atoms are the leaves.
+#
+# This is the AST for the example `(define double (lambda (n) (* n 2)))` drawn as a tree:
+#
 #
 # ```
 #                               '*'  'n'   2
@@ -309,13 +287,14 @@ parse('''
 #              [ ]
 # ```
 #
-# A árvore acima corresponde à AST `['define', 'double', ['lambda', ['n'], ['*', 'n', 2]]]`.<br>
-# Note que todos os elementos da AST são objetos da linguagem Python.
+# That tree depicts the AST `['define', 'double', ['lambda', ['n'], ['*', 'n', 2]]]`.<BR>
+# Note that each element in the AST is a Python object.
 #
-# ### Exercício 0
+
+# ### Exercise 0
 #
-# Substitua as reticências `...` com a AST correspondente à cada expressão-S, para obter o resultado `True`.
-# Para rodar o código na célula, tecle `【CTRL】【ENTER】`.
+# Replace the ellipis `...` with the AST for the given S-expressions, to make each comparison `True`.
+# To run the code in the cell, hit `【CTRL】【ENTER】`. 
 
 parse('9') == ...
 
@@ -328,14 +307,14 @@ parse('(* c (/ 9 5))') == ...
 parse('(+ 32 (* (/ 9 5) c ))') == ...
 
 
-# ## Ambiente básico para aritmética
+# ## Built-in functions for arithmetic
 #
-# Qualquer linguagem útil precisa fornecer funções pré-definidas, prontas para usar, como
-# o módulo `__builtins__` de Python.
 #
-# Em *lis.py*, a função `standard_env()` constrói e devolve um `Environment` carregado
-# com funções pré-definidas.
-# Por enquanto usaremos uma versão simplificada, adepois colocaremos mais funções.
+# To be useful, a programming language must have pre-defined functions, ready to use,
+# like the `__builtins__` module in Python.
+#
+# In _lis.py_, the `standard_env` function builds and returns an `Environment` mapping loaded
+# with predefined functions. Next is a very simplified version of `standard_env`; we'll add more functions later. 
 
 def standard_env() -> Environment:
     "An environment for an s-expression calculator."
@@ -348,40 +327,33 @@ def standard_env() -> Environment:
             '*': op.mul,
             '/': op.truediv,
             'quotient': op.floordiv,
-            '>': op.gt,
-            '<': op.lt,
-            '>=': op.ge,
-            '<=': op.le,
-            '=': op.eq,
             'abs': abs,
-            'begin': lambda *x: x[-1],
-            'eq?': op.is_,
-            'equal?': op.eq,
             'max': max,
             'min': min,
-            'not': op.not_,
-            'number?': lambda x: isinstance(x, (int, float)),
-            'procedure?': callable,
-            'modulo': op.mod,
             'round': round,
-            'symbol?': lambda x: isinstance(x, Symbol),
+            'begin': lambda *x: x[-1],
         }
     )
     return env
 
 
-# O mapeamento `env` é carregado com:
+# The `env` mapping is loaded with:
 #
-# * todas as funções do módulo `math` do Python;
-# * operadores selecionados do módulo `op` do Python;
-# * simples mas poderosas funções construídas com `lambda` do Python;
-# * built-ins do Python renomeados, por exemplo `callable` como `procedure?` ou diretamente mapeados como `round`.
+# * all functions from Python's `math` module;
+# * selected operators from Python's `op` module;
+# * Python built-ins directly mapped like `abs` and `round`.
+#
+# The `begin` function is a way to compute several expressions.
+# We'll see an example using it.
 
-# ## Uma calculadora
+# ## A Calculator
 #
-# A primeira versão da função `evaluate` trata expressões com funções embutidas e váriavies definidas pela usuária.
+# The central function of the interpreter is `evaluate`.
+# We'll start with a simple version that only handles 
+# expressions with built-in functions and user-defined variables.
 #
-# > **NOTA**: o parser de Norvig é simples e sólido, mas seu avaliador é simples e frágil. Ele omitiu a verificação de erros para manter a lógica simples de ser acompanhada. Nas palavras dele: "Lispy não tenta detectar, reportar razoavelmente, ou se recuperar de erros. Lispy espera que o programador seja perfeito." ([fonte](https://norvig.com/lispy.html)).
+# > **NOTE**: Norvig's parser is simple and solid, but his evaluator is simple and fragile. He ommited error checking to keep the logic easy to follow. In his words: "Lispy does not attempt to detect, reasonably report, or recover from errors. Lispy expects the programmer to be perfect." ([source](https://norvig.com/lispy.html)).
+#
 
 def evaluate(x: Expression, env: Environment) -> Any:
     "Evaluate an expression in an environment."
@@ -399,41 +371,41 @@ def evaluate(x: Expression, env: Environment) -> Any:
         return proc(*arg_values)
 
 
-# Execute esses exemplos para ver o `evaluate` em ação.
+# Run these examples to see `evaluate` in action.
 #
-# Um quadrado curioso:
+# A curious square:
 
 evaluate(parse('(* 11111 11111)'), standard_env())
 
-# Se existem 876 candidatas e 123 foram aprovadas, que porcentagem foi aprovada?
+# If there are 876 candidates, and 123 were approved, what percentage was approved?
 
 evaluate(parse('(* (/ 123 876) 100)'), standard_env())
 
-# Agora vamos estudar cada parte do `if/elif/...` em `evaluate`.
+# Now let's study each part of the `if/elif/…` in `evaluate`.
 
-# ### Avaliar símbolo
+# ### Evaluate symbol
 #
 # ```python
 #     if isinstance(x, Symbol):
 #         return env[x]
 # ```
 #
-# Se a expressão é um `Symbol`, então obtenha seu valor no ambiente.
+# If the expression is a `Symbol`, then look it up in the environment.
+#
+#
 
 evaluate('pi', standard_env())
 
 evaluate('+', standard_env())
 
-# ### Avaliar outros átomos
+# ### Evaluate other atoms
 #
 # ```python
 #     elif not isinstance(x, list):
 #         return x
 # ```
 #
-# Se a expressão não é `list` e nem `Symbol` (devido à verificação anterior),
-# então assuma que é uma constante literal cujo valor é ela própria.
-# Simplesmente devolva-a.
+# If the expression is not a `list` and not a `Symbol` (because of the preceding check), then assume it is a constant literal and return it as is.
 
 evaluate(1.5, standard_env())
 
@@ -445,16 +417,13 @@ evaluate(1.5, standard_env())
 #         env[var] = evaluate(exp, env)
 # ```
 #
-# Se a expressão é uma lista começando com a palavra reservada `define`,
-# deveria ser seguida por um `Symbol` e uma `Expression`.
-# Recursivamente avalie a expressão no ambiente e
-# armazene o resultado em `env` usando o `Symbol` como chave.
+# If the expression is a `list` starting with the keyword `define`, then it should be followed by a `Symbol` and an `Expression`. Recursively evaluate the expression in environment, and store it in `env` using the `Symbol` as key.
 
 env = standard_env()
 evaluate(parse('(define answer (* 7 6))'), env)
 env['answer']
 
-# ### Avaliar chamada de função `(proc arg…)`
+# ### Evaluate function call `(proc arg…)`
 #
 # ```python
 #     else:
@@ -464,20 +433,17 @@ env['answer']
 #         return proc(*arg_values)
 # ```
 #
-# Se a expressão é uma `list` que não começa com uma palavra reservada, então:
+# If the expression is a `list` that does not start with a keyword, then:
 #
-# 1. Avalie a primeira expressão—seu valor deve ser um procedimento (_procedure_ é sinônimo de função na comunidade Scheme).
-# 2. Avalie as expressões restantes (os valores dos argumentos).
-# 3. Invoque o procedimento passando os valores dos argumentos.
+# 1. Evaluate the first expression—it should return a procedure (a.k.a. function).
+# 2. Evaluate the remaining expressions (the argument values)
+# 3. Call the procedure with the argument values.
 
-evaluate(['quotient', 11, 4], standard_env())
+evaluate(['quotient', 8, 3], standard_env())
 
 evaluate(['*', ['/', 123, 876], 100], standard_env())
 
-# `evaluate()` consegue processar expressões profundamentes aninhadas, mas somente uma expressão no nível mais alto.
-# Para agrupar várias expressões, use a função `(begin...)`.
-# A função `evaluate()` avalia todos os argumentos antes de invocar `begin`, e `begin` simplesmente devolve o valor do último argumento passado.
-# Por exemplo:
+# `evaluate` can process deeply nested expressions, but only one expression at the top level. To bundle several expressions into one, use the `(begin ...)` function. All the arguments given to `begin` are evaluated before `begin` is called, and `begin` returns the value of the last argument. For example:
 
 env = standard_env()
 percent = """
@@ -489,17 +455,16 @@ percent = """
 """
 evaluate(parse(percent), env)
 
-# Após rodar o código acima, as variáveis `a` e `b` agora estão definidas no ambiente `env`:
+# After the previous code, `env` now holds two variables: `a` and `b`.
 
 env['a'], env['b']
 
 
-# Para avaliar um programa inteiro, use a função `run()`, descrita a seguir.
+# To evaluate a sequence of S-expressions as a program, we use the `run` function, described next.
 
-# ## Execução não-interativa
+# ## Non-interactive execution with `run()`
 #
-# As funções a seguir aceitam o código fonte de um programa em Scheme
-# como uma string formada por uma sequência de expressões-S, e as executam em ordem.
+# The following functions take Scheme source code as a string and execute it.
 
 # +
 def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
@@ -513,7 +478,6 @@ def run_lines(source: str, env: Optional[Environment] = None) -> Iterator[Any]:
 
 
 def run(source: str, env: Optional[Environment] = None) -> Any:
-    result = None
     for result in run_lines(source, env):
         pass
     return result
@@ -521,23 +485,22 @@ def run(source: str, env: Optional[Environment] = None) -> Any:
 
 # -
 
-# Com `run()` não precisamos de `(begin …)` para avaliar múltiplas expressões de uma vez só—mas
-# `begin` ainda é útil em outras situações.
+# With `run()` we don't need `(begin …)` to evaluate several expressions—but `begin` is still useful in other situations.
 
-porcento = """
+percent = """
 (define a 126)
 (define b (* 6 50))
 (* (/ a b) 100)
 """
-run(porcento)
+run(percent)
 
-# ### Exercício 1
+# ### Exercise 1
 #
-# Essa é a fórmula para converter temperaturas de Celsius para Fahrenheit:
+# This is the formula to convert temperatures from Celsius to Fahrenheit:
 #
 # `f = (9 / 5) * c + 32`
 #
-# Eis o código para converter 20°C para °F:
+# Here is the code to convert 20°C to °F:
 
 c_to_f = """
 (define c 20)
@@ -545,72 +508,66 @@ c_to_f = """
 """
 run(c_to_f)
 
-# A função inversa é:
+# The inverse conversion function is:
 #
 # `c = (f − 32) * 5 / 9`
 #
-# No código abaixo, substitua `(+ 1 2)` pela expressão correta para converter 68°F para °C.
+# In the code below, replace `(+ 1 2)` with the expression to convert 68°F to °C.
 
 f_to_c = """
 (define f 68)
 (+ 1 2)
 """
-run(f_to_c) == 20
+run(f_to_c)
 
-# ### Exercicio 2
+# ### Exercise 2
 #
-# O módulo `math` de Python inclui uma função `factorial`, que é parte do ambiente criado por `standard_env()`:
+# Python's `math` module includes a `factorial` function, which is part of the environment returned by `standard_env`:
 
 run('(factorial 10)')
 
-# A linguagem Scheme aceita `!` como um identificador. Sua tarefa é fazer `factorial()` de Python ficar disponível através do símbolo `!` em Scheme.
+# Scheme accepts `!` as an identifier. Your task is to make Python's `factorial` available through the `!` symbol in Scheme. Follow the steps.
 #
-# **Passo 2.1** Descomente a expressão abaixo e execute para ver o erro. Veja para a última linha da saída do erro.
-# Qual é o erro? Você entende porque esse é o erro?
+# **Step 2.1** Uncomment the expression below and run it to see an error. Look at the last line of the error output. What is the error? Do you understand why that is the error?
 
 # +
 # run('(! 10)') == 3628800
 # -
 
-# **Passo 2.2.** Edite a função `standard_env` acima para adicionar uma entrada para `'!'`,
-# mapeando para a função `math.factorial` de Python.
+# **Step 2.2.** Edit the `standard_env` function above to add an entry for `!`,
+# mapping to Python's `math.factorial` function.
 #
-# **Passo 2.3.** Execute a expressão acima para confirmar que o resultado é `True`.
+# **Step 2.3.** Run the expression above to confirm that the result is `True`.
+#
 
-# ### Exercício 3
+# ### Exercise 3
 #
-# Em um Scheme padrão, o operador `+` é variádico, ou seja, aceita qualquer quantidade de argumentos.
-# Com 0 argumentos, `(+)` retorna `0`; caso contrário retorna a soma de todos os argumentos.
+# In standard Scheme, the `+` operator is variadic, i.e. it accepts any number of arguments.
+# With 0 arguments, `(+)` returns `0`; otherwise it returns the sum of all arguments.
 #
-# **Step 3.1.** Descomente a expressão abaixo e execute para ver o erro. O erro faz sentido para você?
+# **Step 3.1.** Uncomment the expression below and run it to see an error. Does the error make sense to you?
 
 # +
 # run('(= 10 (+ 1 2 3 4))')
 # -
 
-# **Passo 3.2.** Edite a função `standard_env` acima para reimplementar o `+`,
-# fazendo a expressão acima devolver `True`.
+# **Step 3.2.** Edit the `standard_env` function above to re-implement `+` to make the expression above return `True`.
 #
-# > **DICA 3.2.1**: Escondida abaixo está uma versão variável do `sum` do Python.
-# Tente resolver o exercício sem revelar a dica.
-# Para revelar o código, descomente a linha do `print()` e execute a célula.
-#
+# > **HINT 3.2.1**: Hidden below is the source code for a variadic version of Python's `sum()`. Consider doing the exercise without revealing the hint. To reveal the code, uncomment the `print()` line and run the cell. 
 
 from base64 import b64decode
 blob = (b'ZGVmIHZhcmlhZGljX3N1bSgqYXJncyk6CiAgICByZXR1cm4g'
         b'c3VtKGFyZ3MpCgp2YXJpYWRpY19zdW0oMSwgMiwgMywgNCk=')
 # print(b64decode(blob).decode('utf8'))
 
-# > **DICA 3.2.2**: A seguir, a mesma função em uma única linha do Python.
-# Tente resolver o exercício sem revelar a dica.
-# Para revelar, descomente a linha do `print()` e execute a célula.
+# > **HINT 3.2.2**: the same function in a single line of Python. Try to do the exercise without revealing the hint. To reveal it, uncomment the `print()` line and run the cell. 
 
 blob = b'ZiA9IGxhbWJkYSAqYXJnczogc3VtKGFyZ3MpCmYoMSwgMiwgMywgNCk='
 # print(b64decode(blob).decode('utf8'))
 
-# ## Um ambiente mais completo
+# ## A more complete environment
 
-# Esta nova versão de `standard_env()` define funções para trabalhar com listas.
+# This new version of `standard_env()` defines functions that handle lists, comparisons, and more.
 
 def standard_env() -> Environment:
     "An environment with some Scheme standard procedures."
@@ -629,14 +586,12 @@ def standard_env() -> Environment:
             '<=': op.le,
             '=': op.eq,
             'abs': abs,
-            'append': lambda *args: list(chain(*args)),
+            'append': lambda *args: list(chain(*args)),          
             'apply': lambda proc, args: proc(*args),
             'begin': lambda *x: x[-1],
             'car': lambda x: x[0],
             'cdr': lambda x: x[1:],
             'cons': lambda x, y: [x] + y,
-            'display': lambda x: print(lispstr(x), end=''),
-            'newline': lambda: print(),
             'eq?': op.is_,
             'equal?': op.eq,
             'filter': lambda *args: list(filter(*args)),
@@ -652,16 +607,26 @@ def standard_env() -> Environment:
             'procedure?': callable,
             'round': round,
             'symbol?': lambda x: isinstance(x, Symbol),
+            'display': lambda x: print(lispstr(x), end=''),
+            'newline': lambda: print(),
         }
     )
     return env
 
-# A função `(display …)` exibe resultados, mas não emite uma quebra de linha.
-# Para isso é preciso chamar `(newline)` (assim mesmo, sem argumentos).
+
+# This `standard_env` is enhanced with:
 #
-# A chamada `(display x)` invoca `lispstr(x)`, que faz o inverso de `parse()`.
-# Dado um objeto Python que representa uma expressão,
-# `lispstr` devolve o código-fonte em Scheme para essa expressão.
+# * more Python built-ins renamed like `len` as `length` and `callable` as `procedure?`;
+# * simple but powerful functions built with Python's `lambda`.
+#
+# The functions with a `?` suffix (like `list?`, `null?`, `number?` etc.) are _predicates_:<BR>single argument functions that check the type of the argument and return a boolean.
+#
+# The `(display …)` function shows results, but does not emit a newline.
+# For that, ywe need to call `(newline)` (just like that, without arguments).
+#
+# The call `(display s)` calls `lispstr(s)` which is the inverse function of `parse`:
+# given a Python object representing an expression as an AST,
+# `lispstr` returns the its Scheme source code as a string.
 
 def lispstr(exp: Expression) -> str:
     "Convert a Python object back into a Lisp-readable string."
@@ -670,21 +635,20 @@ def lispstr(exp: Expression) -> str:
     else:
         return str(exp)
 
-# Por exemplo:
+
+# For example:
 
 lispstr(['+', 32, ['*', ['/', 9, 5], 'c']])
 
-# ## `Procedure`: uma classe que representa uma _closure_
-#
-# A próxima melhoria do `evaluate()` será incluir `(lambda …)` para permitir que
-# usuários definam funções, ou _procedimentos_ no jargão de Scheme.
-# Para implementar `lambda`, precisamos de uma classe que represente um procedimento.
 
+# ## `Procedure`: a class to represent a closure
+#
+# The next improvement to `evaluate()` will include the `(lambda …)` form to allow user-defined functions (the authors of Scheme prefer the term *procedure*). To support `lambda`, we need a class to represent a procedure:
 
 class Procedure:
-    """A user-defined Scheme procedure."""
+    "A user-defined Scheme procedure."
 
-    def __init__(self, parms: List[Symbol], body: Expression, env: Environment) -> None:
+    def __init__(self, parms: List[Symbol], body: Expression, env: Environment):
         self.parms = parms
         self.body = body
         self.env = env
@@ -695,45 +659,37 @@ class Procedure:
         return evaluate(self.body, env)
 
 
-# A classe `Procedure` poderia muito bem ser nomeada `Closure`,
-# porque é isso o que ela representa:<br>
-# uma definição de função junto com um ambiente capturado quando a função é definida.
+# The `Procedure` class could very well be named `Closure`,
+# because that's what it represents:
+# a function definition together with an environment captured when the function is defined.
+# The required parameters to create a `Procedure` are:
 #
-# Os parâmetros obrigatórios para criar uma `Procedure` são:
+# `parms`: the function parameter names as a list of symbols. This list may be empty.
 #
-# `parms`: uma lista de símbolos que representam os nomes dos parâmetros da função.
-# A lista pode estar vazia.
+# `body`: the body of the function as an expression to be evaluated when the function is invoked.
 #
-# `body`: o corpo da função como uma expressão que será interpretada quando a função for chamada.
+# `env`: the environment where the function is created. This is what makes it a [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)).
 #
-# `env`: o ambiente onde a função é criada. Isso é o que torna o procedimento uma
-# [*closure*](https://en.wikipedia.org/wiki/Closure_(computer_programming)) ou
-# [*clausura*](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o))
-# (o termo em PT não é muito usado, mas o
-# [artigo na Wikipédia](https://pt.wikipedia.org/wiki/Clausura_(ci%C3%AAncia_da_computa%C3%A7%C3%A3o)) é bom).
+# The `__init__` method simply stores the arguments passed. None of them is evaluated when the function is defined.
 #
-# O método `__init__` apenas guarda os argumentos recebidos. Nenhum deles é avaliado quando a função é definida.
+# The environment is used when the function is called to provide the values of
+# the [*non-local variables*](https://en.wikipedia.org/wiki/Non-local_variable):
+# variables that appear in the body of the function but that
+# are not parameters or local variables.
 #
-# O ambiente `self.env` é usado quando a função é chamada para fornecer os valores de
-# [variáveis não-locais](https://en.wikipedia.org/wiki/Non-local_variable):<br>
-# variáveis que aparecem no corpo da função mas que não são parâmetros ou variáveis locais.
-#
-# Vamos criar uma `Procedure` "na mão" para ver como funciona:
+# Let's create a `Procedure` "by hand" to see how it works:
 
-dobro = Procedure(['n'], ['*', 'n', 2], standard_env())
-dobro(4)
+double = Procedure(['n'], ['*', 'n', 2], standard_env())
+double(4)
 
 
-# ## Avaliador com `lambda`, `if` e `quote`
+# ## Evaluate with `lambda`, `if`, and `quote`
 #
-# Para transformar a calculadora em um subconjunto digno da linguagem Scheme,
-# precisamos permitir funções definidas pelo usuário,
-# condicionais e a instrução `(quote …)` para lidar com expressões
-# como dados ao invés de interpretá-las.
+# To transform the calculator into a worthy subset of Scheme, we need to support user defined functions, conditionals and the `(quote …)` form to handle S-expressions as data—instead of evaluating them.
 #
 
 def evaluate(x: Expression, env: Environment) -> Any:
-    """Evaluate an expression in an environment."""
+    "Evaluate an expression in an environment."
     if isinstance(x, str):                       # variable reference
         return env[x]
     elif not isinstance(x, list):                # constant literal
@@ -760,32 +716,26 @@ def evaluate(x: Expression, env: Environment) -> Any:
         return proc(*arg_values)
 
 
-# ### Avaliar `(lambda (var…) body)`
+# ### Evaluate `(lambda (var…) body)`
 #
 # ```python
-#     elif x[0] == 'lambda':
+#     elif x[0] == 'lambda':                       
 #         _, parms, body = x
 #         return Procedure(parms, body, env)
 # ```
 #
-# Se a expressão é uma `list` onde o primeiro elemento é a
-# palavra reservada `lambda`, seguida por uma lista de zero ou mais símbolos,
-# e finalmente um `body` formado por uma única expressão,
-# então criamos e devolvemos um objeto `Procedure`.
+# If the expression is a `list` starting with the keyword `lambda`, followed by a list of 0 or more symbols, and a single `body` expression, then build and return a `Procedure`.
 #
-# Exemplo:
+# Example:
 
-porcentagem = run('(lambda (a b) (* (/ a b) 100))')
-porcentagem(15, 20)
+percent = run('(lambda (a b) (* (/ a b) 100))')
+percent(15, 20)
 
-# O resultado de `(lambda …)` é uma função anônima,
-# ela não é salva no ambiente. Para criar uma função nomeada,
-# use `lambda` com `define`.
+# The result of `(lambda …)` is an anonymous function, so it is not stored in the environment. To create a named function, use `lambda` with `define`.
 #
-# > **NOTA**: Essa versão de *lis.py* só aceita uma única expressão como corpo de uma função.
-#   Use `(begin …)` para criar um `body` várias expressões. O resultado da função será o valor da última expressão.
+# > **NOTE**: This version of _lis.py_ only accepts a single expression as the `body` of the function. Use `(begin …)` to wrap multiple expressions. The result of the function will be the value of the last expression.
 
-# ### Avaliar `(quote exp)`
+# ### Evaluate `(quote exp)`
 #
 # ```python
 #     elif x[0] == 'quote':
@@ -793,19 +743,17 @@ porcentagem(15, 20)
 #         return exp
 # ```
 #
-# Se a expressão for uma `list` onde o primeiro elemento
-# é a palavra reservada `quote` seguida por uma única expressão,
-# devolva a expressão sem interpretá-la.
+# If the expression is a `list` starting with the keyword `quote` followed by a single expression, return the expression without evaluating it.
 #
-# Exemplos:
+# Examples:
 
-run('(quote no-such-name)')  # símbolo não definido, iria causar um erro se fosse interpretado
+run('(quote no-such-name)')  # undefined symbol, would raise error if evaluated
 
-run('(quote (99 bottles of beer))')  # 99 não é o nome de uma função ou palavra reservada
+run('(quote (99 bottles of beer))')  # 99 is not the name of a function or reserved word
 
-run('(quote (/ 10 0))')  # se interpretada, a expressão causaria uma exceção de divisão por zero
+run('(quote (/ 10 0))')  # this would raise division by zero if evaluated
 
-# ### Avaliar `(if test consequence alternative)`
+# ### Evaluate `(if test consequence alternative)`
 #
 # ```python
 #     elif x[0] == 'if':
@@ -816,278 +764,269 @@ run('(quote (/ 10 0))')  # se interpretada, a expressão causaria uma exceção 
 #             return evaluate(alternative, env)
 # ```
 #
-# Se a expressão é uma `list` onde o primeiro elemento é a palavra reservada `if`,
-# seguida por exatamente três expressões, avalie a expressão `test`.
-# Se o resultado é `True`, avalie `consequence` devolva seu valor;
-# caso contrário, avalie `alternative` e devolva seu valor.
+# If the expression is a `list` starting with the keyword `if`, followed by exactly three expressions, evaluate `test`. If true, evaluate `consequence`; otherwise evaluate `alternative`.
 #
-# Exemplos:
+# Example:
 
 run('(if (= 3 3) 1 0)')
 
 run('(if (= 3 30) 1 0)')
 
 source = '''
-(define avaliar
-    (lambda (nota)
-        (if (>= nota 5)
-            (quote PASSOU)
-            (quote NÃO-PASSOU))))
-(avaliar 7)
+(define pass-fail
+    (lambda (grade)
+        (if (>= grade 5)
+            (quote PASS)
+            (quote FAIL))))
+(pass-fail 7)
 '''
 run(source)
 
 
-# ## O REPL
+# ## The REPL
 #
-# O REPL (Read-Eval-Print-Loop) de Norvig é fácil de entender porém não é
-# muito amigavél.
-# A função `repl()` exibe um prompt `lis.py>`,
-# e nele devemos digitar expressões corretas e completas;
-# se esquecermos de fechar um parêntesis o _lis.py_ irá quebrar.
+# Norvig's REPL (Read-Eval-Print-Loop) is easy to undersand but not user-friendly.
+# If no command-line arguments are given to _lis.py_,
+# the `repl()` function is invoked by `main()`—defined at the end of the module.
+# At the `lis.py>` prompt we must enter correct and complete expressions—if
+# we forget to close one parenthesis, _lis.py_ crashes.
 #
-# > **DICA**: O `repl()` não funciona bem dentro do Jupyter Notebook.
-#   É melhor experimentá-lo executando o arquivo _norvigs-lispy.py_ como um script:<br>
-#   `$ python3 norvigs-lispy.py`
+# > **TIP**: `repl()` does not work well inside a Jupyter notebook.
+# It's better to try it out exporting this notebook as a script _norvigs-lispy.py_
+# and then running it from the shell:<BR>
+# `$ python3 norvigs-lispy.py`
 
 # +
 def repl(prompt: str = 'lis.py> ') -> NoReturn:
     "A prompt-read-evaluate-print loop."
-    global_env: Environment = ChainMap({}, standard_env())
+    global_env: Environment = standard_env()
     while True:
         val = evaluate(parse(input(prompt)), global_env)
         if val is not None:
             print(lispstr(val))
 
-if __name__ == '__main__' and '__file__' in globals():
-    import readline  # activate readline
-    repl()
+
+def lispstr(exp: object) -> str:
+    "Convert a Python object back into a Lisp-readable string."
+    if isinstance(exp, list):
+        return '(' + ' '.join(map(lispstr, exp)) + ')'
+    else:
+        return str(exp)
+
+
 # -
 
-# A função `repl()` chama a função `standard_env()` para instalar funções essenciais no ambiente global,
-# então entra em um loop infinito lendo e fazendo o parse de cada linha digitada pelo usuário,
-# interpretando cada linha no ambiente global, e mostrando o resultado—exceto quando é `None`.
-# A variável `global_env` pode ser modificada pela função `evaluate()`
-# quando se usa `(define …)` no escopo global.
-
-# > **NOTA**: Quando estudei os scripts _lis.py_ e _lispy.py_ feitos por Norvig,
-#   criei um fork chamado [`mylis`](https://github.com/fluentpython/lispy/blob/main/mylis)
-#   com algumas funcionalidades a mais,
-#   como um REPL que aceita expressões parciais que podem ser continuadas nas próximas linhas,
-#   semelhante ao REPL de Python que sabe que não terminamos e nos apresenta um segundo prompt
-#   `...` até que entremos um expressão ou instrução completa que possa ser interpretada.
-#   `mylis` também consegue tratar alguns erros um pouco melhor, porém ainda é fácil de quebrar.
-
-
-# ## Exemplos
-
-# ### Máximo divisor comum
+# Function `repl` calls `standard_env()` to provide built-in functions for the global environment,
+# then enters an infinite loop reading and parsing each input line,
+# evaluating it in the global environment and displaying the result—unless it's `None`.
+# The `global_env` may be modified by `evaluate`.
 #
-# O [algoritmo de Euclides](https://pt.wikipedia.org/wiki/Algoritmo_de_Euclides).
+# > **NOTE**: As I studied Norvig's _lis.py_ and _lispy.py_, I started a fork named
+#   [`mylis`](https://github.com/fluentpython/lispy/blob/main/mylis)
+#   which adds some features, including a REPL that accepts partial S-expressions
+#   and prompts for the continuation, similar to how Python's REPL
+#   knows we are not finished and presents the secondary prompt `...` until
+#   we enter a complete expression or statement that can be evaluated.
+#   `mylis` also handles a few errors gracefully, but it's still easy to crash.
 
-mdc_scm = '''
-(define resto (lambda (m n)
+# ## Examples
+#
+
+# ### Greatest common divisor
+#
+# The [Euclidean algorihm](https://en.wikipedia.org/wiki/Euclidean_algorithm).
+#
+# > **NOTE**: This is example uses `lambda` inside `define` instead of the shortcut `define` form listed in 
+# [Scheme Syntax](#Scheme-Syntax), which creates named procedures directly.
+# We'll get back to the `define` shortcut in the last section of the tutorial, [Syntactic Sugar](Syntactic-Sugar)
+
+gcd_src = '''
+(define mod (lambda (m n)
     (- m (* n (quotient m n)))))
 
-(define mdc (lambda (m n)
+(define gcd (lambda (m n)
     (if (= n 0)
         m
-        (mdc n (resto m n)))))
+        (gcd n (mod m n)))))
 
-(mdc 18 45)
+(gcd 18 45)
 '''
-run(mdc_scm)
+run(gcd_src)
 
-# > **NOTA**: Este exemplo usa `lambda` dentro de `define` em vez da sintaxe abreviada com `define`
-# ilustrada na função `mdc` em [Sintaxe de Scheme](#Sintaxe-de-Scheme).
-# Leia mais sobre essa sintaxe abreviada em [Açúcar Sintático](Açúcar-Sintático).
+#
+# ### Simple recursive factorial
 
-# ### Fatorial recursivo simples
-
-fatorial_scm = '''
+fact_src = '''
 (define ! (lambda (n)
-    (if (< n 2)
-        1
+    (if (< n 2) 
+        1 
         (* n (! (- n 1)))
 )))
 
 (! 5)
 '''
-run(fatorial_scm)
+run(fact_src)
 
-# ### Fatorial com recursão de cauda
+# ### Tail-recursive factorial
+#
+# The `factorial-iter` function is tail-recursive: the recursive call is returned as the result. That's a
+# [*tail call*](https://en.wikipedia.org/wiki/Tail_call). Scheme can evaluate tail recursion without growing te call stack.
+#
+# In contrast, the [Simple recursive factorial](#Simple-recursive-factorial) is not tail recursive: the result of the recursive call is multiplied by `n` before it is returned.
 
-fatorial_scm = '''
+fact_src = '''
 (define ! (lambda (n)
-    (fatorial-iter n 1)))
+    (factorial-iter n 1)))
 
-(define fatorial-iter
-    (lambda (n produto)
+(define factorial-iter
+    (lambda (n product)
         (if (= n 1)
-            produto
-            (fatorial-iter (- n 1) (* n produto))
+            product
+            (factorial-iter (- n 1) (* n product))
         )
     )
 )
-
+      
 (! 5)
 '''
-run(fatorial_scm)
+run(fact_src)
 
-# Na função `fatorial-iter`,
-# a chamada recursiva é devolvida como resultado diretamente.
-# Isso é denominado uma _recursão de cauda_,
-# um caso particular de _chamada de cauda_ ou [*tail call*](https://en.wikipedia.org/wiki/Tail_call),
-# quando a última operação no caminho de execução de uma função é
-# devolver o resultado de invocar outra função (ou própria, no caso de recursão).
+# > **NOTE**: _lis.py_ does not implement proper tail calls (PTC)—a.k.a. tail call optimization (TCO).
+# Therefore, there is no advantage in writing tail recursive functions. But
+# [`lispy.py`](https://github.com/norvig/pytudes/blob/main/py/lispy.py) and
+# [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py) implement PTC, so tail-recursion does not grow the stack, and tail-recursive code is more efficient.
+
+# ### Square root algorithm
 #
-# Em contraste, o [Fatorial recursivo simples](#Fatorial-recursivo-simples)
-# não é um exemplo de recursão de cauda:
-# o resultado da chamada recursiva é multiplicado por `n` antes de ser devolvido.
-#
-# O sufixo `-iter` é comumente usado em Scheme para funções que fazem iteração por recursão de cauda.
-# É comum que tais funções utilizem um parâmetro acumulador,
-# que vai gradualmente acumulando resultados parciais.
-# Em `fatorial-iter`, o parâmetro `produto` é o acumulador.
-#
-# > **NOTA**: *lis.py* não implementa chamadas de cauda eficientes, um recurso conhecido em inglês como _proper tail call_ (PTC) ou _tail call optimization_ (TCO), conforme o autor.
-# Portanto, não há vantagem em fazer recursão de cauda. Porém
-# [*lispy.py*](https://github.com/norvig/pytudes/blob/main/py/lispy.py) e
-# [`mylis_2`](https://github.com/fluentpython/lispy/blob/main/mylis/mylis_2/lis.py)
-# implementam PTC, o que significa que nesses interpretadores uma recursão de cauda não faz a pilha crescer a cada iteração.
+# This is known as the [Babylonian method](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
+# an ancient special case of [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method).
+# This code is adapted from an [example](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html) in the book *Structure and Interpretation of Computer Programs*.
 
-# ### Raiz quadrada por aproximação
-#
-# O [método babilônio](https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method),
-# um algoritmo para calcular raiz quadrada usado desde a antiguidade.
-# É um caso especial do
-# [Método de Newton–Raphson](https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Newton%E2%80%93Raphson)
-# para calcular raízes de funções.
-# Adaptei o código abaixo de um
-# [exemplo](https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node12.html)
-# do livro clássico *Structure and Interpretation of Computer Programs*.
-
-raiz2_scm = """
-(define raiz2 (lambda (x)
-    (raiz2-iter 1.0 x)))
-
-(define raiz2-iter (lambda (chute x)
-    (if (aproximado? chute x)
-        chute
-        (raiz2-iter (melhorar chute x) x))))
-
-(define aproximado? (lambda (chute x)
-    (< (abs (- (* chute chute) x)) 0.001)))
-
-(define melhorar (lambda (chute x)
-    (média chute (/ x chute))))
-
-(define média (lambda (x y)
+sqrt_src = """
+(define sqrt (lambda (x)
+    (sqrt-iter 1.0 x)))
+    
+(define sqrt-iter (lambda (guess x)
+    (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x))))
+        
+(define good-enough? (lambda (guess x)
+    (< (abs (- (* guess guess) x)) 0.001)))
+    
+(define improve (lambda (guess x)
+    (average guess (/ x guess))))
+    
+(define average (lambda (x y)
     (/ (+ x y) 2)))
-
-(raiz2 12345654321)
+    
+(sqrt 123454321)
 """
-run(raiz2_scm)
+run(sqrt_src)
 
-# ### Média de uma lista de números
+# ### Average of a list of numbers
 #
-# Um exemplo simples com operações de manipulação de lista: `null?`, `car`, `cdr`, `list`.
+# A simple example using the list handling functions `null?`, `car`, `cdr`, and `list`.
 
-média_scm = """
-(define média (lambda (lista)
-    (média-iter lista 0 0)))
+average_scm = """
+(define average (lambda (numbers)
+    (average-iter numbers 0 0)))
 
-(define média-iter (lambda (lista contador soma)
-    (if (null? lista)
-        (/ soma contador)
-        (média-iter (cdr lista) (+ contador 1) (+ soma (car lista))))))
+(define average-iter (lambda (numbers count sum)
+    (if (null? numbers)
+        (/ sum count)
+        (average-iter (cdr numbers) (+ count 1) (+ sum (car numbers))))))
 
-(média (list 1 2 3 4))
+(average (list 1 2 3 4))
 """
-run(média_scm)
+run(average_scm)
 
 # ### Quicksort
 #
-# O [algoritmo recursivo de ordenação](https://pt.wikipedia.org/wiki/Quicksort) eficiente e elegante inventado por Tony Hoare.
+# Tony Hoare's elegant [recursive sorting algorithm](https://en.wikipedia.org/wiki/Quicksort).
 #
-# Note as funções `append` e `filter` que operam com listas.
-# Confira em `standard_env()` que
-# o comportamento de `append` em Scheme é criar uma nova lista concatenando listas.
-# É mais parecido com `l1 + l2` em Python, e bem diferente de fazer `l1.append(l2)`.
+# Note that Scheme's `append` is very different from Python's `.append` method. 
+# The definition of `append` in `standard_env` builds a new list by concatenating lists.
+# So `(append l1 l2)` in Scheme is like `l1 + l2` in Python.
+#
+# `filter` is a high-order function in Scheme and in Python: it takes a predicate and a list as arguments, and returns a new list with the items that make the predicate true.
 
-quicksort_scm = """
+quicksort_src = """
 (define quicksort (lambda (lst)
     (if (null? lst)
         lst
         (begin
-            (define pivô (car lst))
-            (define resto (cdr lst))
+            (define pivot (car lst))
+            (define rest (cdr lst))
             (append
                 (quicksort
-                    (filter (lambda (x) (< x pivô)) resto))
-                (list pivô)
+                    (filter (lambda (x) (< x pivot)) rest))
+                (list pivot)
                 (quicksort
-                    (filter (lambda (x) (>= x pivô)) resto)))
+                    (filter (lambda (x) (>= x pivot)) rest)))
 ))))
-
 (display (quicksort (list 2 1 6 3 4 0 8 9 7 5)))
 (newline)
 """
-run(quicksort_scm)
+run(quicksort_src)
 
-# > **NOTA**: o código acima funciona em *lis.py*, mas não em Scheme padrão.
-# A forma `define` não pode ser usada naquele contexto em Scheme padrão;
-# em vez dela, usaríamos a forma `let`—que não existe em *lis.py*.
-# O funcionamento de `define` em *lis.py* é uma simplificação feita por Norvig,
-# imitando a semântica de atribuições em Python.
-# Quando `define` ocorre no nível global, é criada ou atualizada uma variável no ambiente global.
-# No corpo de uma função, `define` cria ou atualiza uma variável
-# no primeiro dicionário do `ChainMap` que define o ambiente local.
+# > **NOTE**: the code above works in *lis.py* but not in standard Scheme.
+# The form `define` cannot be used in that context in standard Scheme;
+# instead, we would use the form `let`—which doesn't exist in *lis.py*.
+# The implementation of `define` in *lis.py* is a simplification by Norvig,
+# mimicking assignment semantics in Python.
+# When `define` occurs at the global level, a variable is created or updated in the global environment.
+# In the body of a function, `define` creates or updates a variable
+# in the first dictionary in `ChainMap`, which holds the local environment. 
 
-# ## Açúcar Sintático
+# ## Syntactic sugar
 #
-# Por padrão, Scheme tem uma sintaxe alternativa para `define` que permite definir funções nomeadas
-# sem usar a palavra reservada `lambda`.
+# Standard Scheme provides an alternative syntax for `define` that allows defining named functions without `lambda`.
 #
-# A sintaxe é: `(define (name params…) body…)`, onde:
+# The syntax is: `(define (name parms…) body…)`, where:
 #
-# `name`: é o nome da função a ser definida (um `Symbol`);
+# `name`: the name of the function to be defined (a `Symbol`);
 #
-# `params…`: zero ou mais símbolos declarando o nome dos parâmetros;
+# `parms…`: 0 or more symbols declaring the parameter names;
 #
-# `body…`: uma ou mais expressões para serem usadas como o corpo da função.
+# `body…`: 1 or more expressions to be used as the body of the function.
 #
-# Isso é um exemplo de _açúcar sintático_:
-# uma sintaxe nova que não adiciona nenhuma funcionalidade à linguagem,
-# mas facilita o uso dela, tornando-a mais conveniente.
+# This is an example of _syntactic sugar_: new syntax that does not add any functionality to the language, but makes it more convenient to use.
 #
-# A versão de `mdc` apresentada na seção [Sintaxe de Scheme](#Sintaxe-de-Scheme)
-# usa esse atalho sintático.
+# The version of `gcd` shown in [Scheme Syntax](#Scheme-Syntax) uses that shortcut syntax. Here it is again:
 #
-# ### Exercício para casa
+# ```lisp
+# (define (mod m n)
+#     (- m (* n (quotient m n))))
 #
-# Valide seu entendimento do *lis.py* modificando a função `evaluate()`
-# para permitir o atalho sintático `define` para funções nomeadas.<br>
-# Teste sua solução rodando o exemplo abaixo. O resultado deve ser `9`.
+# (define (gcd m n)
+#     (if (= n 0)
+#         m
+#         (gcd n (mod m n))))
+#
+# (gcd 18 45)
+# ```
+#
+# ### Final exercise
+#
+# Check your understanding of _lis.py_ by implementing the shortcut syntax of `define` in the `evaluate()` function.
+# Test your work by running the example below. The result should be 9.
 #
 
-mdc2_scm = '''
-(define (resto m n)
+gcd2_src = '''
+(define (mod m n)
     (- m (* n (quotient m n))))
 
-(define (mdc m n)
+(define (gcd m n)
     (if (= n 0)
         m
-        (mdc n (resto m n))))
+        (gcd n (mod m n))))
 
-(mdc 18 45)
+(gcd 18 45)
 '''
-# run(mdc2_scm)
+# run(gcd2_src)
 
-# ## Fim
-
-# Parabéns por ter chegado até aqui!
+# ### The End
 #
-# A célula a seguir torna mais fácil verificar que nenhuma célula acima está levantando uma exceção.
-
-run('(display (quote (Este é o lis.py de Norvig))) (newline)')
+# Congratulations, you've just studied and changed a working interpreter for a
+# [Turing-complete](https://en.wikipedia.org/wiki/Turing_completeness) subset of Scheme!

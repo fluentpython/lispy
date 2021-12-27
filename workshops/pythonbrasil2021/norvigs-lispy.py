@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.0
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -79,7 +79,7 @@
 # instruções especiais—ex. `(define x 13)`, que corresponde à
 # instrução de atribuição em Python: `x = 13`.
 #
-# Essa notação com prefixa com parêntesis é chamada _S-expression_ ou _expressão-S_.
+# Essa notação prefixa com parêntesis é chamada _S-expression_ ou _expressão-S_.
 # É a mesma notação usada em Lisp e outros dialetos, como Clojure.
 #
 # Eis um exemplo simples em Scheme, para calcular o MDC (Máximo Divisor Comum):
