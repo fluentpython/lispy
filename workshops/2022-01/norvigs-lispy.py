@@ -57,7 +57,7 @@
 #
 # * _lis.py_ is a beautiful example of idiomatic Python code.
 #
-# Norvig describes _lis.py_ in a post titled 
+# Norvig describes _lis.py_ in a post titled
 # [(How to Write a (Lisp) Interpreter (in Python))](https://norvig.com/lispy.html). Highly recommended.
 #
 # Before looking at the Python code, let’s get a little taste of Scheme—in case you haven’t seen it (or Lisp) before.
@@ -294,7 +294,7 @@ parse('''
 # ### Exercise 0
 #
 # Replace the ellipis `...` with the AST for the given S-expressions, to make each comparison `True`.
-# To run the code in the cell, hit `【CTRL】【ENTER】`. 
+# To run the code in the cell, hit `【CTRL】【ENTER】`.
 
 parse('9') == ...
 
@@ -314,7 +314,7 @@ parse('(+ 32 (* (/ 9 5) c ))') == ...
 # like the `__builtins__` module in Python.
 #
 # In _lis.py_, the `standard_env` function builds and returns an `Environment` mapping loaded
-# with predefined functions. Next is a very simplified version of `standard_env`; we'll add more functions later. 
+# with predefined functions. Next is a very simplified version of `standard_env`; we'll add more functions later.
 
 def standard_env() -> Environment:
     "An environment for an s-expression calculator."
@@ -349,7 +349,7 @@ def standard_env() -> Environment:
 # ## A Calculator
 #
 # The central function of the interpreter is `evaluate`.
-# We'll start with a simple version that only handles 
+# We'll start with a simple version that only handles
 # expressions with built-in functions and user-defined variables.
 #
 # > **NOTE**: Norvig's parser is simple and solid, but his evaluator is simple and fragile. He ommited error checking to keep the logic easy to follow. In his words: "Lispy does not attempt to detect, reasonably report, or recover from errors. Lispy expects the programmer to be perfect." ([source](https://norvig.com/lispy.html)).
@@ -553,14 +553,14 @@ run('(factorial 10)')
 
 # **Step 3.2.** Edit the `standard_env` function above to re-implement `+` to make the expression above return `True`.
 #
-# > **HINT 3.2.1**: Hidden below is the source code for a variadic version of Python's `sum()`. Consider doing the exercise without revealing the hint. To reveal the code, uncomment the `print()` line and run the cell. 
+# > **HINT 3.2.1**: Hidden below is the source code for a variadic version of Python's `sum()`. Consider doing the exercise without revealing the hint. To reveal the code, uncomment the `print()` line and run the cell.
 
 from base64 import b64decode
 blob = (b'ZGVmIHZhcmlhZGljX3N1bSgqYXJncyk6CiAgICByZXR1cm4g'
         b'c3VtKGFyZ3MpCgp2YXJpYWRpY19zdW0oMSwgMiwgMywgNCk=')
 # print(b64decode(blob).decode('utf8'))
 
-# > **HINT 3.2.2**: the same function in a single line of Python. Try to do the exercise without revealing the hint. To reveal it, uncomment the `print()` line and run the cell. 
+# > **HINT 3.2.2**: the same function in a single line of Python. Try to do the exercise without revealing the hint. To reveal it, uncomment the `print()` line and run the cell.
 
 blob = b'ZiA9IGxhbWJkYSAqYXJnczogc3VtKGFyZ3MpCmYoMSwgMiwgMywgNCk='
 # print(b64decode(blob).decode('utf8'))
@@ -586,7 +586,7 @@ def standard_env() -> Environment:
             '<=': op.le,
             '=': op.eq,
             'abs': abs,
-            'append': lambda *args: list(chain(*args)),          
+            'append': lambda *args: list(chain(*args)),
             'apply': lambda proc, args: proc(*args),
             'begin': lambda *x: x[-1],
             'car': lambda x: x[0],
@@ -719,7 +719,7 @@ def evaluate(x: Expression, env: Environment) -> Any:
 # ### Evaluate `(lambda (var…) body)`
 #
 # ```python
-#     elif x[0] == 'lambda':                       
+#     elif x[0] == 'lambda':
 #         _, parms, body = x
 #         return Procedure(parms, body, env)
 # ```
@@ -804,16 +804,6 @@ def repl(prompt: str = 'lis.py> ') -> NoReturn:
         val = evaluate(parse(input(prompt)), global_env)
         if val is not None:
             print(lispstr(val))
-
-
-def lispstr(exp: object) -> str:
-    "Convert a Python object back into a Lisp-readable string."
-    if isinstance(exp, list):
-        return '(' + ' '.join(map(lispstr, exp)) + ')'
-    else:
-        return str(exp)
-
-
 # -
 
 # Function `repl` calls `standard_env()` to provide built-in functions for the global environment,
@@ -836,7 +826,7 @@ def lispstr(exp: object) -> str:
 #
 # The [Euclidean algorihm](https://en.wikipedia.org/wiki/Euclidean_algorithm).
 #
-# > **NOTE**: This is example uses `lambda` inside `define` instead of the shortcut `define` form listed in 
+# > **NOTE**: This is example uses `lambda` inside `define` instead of the shortcut `define` form listed in
 # [Scheme Syntax](#Scheme-Syntax), which creates named procedures directly.
 # We'll get back to the `define` shortcut in the last section of the tutorial, [Syntactic Sugar](Syntactic-Sugar)
 
@@ -858,8 +848,8 @@ run(gcd_src)
 
 fact_src = '''
 (define ! (lambda (n)
-    (if (< n 2) 
-        1 
+    (if (< n 2)
+        1
         (* n (! (- n 1)))
 )))
 
@@ -886,7 +876,7 @@ fact_src = '''
         )
     )
 )
-      
+
 (! 5)
 '''
 run(fact_src)
@@ -905,21 +895,21 @@ run(fact_src)
 sqrt_src = """
 (define sqrt (lambda (x)
     (sqrt-iter 1.0 x)))
-    
+
 (define sqrt-iter (lambda (guess x)
     (if (good-enough? guess x)
         guess
         (sqrt-iter (improve guess x) x))))
-        
+
 (define good-enough? (lambda (guess x)
     (< (abs (- (* guess guess) x)) 0.001)))
-    
+
 (define improve (lambda (guess x)
     (average guess (/ x guess))))
-    
+
 (define average (lambda (x y)
     (/ (+ x y) 2)))
-    
+
 (sqrt 123454321)
 """
 run(sqrt_src)
@@ -945,7 +935,7 @@ run(average_scm)
 #
 # Tony Hoare's elegant [recursive sorting algorithm](https://en.wikipedia.org/wiki/Quicksort).
 #
-# Note that Scheme's `append` is very different from Python's `.append` method. 
+# Note that Scheme's `append` is very different from Python's `.append` method.
 # The definition of `append` in `standard_env` builds a new list by concatenating lists.
 # So `(append l1 l2)` in Scheme is like `l1 + l2` in Python.
 #
@@ -977,7 +967,7 @@ run(quicksort_src)
 # mimicking assignment semantics in Python.
 # When `define` occurs at the global level, a variable is created or updated in the global environment.
 # In the body of a function, `define` creates or updates a variable
-# in the first dictionary in `ChainMap`, which holds the local environment. 
+# in the first dictionary in `ChainMap`, which holds the local environment.
 
 # ## Syntactic sugar
 #
