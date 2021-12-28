@@ -6,7 +6,7 @@ from pytest import mark
 import mylis
 import lis
 
-META_SCM = Path('meta.scm').read_text()
+META_SCM = Path('metacircular.scm').read_text()
 
 
 def test_GLOBAL_ENV_data():
