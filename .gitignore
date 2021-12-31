@@ -1,5 +1,6 @@
 # LR
 .py3*/
+*.rkt~
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
