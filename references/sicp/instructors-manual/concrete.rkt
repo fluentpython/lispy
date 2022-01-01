@@ -11,20 +11,44 @@
 
 (define (EVAL exp environ)
   ;; dispatch on expression type
-  (cond [(number? exp) exp]    ; self-evaluating
-        [(symbol? exp)
+  (cond [(number? exp) exp]                    ; self-evaluating
+        [(symbol? exp)                         ; variable?
          (LOOKUP-VARIABLE-VALUE exp environ)]
+        [(eq? (car exp) 'QUOTE) (cadr exp)]    ; quoted?
+        ;; rule for procedure objects in the environment model
+        [(eq? (car exp) 'LAMBDA)               ; lambda?
+         (list 'procedure                      ; make-procedure
+               (cadr exp)                      ; lambda-parameters
+               (caddr exp)                     ; lambda-body
+               environ)]
+        [(eq? (car exp) 'IF)                   ; if?
+         (EVAL-IF exp environ)]
         [else
-         (apply (EVAL (car exp) environ)       ; operator
-                (LIST-OF-VALUES (cdr exp)  ; operands
+         (APPLY (EVAL (car exp) environ)       ; operator
+                (LIST-OF-VALUES (cdr exp)      ; operands
                                 environ))]))
 
+(define (APPLY procedure arguments)
+  ;; dispatch on procedure type
+  (cond [(and (list? procedure) (eq? (car procedure) 'procedure)) ; compoud-procedure?
+         (EVAL
+          (caddr procedure)       ; procedure-body
+          (EXTEND-ENVIRONMENT
+           (cadr procedure)       ; procedure-parameters
+           arguments 
+           (cadddr procedure)))]  ; procedure-environment
+  [else (apply procedure arguments)])) ; (apply ...) from host interpreter
 
 (define (LIST-OF-VALUES exps environ)
   (if (null? exps)
       '()
       (cons (EVAL (car exps) environ)
             (LIST-OF-VALUES (cdr exps) environ))))
+
+(define (EVAL-IF exp environ)
+  (if (EVAL (cadr exp) environ)      ; if-predicate
+      (EVAL (caddr exp) environ)         ; if-consequent
+      (EVAL (cadddr exp) environ)))  ; if-alternative
 
 (define (EXTEND-ENVIRONMENT vars values base-environ)
   (cons (MAKE-FRAME vars values) base-environ))
@@ -52,8 +76,8 @@
 
 (define (MAKE-BUILTINS)
   (EXTEND-ENVIRONMENT
-   '(+ - * /)
-   (list + - * /)
+   '(+ - * / <)
+   (list + - * / <)
    '()))
 
 ; Needed to support rackunit tests in concrete-test.rkt.
