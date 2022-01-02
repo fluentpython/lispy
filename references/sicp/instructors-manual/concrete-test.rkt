@@ -12,6 +12,11 @@
 (check-equal? (EXTEND-ENVIRONMENT '(a b) '(1 2) '()) '(([a . 1] [b . 2])))
 (check-equal? (EXTEND-ENVIRONMENT '() '() '()) '(()) )
 
+(check-equal? (EXTEND-ENVIRONMENT '(a b) '(1 2)
+                                  (EXTEND-ENVIRONMENT '(c d) '(3 4) '()))
+              '(((a . 1) (b . 2))
+                ((c . 3) (d . 4))))
+
 (check-exn (regexp "Unbound variable 'x") (lambda ()
     (LOOKUP-VARIABLE-VALUE 'x '())))
 
