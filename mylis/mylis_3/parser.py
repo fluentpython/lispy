@@ -15,35 +15,34 @@ from .listypes import (
 
 def parse(source: str) -> Expression:
     """Read a Scheme expression from a string."""
-    return read_from_tokens(tokenize(source), [])
+    return read_from_tokens(tokenize(source))
 
 
-OPEN_BRACES = {
+BRACES = {
     '(': ')',
     '[': ']',
     '{': '}',
 }
-CLOSE_BRACES = OPEN_BRACES.values()
+CLOSE_BRACES = BRACES.values()
 
 
 def tokenize(s: str) -> list[str]:
     """Convert a string into a list of tokens."""
-    for open, close in OPEN_BRACES.items():
+    for open, close in BRACES.items():
         s = s.replace(open, f' {open} ').replace(close, f' {close} ')
     return s.split()
 
 
-def read_from_tokens(tokens: list[str], open_braces: list[str]) -> Expression:
+def read_from_tokens(tokens: list[str]) -> Expression:
     """Read an expression from a sequence of tokens."""
     try:
         token = tokens.pop(0)
     except IndexError:
         raise UnexpectedEndOfSource()
-    if token in OPEN_BRACES:
-        open_braces.append(token)
+    if token in BRACES:
         exp = []
-        while tokens and tokens[0] != OPEN_BRACES[token]:
-            exp.append(read_from_tokens(tokens, open_braces))
+        while tokens and tokens[0] != BRACES[token]:
+            exp.append(read_from_tokens(tokens))
         if not tokens:
             raise UnexpectedEndOfSource()
         tokens.pop(0)  # discard close brace

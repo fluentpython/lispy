@@ -1,6 +1,6 @@
 from .listypes import (
     Expression,
-    InterpreterException,
+    ParserException,
     UnexpectedCloseBrace,
     UnexpectedEndOfSource,
 )
@@ -68,9 +68,11 @@ def test_parse_mixed_braces(source: str, expected: Expression) -> None:
     [
         ('', UnexpectedEndOfSource),
         ('(', UnexpectedEndOfSource),
+        ('([]', UnexpectedEndOfSource),
         ('(])', UnexpectedCloseBrace),
+        ('([)', UnexpectedCloseBrace),
     ],
 )
-def test_parse_malformed(source: str, expected: InterpreterException) -> None:
-    with raises(expected):
+def test_parse_malformed(source: str, expected: ParserException) -> None:
+    with raises(expected):  # type: ignore
         parse(source)
