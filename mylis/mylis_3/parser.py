@@ -2,7 +2,7 @@
 
 ################ lis.py: Scheme Interpreter in Python 3.10
 ## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
-## refactored by Luciano Ramalho in 2022.
+## Refactorting and additions by Luciano Ramalho (2022)
 
 from .listypes import (
     Atom,
