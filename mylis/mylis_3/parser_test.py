@@ -1,8 +1,9 @@
-from .listypes import (
+from .lis_types import (
+    BlankExpression,
     Expression,
     ParserException,
     UnexpectedCloseBrace,
-    UnexpectedEndOfSource,
+    BraceNeverClosed,
 )
 from .parser import parse
 
@@ -64,15 +65,19 @@ def test_parse_mixed_braces(source: str, expected: Expression) -> None:
 
 
 @mark.parametrize(
-    'source, expected',
+    'source, expected, brace',
     [
-        ('', UnexpectedEndOfSource),
-        ('(', UnexpectedEndOfSource),
-        ('([]', UnexpectedEndOfSource),
-        ('(])', UnexpectedCloseBrace),
-        ('([)', UnexpectedCloseBrace),
+        ('', BlankExpression, ''),
+        ('{', BraceNeverClosed, '{'),
+        ('([]', BraceNeverClosed, '('),
+        ('(])', UnexpectedCloseBrace, ']'),
+        ('([)', UnexpectedCloseBrace, ')'),
     ],
 )
-def test_parse_malformed(source: str, expected: ParserException) -> None:
-    with raises(expected):  # type: ignore
+def test_parse_malformed(
+    source: str, expected: ParserException, brace: str
+) -> None:
+    with raises(expected) as excinfo:  # type: ignore
         parse(source)
+    if brace:
+        assert repr(brace) in str(excinfo.value)

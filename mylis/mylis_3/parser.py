@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-################ lis.py: Scheme Interpreter in Python 3.10
-## (c) Peter Norvig, 2010-18; See http://norvig.com/lispy.html
+################ Scheme Interpreter in Python 3.10
+## Based on lis.py (c) Peter Norvig, 2010-18
+## See http://norvig.com/lispy.html
 ## Refactorting and additions by Luciano Ramalho (2022)
 
-from .listypes import (
+from .lis_types import (
     Atom,
     Symbol,
     Expression,
+    BlankExpression,
+    BraceNeverClosed,
     UnexpectedCloseBrace,
-    UnexpectedEndOfSource,
 )
 
 
@@ -38,17 +40,17 @@ def read_from_tokens(tokens: list[str]) -> Expression:
     try:
         token = tokens.pop(0)
     except IndexError:
-        raise UnexpectedEndOfSource()
+        raise BlankExpression()
     if token in BRACES:
         exp = []
         while tokens and tokens[0] != BRACES[token]:
             exp.append(read_from_tokens(tokens))
         if not tokens:
-            raise UnexpectedEndOfSource()
+            raise BraceNeverClosed(token)
         tokens.pop(0)  # discard close brace
         return exp
     elif token in CLOSE_BRACES:
-        raise UnexpectedCloseBrace()
+        raise UnexpectedCloseBrace(token)
     else:
         return parse_atom(token)
 
