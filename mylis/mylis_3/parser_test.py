@@ -31,11 +31,11 @@ def test_parse(source: str, expected: Expression) -> None:
         ('(if (< x 0) 0 x)', ['if', ['<', 'x', 0], 0, 'x']),
         ('{if (< x 0) 0 x}', ['if', ['<', 'x', 0], 0, 'x']),
         (
-            """(cond
-                ((> x 0) x)
-                ((= x 0) 0)
-                ((< x 0) (- 0 x)))
-         """,
+            """ (cond
+                    ((> x 0) x)
+                    ((= x 0) 0)
+                    ((< x 0) (- 0 x)))
+            """,
             [
                 'cond',
                 [['>', 'x', 0], 'x'],
@@ -44,11 +44,11 @@ def test_parse(source: str, expected: Expression) -> None:
             ],
         ),
         (
-            """{cond
-                [(> x 0) x]
-                [(= x 0) 0]
-                [(< x 0) (- 0 x)]}
-         """,
+            """ {cond
+                    [(> x 0) x]
+                    [(= x 0) 0]
+                    [(< x 0) (- 0 x)]}
+            """,
             [
                 'cond',
                 [['>', 'x', 0], 'x'],
