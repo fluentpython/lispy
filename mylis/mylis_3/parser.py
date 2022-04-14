@@ -5,11 +5,11 @@
 ## See http://norvig.com/lispy.html
 ## Refactorting and additions by Luciano Ramalho (2022)
 
-from .lis_types import (
+from .mytypes import (
     Atom,
+    ParserException,
     Symbol,
     Expression,
-    BlankExpression,
     BraceNeverClosed,
     UnexpectedCloseBrace,
 )
@@ -40,7 +40,7 @@ def read_from_tokens(tokens: list[str]) -> Expression:
     try:
         token = tokens.pop(0)
     except IndexError:
-        raise BlankExpression()
+        raise ParserException('Empty list of tokens')
     if token in BRACES:
         exp = []
         while tokens and tokens[0] != BRACES[token]:
@@ -66,9 +66,19 @@ def parse_atom(token: str) -> Atom:
             return Symbol(token)
 
 
-def lispstr(exp: object) -> str:
-    """Convert a Python object back into a Lisp-readable string."""
-    if isinstance(exp, list):
-        return '(' + ' '.join(map(lispstr, exp)) + ')'
-    else:
-        return str(exp)
+# s_expr is the inverse function of parse, but some formatting
+# is lost, and all braces are rendered as ()
+def s_expr(obj: object) -> str:
+    """ Convert Python object back to s-expression code. """
+    match obj:
+        case True:
+            return '#t'
+        case False:
+            return '#f'
+        case list(obj):
+            items = ' '.join(s_expr(x) for x in obj)
+            return f'({items})'
+        case Symbol(x):
+            return x
+        case _:
+            return repr(obj)

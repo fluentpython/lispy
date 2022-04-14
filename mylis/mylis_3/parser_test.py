@@ -1,11 +1,11 @@
-from .lis_types import (
-    BlankExpression,
+from email.parser import Parser
+from .mytypes import (
     Expression,
     ParserException,
     UnexpectedCloseBrace,
     BraceNeverClosed,
 )
-from .parser import parse
+from .parser import parse, s_expr
 
 from pytest import mark, raises
 
@@ -65,9 +65,9 @@ def test_parse_mixed_braces(source: str, expected: Expression) -> None:
 
 
 @mark.parametrize(
-    'source, expected, brace',
+    'source, expected, match',
     [
-        ('', BlankExpression, ''),
+        ('', ParserException, 'Empty'),
         ('{', BraceNeverClosed, '{'),
         ('([]', BraceNeverClosed, '('),
         ('(])', UnexpectedCloseBrace, ']'),
@@ -75,9 +75,26 @@ def test_parse_mixed_braces(source: str, expected: Expression) -> None:
     ],
 )
 def test_parse_malformed(
-    source: str, expected: ParserException, brace: str
+    source: str, expected: ParserException, match: str
 ) -> None:
     with raises(expected) as excinfo:  # type: ignore
         parse(source)
-    if brace:
-        assert repr(brace) in str(excinfo.value)
+    assert match in str(excinfo.value)
+
+
+@mark.parametrize('obj, expected', [
+    (0, '0'),
+    (1, '1'),
+    (False, '#f'),
+    (True, '#t'),
+    (1.5, '1.5'),
+    ('sin', 'sin'),
+    (['+', 1, 2], '(+ 1 2)'),
+    (['if', ['<', 'a', 'b'], True, False], '(if (< a b) #t #f)'),
+    ([], '()'),
+    (None, 'None'),
+    (..., 'Ellipsis'),
+])
+def test_s_expr(obj: object, expected: str) -> None:
+    got = s_expr(obj)
+    assert got == expected
