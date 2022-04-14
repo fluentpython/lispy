@@ -42,7 +42,7 @@ def test_evaluate_call(
 
 # Special forms
 
-def test_define(std_env: Environment) -> None:
+def test_define_variable(std_env: Environment) -> None:
     source = '(define answer (* 6 7))'
     got = evaluate(parse(source), std_env)
     assert got is None
