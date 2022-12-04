@@ -1,10 +1,10 @@
 import ast
 from typing import Any
 
-from .environ import core_env
-from .evaluator import evaluate, KEYWORDS
-from .parser import parse
-from .mytypes import Environment, Symbol
+from environ import core_env
+from evaluator import evaluate, KEYWORDS, Environment
+from parser import parse
+from mytypes import Symbol
 
 from pytest import fixture, mark
 
@@ -14,7 +14,7 @@ def std_env() -> Environment:
 
 
 def test_evaluate_variable() -> None:
-    env: Environment = {Symbol('x'): 10}
+    env = Environment(dict(x = 10))
     source = 'x'
     expected = 10
     got = evaluate(parse(source), env)
@@ -50,8 +50,96 @@ def test_define_variable(std_env: Environment) -> None:
     assert std_env[Symbol('answer')] == 42
 
 
-# TODO: consider moving test below as a self test in evaluator.py
+def test_evaluate_if_true(std_env: Environment) -> None:
+    source = '(if 1 10 no-such-thing)'
+    expected = 10
+    got = evaluate(parse(source), std_env)
+    assert got == expected
 
+
+def test_evaluate_if_false(std_env: Environment) -> None:
+    source = '(if 0 no-such-thing 20)'
+    expected = 20
+    got = evaluate(parse(source), std_env)
+    assert got == expected
+
+
+def test_evaluate_quote(std_env: Environment) -> None:
+    source = '(quote (1.1 is not 1))'
+    expected = [1.1, 'is', 'not', 1]
+    got = evaluate(parse(source), std_env)
+    assert got == expected
+
+
+def test_evaluate_lambda(std_env: Environment) -> None:
+    source = '(lambda (a b) (if (>= a b) a b))'
+    func = evaluate(parse(source), std_env)
+    assert func.parms == ['a', 'b']
+    assert len(func.body) == 1
+    assert func.body[0] == ['if', ['>=', 'a', 'b'], 'a', 'b']
+    assert func.definition_env is std_env
+    assert func(1, 2) == 2
+    assert func(3, 2) == 3
+
+
+def test_define_procedure(std_env: Environment) -> None:
+    source = '(define (max a b) (if (>= a b) a b))'
+    got = evaluate(parse(source), std_env)
+    assert got is None
+    max_fn = std_env['max']
+    assert max_fn.parms == ['a', 'b']
+    assert len(max_fn.body) == 1
+    assert max_fn.body[0] == ['if', ['>=', 'a', 'b'], 'a', 'b']
+    assert max_fn.definition_env is std_env
+    assert max_fn(1, 2) == 2
+    assert max_fn(3, 2) == 3
+
+
+def test_call_user_procedure(std_env: Environment) -> None:
+    source = """
+        (begin
+            (define max (lambda (a b) (if (>= a b) a b)))
+            (max 22 11)
+        )
+        """
+    got = evaluate(parse(source), std_env)
+    assert got == 22
+
+def test_evaluate_lambda_with_multi_expression_body(std_env: Environment) -> None:
+    source = """
+        (lambda (m n)
+            (define (mod m n)
+                (- m (* n (quotient m n))))
+            (define (gcd m n)
+                (if (= n 0)
+                    m
+                    (gcd n (mod m n))))
+            (gcd m n)
+        )
+    """
+    func = evaluate(parse(source), std_env)
+    assert func.parms == ['m', 'n']
+    assert len(func.body) == 3
+    assert func(18, 45) == 9    
+
+
+source = """
+(begin
+    (define (make-adder increment)
+        (lambda (x) (+ increment x))
+    )
+    (define x 0)
+    (define inc (make-adder 8))
+    (inc 34)
+)
+"""
+def test_closure(std_env: Environment) -> None:
+    got = evaluate(parse(source), std_env)
+    assert got == 42
+
+# Consistency check
+
+# TODO: consider moving test below as a self test in evaluator.py
 def test_declared_keywords():
     """ Check that the set of KEYWORDS is the same as
         the set of string constants in the first position of
@@ -78,5 +166,4 @@ def test_declared_keywords():
                     patterns=[ast.MatchValue(ast.Constant(value=str(kw))), *_]):
                 found_keywords.add(kw)
 
-    found_keywords = sorted(found_keywords)
-    assert found_keywords == sorted(KEYWORDS)
+    assert sorted(found_keywords) == sorted(KEYWORDS)

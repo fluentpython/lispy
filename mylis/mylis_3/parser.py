@@ -5,12 +5,12 @@
 ## See http://norvig.com/lispy.html
 ## Refactorting and additions by Luciano Ramalho (2022)
 
-from .mytypes import (
+from mytypes import (
     Atom,
-    ParserException,
     Symbol,
     Expression,
     BraceNeverClosed,
+    ParserException,
     UnexpectedCloseBrace,
 )
 
@@ -39,8 +39,8 @@ def read_from_tokens(tokens: list[str]) -> Expression:
     """Read an expression from a sequence of tokens."""
     try:
         token = tokens.pop(0)
-    except IndexError:
-        raise ParserException('Empty list of tokens')
+    except IndexError as exc:
+        raise ParserException('Empty list of tokens') from exc
     if token in BRACES:
         exp = []
         while tokens and tokens[0] != BRACES[token]:

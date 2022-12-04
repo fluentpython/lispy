@@ -9,7 +9,6 @@ Number: TypeAlias = int | float
 Atom: TypeAlias = int | float | Symbol
 Expression: TypeAlias = Atom | list  # type: ignore
 
-Environment = MutableMapping[Symbol, object]
 
 class InterpreterException(Exception):
     """Generic interpreter exception."""

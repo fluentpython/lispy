@@ -1,11 +1,11 @@
 from email.parser import Parser
-from .mytypes import (
+from mytypes import (
     Expression,
     ParserException,
     UnexpectedCloseBrace,
     BraceNeverClosed,
 )
-from .parser import parse, s_expr
+from parser import parse, s_expr
 
 from pytest import mark, raises
 
