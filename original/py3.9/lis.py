@@ -152,9 +152,7 @@ def evaluate(x: Expression, env: Environment) -> Any:
     elif x[0] == 'quote':                        # (quote exp)
         (_, exp) = x
         return exp
-    elif (
-        x[0] == 'if'
-    ):                           # (if test consequence alternative)
+    elif (x[0] == 'if'):                         # (if test consequence alternative)
         (_, test, consequence, alternative) = x
         if evaluate(test, env):
             return evaluate(consequence, env)
