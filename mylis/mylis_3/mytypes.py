@@ -4,8 +4,7 @@ from typing import TypeAlias
 
 # cannot use NewType because we need isinstance()
 # to support (symbol? x) in environ.py
-class Symbol(str):
-    pass  
+Symbol: TypeAlias = str
 Number: TypeAlias = int | float
 Atom: TypeAlias = int | float | Symbol
 Expression: TypeAlias = Atom | list  # type: ignore

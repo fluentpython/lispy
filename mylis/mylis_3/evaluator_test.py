@@ -1,7 +1,8 @@
+import ast
 from typing import Any
 
 from .environ import core_env
-from .evaluator import evaluate
+from .evaluator import evaluate, KEYWORDS
 from .parser import parse
 from .mytypes import Environment, Symbol
 
@@ -47,3 +48,35 @@ def test_define_variable(std_env: Environment) -> None:
     got = evaluate(parse(source), std_env)
     assert got is None
     assert std_env[Symbol('answer')] == 42
+
+
+# TODO: consider moving test below as a self test in evaluator.py
+
+def test_declared_keywords():
+    """ Check that the set of KEYWORDS is the same as
+        the set of string constants in the first position of
+        sequence patterns in the match/case inside evaluate()
+    """
+    with open('evaluator.py') as source:
+        tree = ast.parse(source.read())
+
+    cases = None
+    for node in ast.walk(tree):
+        match node:
+            # find FunctionDef named 'evaluate'
+            case ast.FunctionDef(name='evaluate', body=[_,
+                        ast.Match(cases=cases)
+                    ]):
+                break
+    assert cases is not None
+
+    # collect string constants in the first position of sequence patterns
+    found_keywords = set()
+    for case in cases:
+        match case.pattern:
+            case ast.MatchSequence(
+                    patterns=[ast.MatchValue(ast.Constant(value=str(kw))), *_]):
+                found_keywords.add(kw)
+
+    found_keywords = sorted(found_keywords)
+    assert found_keywords == sorted(KEYWORDS)
