@@ -3,7 +3,7 @@ from typing import Any
 from .environ import core_env
 from .evaluator import evaluate
 from .parser import parse
-from .mytypes import Environment
+from .mytypes import Environment, Symbol
 
 from pytest import fixture, mark
 
@@ -13,7 +13,7 @@ def std_env() -> Environment:
 
 
 def test_evaluate_variable() -> None:
-    env: Environment = dict(x=10)
+    env: Environment = {Symbol('x'): 10}
     source = 'x'
     expected = 10
     got = evaluate(parse(source), env)
@@ -46,4 +46,4 @@ def test_define_variable(std_env: Environment) -> None:
     source = '(define answer (* 6 7))'
     got = evaluate(parse(source), std_env)
     assert got is None
-    assert std_env['answer'] == 42
+    assert std_env[Symbol('answer')] == 42

@@ -2,7 +2,10 @@ from collections.abc import MutableMapping
 from typing import TypeAlias
 
 
-Symbol: TypeAlias = str
+# cannot use NewType because we need isinstance()
+# to support (symbol? x) in environ.py
+class Symbol(str):
+    pass  
 Number: TypeAlias = int | float
 Atom: TypeAlias = int | float | Symbol
 Expression: TypeAlias = Atom | list  # type: ignore
